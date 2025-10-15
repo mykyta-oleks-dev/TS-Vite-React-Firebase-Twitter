@@ -1,8 +1,11 @@
 import admin from 'firebase-admin';
+import { App } from 'firebase-admin/app';
 
-if (!admin.apps.length) {
-	admin.initializeApp();
+let app: undefined | App;
+
+if (!admin.apps.length || !app) {
+	app = admin.initializeApp();
 }
 
-export const db = admin.firestore();
-export const auth = admin.auth();
+export const db = admin.firestore(app);
+export const auth = admin.auth(app);

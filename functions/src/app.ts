@@ -1,10 +1,10 @@
 import cors from 'cors';
 import express, { RequestHandler } from 'express';
 import {
-	AppError,
 	errorHandler,
-	notFoundHandler,
+	notFoundHandler
 } from './middlewares/ErrorHandling';
+import usersRoutes from './modules/users/users.routes';
 
 // Initialize Firebase Admin SDK
 
@@ -17,15 +17,11 @@ app.use(express.json());
 
 // Routes
 const helloHandler: RequestHandler = (_req, res) => {
-    res.status(200).send('Hello world');
-};
-
-const throwTestError: RequestHandler = () => {
-    throw new AppError('Test error');
+	res.status(200).send('Hello world');
 };
 
 app.get('/', helloHandler);
-app.get('/error', throwTestError);
+app.use('/users', usersRoutes);
 
 // Unknown routes handling
 app.use(notFoundHandler);

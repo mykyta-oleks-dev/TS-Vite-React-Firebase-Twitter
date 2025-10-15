@@ -1,10 +1,14 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { HTTP, HTTP_LABEL } from '../shared/constants/HTTP';
+
+type Payload = Record<string, string | number>;
 
 // Custom error class for better error handling
 export class AppError extends Error {
 	constructor(
 		public message: string,
-		public status: number = 500,
+		public status: number = HTTP.INTERNAL,
+		public payload?: Payload,
 		public isOperational: boolean = true
 	) {
 		super(message);
@@ -15,32 +19,35 @@ export class AppError extends Error {
 
 // Predefined error creators
 export class BadRequestError extends AppError {
-	constructor(message: string = 'Bad Request') {
-		super(message, 400);
+	constructor(
+		message: string = HTTP_LABEL[HTTP.BAD_REQUEST],
+		payload?: Payload
+	) {
+		super(message, HTTP.BAD_REQUEST, payload);
 	}
 }
 
 export class UnauthorizedError extends AppError {
-	constructor(message: string = 'Unauthorized') {
-		super(message, 401);
+	constructor(message: string = HTTP_LABEL[HTTP.UNAUTHORIZED]) {
+		super(message, HTTP.UNAUTHORIZED);
 	}
 }
 
 export class ForbiddenError extends AppError {
-	constructor(message: string = 'Forbidden') {
-		super(message, 403);
+	constructor(message: string = HTTP_LABEL[HTTP.FORBIDDEN]) {
+		super(message, HTTP.FORBIDDEN);
 	}
 }
 
 export class NotFoundError extends AppError {
-	constructor(message: string = 'Resource not found') {
-		super(message, 404);
+	constructor(message: string = HTTP_LABEL[HTTP.NOT_FOUND]) {
+		super(message, HTTP.NOT_FOUND);
 	}
 }
 
 export class ConflictError extends AppError {
-	constructor(message: string = 'Conflict') {
-		super(message, 409);
+	constructor(message: string = HTTP_LABEL[HTTP.CONFLICT]) {
+		super(message, HTTP.CONFLICT);
 	}
 }
 
@@ -50,6 +57,7 @@ interface ErrorResponse {
 	message: string;
 	stack?: string;
 	errors?: unknown;
+	payload?: Payload;
 }
 
 // Main error handler
@@ -63,12 +71,14 @@ export const errorHandler = (
 	let statusCode = 500;
 	let message = 'Internal Server Error';
 	let isOperational = false;
+	let payload: Payload | undefined = undefined;
 
 	// Handle AppError instances
 	if (err instanceof AppError) {
 		statusCode = err.status;
 		message = err.message;
 		isOperational = err.isOperational;
+		payload = err.payload;
 	}
 
 	if (!isOperational || statusCode === 500) {
@@ -77,6 +87,7 @@ export const errorHandler = (
 			message: err.message,
 			status: statusCode,
 			stack: err.stack,
+			payload: payload,
 		});
 	}
 
@@ -84,6 +95,7 @@ export const errorHandler = (
 	const response: ErrorResponse = {
 		status: statusCode >= 500 ? 'error' : 'fail',
 		message,
+		payload,
 	};
 
 	if (process.env.NODE_ENV !== 'production') {
@@ -127,7 +139,7 @@ export const notFoundHandler = (
 
 // Async handler wrapper to catch errors in async route handlers
 export const asyncHandler = (
-	fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
+	fn: RequestHandler
 ) => {
 	return (req: Request, res: Response, next: NextFunction) => {
 		Promise.resolve(fn(req, res, next)).catch(next);
