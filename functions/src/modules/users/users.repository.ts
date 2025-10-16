@@ -1,7 +1,7 @@
 import {
 	DecodedIdToken
 } from 'firebase-admin/auth';
-import { auth, db } from '../../config/firebase';
+import { db } from '../../config/firebase';
 import {
 	NotFoundError
 } from '../../middlewares/ErrorHandling';
@@ -28,10 +28,6 @@ class UsersRepository {
 		};
 
 		await db.collection(COLLECTIONS.USERS).add(userData);
-
-		const token = await auth.createCustomToken(uid);
-
-		return { token };
 	};
 
 	update = async (userToken: DecodedIdToken, values: UserInfo) => {

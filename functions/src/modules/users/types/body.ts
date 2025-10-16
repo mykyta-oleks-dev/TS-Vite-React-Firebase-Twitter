@@ -5,11 +5,18 @@ export type UserInfo = Omit<UserData, 'email' | 'isVerified'> & {
 	birthday: string
 }
 
-type SignUpData = {
-	email: string;
+export type PasswordsData = {
 	password: string;
 	confirmPassword: string;
-};
+}
+
+export type PasswordsDataBody = Partial<PasswordsData>;
+
+export type PasswordsDataErrors = Partial<Stringified<PasswordsData>>;
+
+type SignUpData = {
+	email: string;
+} & PasswordsData;
 
 export type SignUp = UserInfo & SignUpData;
 

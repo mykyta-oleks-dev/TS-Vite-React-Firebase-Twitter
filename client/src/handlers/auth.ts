@@ -7,8 +7,6 @@ import {
 } from 'firebase/auth';
 
 export const handleSignUp = async (values: signUpData) => {
-	console.log({ values });
-
 	try {
 		const res = await fetch(API.ROUTE, {
 			method: 'POST',

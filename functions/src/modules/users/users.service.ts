@@ -12,15 +12,17 @@ import {
 	NotFoundError,
 } from '../../middlewares/ErrorHandling';
 import { ERRORS } from './constants/Errors';
-import { SignUpBody, UserInfoBody } from './types/body';
+import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body';
 import usersRepository from './users.repository';
+import { sendResetPassword, sendVerificationEmail } from './utils/emails';
 import {
+	assertIsPasswordsData,
 	assertIsSignUp,
 	assertIsUserInfo,
+	validatePasswords,
 	validateSignUpBody,
 	validateUserInfo,
 } from './utils/validate';
-import { sendVerificationEmail } from './utils/verification';
 
 class UsersService {
 	signUp = async (body: SignUpBody) => {
@@ -39,7 +41,7 @@ class UsersService {
 				photoURL: body.avatar,
 			});
 
-			await sendVerificationEmail(body.email, body.redirectUrl);
+			await sendResetPassword(body.email, body.redirectUrl);
 		} catch (err: unknown) {
 			if (
 				err instanceof FirebaseAuthError &&
@@ -53,7 +55,9 @@ class UsersService {
 
 		if (!userRecord) throw new AppError(ERRORS.CREATE_ERROR);
 
-		return await usersRepository.signUp(body, userRecord.uid);
+		const token = await auth.createCustomToken(userRecord.uid);
+
+		return { token };
 	};
 
 	update = async (user: DecodedIdToken, body: UserInfoBody) => {
@@ -89,6 +93,18 @@ class UsersService {
 			throw new AppError('User has no email coupled to their record');
 
 		await sendVerificationEmail(user.email, redirectUrl);
+	};
+
+	changePassword = async (user: DecodedIdToken, body: PasswordsDataBody) => {
+		const errors = validatePasswords(body);
+
+		if (!assertIsPasswordsData(body, errors)) {
+			throw new BadRequestError(ERRORS.BADREQUEST_RESET_PSW, errors);
+		}
+
+		await auth.updateUser(user.uid, {
+			password: body.password,
+		});
 	};
 }
 

@@ -4,12 +4,15 @@ import {
 	isNotDate,
 } from '../../../shared/utils/validation';
 import {
+	PasswordsData,
+	PasswordsDataBody,
+	PasswordsDataErrors,
 	SignUp,
 	SignUpBody,
 	SignUpErrors,
 	UserInfo,
 	UserInfoBody,
-	UserInfoErrors,
+	UserInfoErrors
 } from '../types/body';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -20,7 +23,7 @@ const urlRegex =
 const PASSWORD_MIN_LENGTH = 6;
 
 export const validateSignUpBody = (body: SignUpBody) => {
-	const { email, password, confirmPassword } = body;
+	const { email } = body;
 
 	const errors: SignUpErrors = validateUserInfo(body);
 
@@ -30,17 +33,10 @@ export const validateSignUpBody = (body: SignUpBody) => {
 		errors.email = 'Invalid email is provided';
 	}
 
-	if (isEmptyString(password)) {
-		errors.password = 'Password is required';
-	} else if (password.length < PASSWORD_MIN_LENGTH) {
-		errors.password = `Password has to be at least ${PASSWORD_MIN_LENGTH} characters long`;
-	}
+	const passwordsErrors = validatePasswords(body);
 
-	if (isEmptyString(confirmPassword)) {
-		errors.confirmPassword = 'Password confirmation is required';
-	} else if (confirmPassword !== password) {
-		errors.confirmPassword = "Passwords don't match";
-	}
+	errors.password = passwordsErrors.password
+	errors.confirmPassword = passwordsErrors.confirmPassword;
 
 	return errors;
 };
@@ -73,6 +69,24 @@ export const validateUserInfo = (body: UserInfoBody) => {
 	return errors;
 };
 
+export const validatePasswords = ({password, confirmPassword}: PasswordsDataBody) => {
+	const errors: PasswordsDataErrors = {};
+
+	if (isEmptyString(password)) {
+		errors.password = 'Password is required';
+	} else if (password.length < PASSWORD_MIN_LENGTH) {
+		errors.password = `Password has to be at least ${PASSWORD_MIN_LENGTH} characters long`;
+	}
+
+	if (isEmptyString(confirmPassword)) {
+		errors.confirmPassword = 'Password confirmation is required';
+	} else if (confirmPassword !== password) {
+		errors.confirmPassword = "Passwords don't match";
+	}
+
+	return errors;
+}
+
 export const assertIsSignUp = assertIsNotErroneous<
 	SignUp,
 	SignUpBody,
@@ -83,4 +97,10 @@ export const assertIsUserInfo = assertIsNotErroneous<
 	UserInfo,
 	UserInfoBody,
 	UserInfoErrors
+>;
+
+export const assertIsPasswordsData = assertIsNotErroneous<
+	PasswordsData,
+	PasswordsDataBody,
+	PasswordsDataErrors
 >;
