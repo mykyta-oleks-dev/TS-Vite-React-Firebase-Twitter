@@ -2,7 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { HTTP } from '../../shared/constants/HTTP';
 import { UserInfoBody, SignUpBody } from './types/body';
 import usersService from './users.service';
-import { UnauthorizedError } from '../../middlewares/ErrorHandling';
+import { ConflictError, UnauthorizedError } from '../../middlewares/ErrorHandling';
 import { ERRORS } from './constants/Errors';
 
 class UsersController {
@@ -29,6 +29,24 @@ class UsersController {
 		await usersService.update(user, body);
 
 		res.status(HTTP.OK).json({ message: 'Success!' });
+	};
+
+	resendVerification: RequestHandler = async (req, res) => {
+		const user = req.user;
+
+		if (!user) {
+			throw new UnauthorizedError(ERRORS.UNAUTH_UPDATE);
+		}
+
+		if (user.email_verified) {
+			throw new ConflictError(ERRORS.ALREADY_VERIFIED)
+		}
+
+		const { redirectUrl } = req.body as { redirectUrl?: string };
+
+		await usersService.resendVerification(user, redirectUrl);
+
+		res.status(HTTP.OK).json({ message: 'Verification link was resent!' });
 	};
 }
 

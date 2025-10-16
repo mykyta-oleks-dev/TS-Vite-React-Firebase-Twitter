@@ -1,17 +1,22 @@
-import { User } from '../../../shared/types/data/User';
+import { Stringified } from '../../../shared/types/data/common';
+import { UserData } from '../../../shared/types/data/User';
 
-type PasswordsData = {
-	password?: string;
-	confirmPassword?: string;
+export type UserInfo = Omit<UserData, 'email' | 'isVerified'> & {
+	birthday: string
+}
+
+type SignUpData = {
+	email: string;
+	password: string;
+	confirmPassword: string;
 };
 
-export type SignUpBody = Partial<
-	Omit<User, 'id' | 'isVerified' | 'createdAt' | 'updatedAt' | 'birthday'>
-> & {
-	birthday?: string;
-} & PasswordsData;
+export type SignUp = UserInfo & SignUpData;
 
-export type UserInfoBody = Omit<
-	SignUpBody,
-	'email' | keyof PasswordsData
->;
+export type SignUpBody = Partial<SignUp> & { redirectUrl?: string };
+
+export type SignUpErrors = Partial<Stringified<SignUp>>;
+
+export type UserInfoBody = Partial<UserInfo>;
+
+export type UserInfoErrors = Partial<Stringified<UserInfo>>;

@@ -5,6 +5,7 @@ import usersController from "./users.controller";
 const usersRoutes = Router();
 
 usersRoutes.post('/sign-up', usersController.signUp);
-usersRoutes.patch('/update', authenticate, usersController.update);
+usersRoutes.put('/update', authenticate, usersController.update);
+usersRoutes.post('/resend-verification', authenticate, usersController.resendVerification);
 
 export default usersRoutes;

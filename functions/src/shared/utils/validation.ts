@@ -9,3 +9,14 @@ export const isNotDate = (value: string) => {
 
 export const isNotEmptyObj = (object: object) =>
 	Object.values(object).length > 0;
+
+export function assertIsNotErroneous<
+	TFull,
+	TPartial extends Partial<TFull>,
+	TErrors extends object
+>(body: TPartial, errors: TErrors): body is TPartial & TFull {
+	if (isNotEmptyObj(errors)) {
+		return false;
+	}
+	return true;
+}
