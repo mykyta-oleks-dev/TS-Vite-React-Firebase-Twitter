@@ -1,6 +1,6 @@
 import { Stringified } from '../../../shared/types/data/common';
 import { isEmptyString, isNotDate } from '../../../shared/utils/validation';
-import { SignUpBody } from '../types/body';
+import { SignUpBody, UserInfoBody } from '../types/body';
 
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -9,14 +9,10 @@ const urlRegex =
 
 const PASSWORD_MIN_LENGTH = 6;
 
-export const validateLogInData = ({
-	email,
-	password,
-}: {
-	email?: string;
-	password?: string;
-}) => {
-	const errors: { email?: string; password?: string } = {};
+export const validateSignUpData = (body: SignUpBody) => {
+	const { email, password, confirmPassword } = body;
+
+	const errors: Partial<Stringified<SignUpBody>> = validateUserInfo(body);
 
 	if (isEmptyString(email)) {
 		errors.email = 'Email is required';
@@ -30,24 +26,19 @@ export const validateLogInData = ({
 		errors.password = `Password has to be at least ${PASSWORD_MIN_LENGTH} characters long`;
 	}
 
+	if (isEmptyString(confirmPassword)) {
+		errors.confirmPassword = 'Password confirmation is required';
+	} else if (confirmPassword !== password) {
+		errors.confirmPassword = "Passwords don't match";
+	}
+
 	return errors;
 };
 
-export const validateSignUpData = (body: SignUpBody) => {
-	const { confirmPassword, firstName, lastName, avatar, birthday } = body;
+export const validateUserInfo = (body: UserInfoBody) => {
+	const { firstName, lastName, avatar, birthday } = body;
 
-	const errors: Partial<Stringified<SignUpBody>> = {};
-
-	const logInErrors = validateLogInData(body);
-
-	if (logInErrors.email) errors.email = logInErrors.email;
-	if (logInErrors.password) errors.password = logInErrors.password;
-
-	if (isEmptyString(confirmPassword)) {
-		errors.confirmPassword = 'Password confirmation is required';
-	} else if (confirmPassword.length < PASSWORD_MIN_LENGTH) {
-		errors.confirmPassword = `Password confirmation has to be at least ${PASSWORD_MIN_LENGTH} characters long`;
-	}
+	const errors: Partial<Stringified<UserInfoBody>> = {};
 
 	if (isEmptyString(firstName)) {
 		errors.firstName = 'First name is required';

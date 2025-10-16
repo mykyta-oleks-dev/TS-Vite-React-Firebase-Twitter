@@ -134,7 +134,7 @@ export const notFoundHandler = (
 	_res: Response,
 	next: NextFunction
 ) => {
-	next(new NotFoundError(`Route ${req.originalUrl} not found`));
+	next(new NotFoundError(`Route ${req.method} ${req.originalUrl} not found`));
 };
 
 // Async handler wrapper to catch errors in async route handlers

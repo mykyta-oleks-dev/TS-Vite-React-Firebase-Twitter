@@ -1,11 +1,17 @@
 import { User } from '../../../shared/types/data/User';
 
-export type LogInBody = { email?: string; password?: string };
-
-export type SignUpBody = Partial<
-	Omit<User, 'isVerified' | 'createdAt' | 'updatedAt' | 'birthday'>
-> & {
+type PasswordsData = {
 	password?: string;
 	confirmPassword?: string;
-	birthday?: string;
 };
+
+export type SignUpBody = Partial<
+	Omit<User, 'id' | 'isVerified' | 'createdAt' | 'updatedAt' | 'birthday'>
+> & {
+	birthday?: string;
+} & PasswordsData;
+
+export type UserInfoBody = Omit<
+	SignUpBody,
+	'email' | keyof PasswordsData
+>;
