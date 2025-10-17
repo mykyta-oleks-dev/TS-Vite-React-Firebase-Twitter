@@ -1,27 +1,28 @@
 import { Router } from 'express';
 import authenticate from '../../middlewares/Authentication';
 import usersController from './users.controller';
+import { ROUTES } from './constants/Routes';
 
 const usersRoutes = Router();
 
-usersRoutes.post('/sign-up', usersController.signUp);
-usersRoutes.post('/sign-up-google', usersController.signUpGoogle);
-usersRoutes.get('/:uid', usersController.getOne)
-usersRoutes.get('/', usersController.getMany)
-usersRoutes.put('/', authenticate, usersController.update);
-usersRoutes.delete('/', authenticate, usersController.delete);
+usersRoutes.post(ROUTES.SIGN_UP, usersController.signUp);
+usersRoutes.post(ROUTES.SIGN_UP_GOOGLE, usersController.signUpGoogle);
+usersRoutes.get(ROUTES.DYNAMIC, usersController.getOne)
+usersRoutes.get(ROUTES.ROOT, usersController.getMany)
+usersRoutes.put(ROUTES.ROOT, authenticate, usersController.update);
+usersRoutes.delete(ROUTES.ROOT, authenticate, usersController.delete);
 usersRoutes.post(
-	'/resend-verification',
+	ROUTES.RESEND_VERIFICATION,
 	authenticate,
 	usersController.resendVerification
 );
 usersRoutes.post(
-	'/change-password',
+	ROUTES.CHANGE_PASSWORD,
 	authenticate,
 	usersController.changePassword
 );
 usersRoutes.post(
-	'/reset-password',
+	ROUTES.RESET_PASSWORD,
 	authenticate,
 	usersController.resetPassword
 );
