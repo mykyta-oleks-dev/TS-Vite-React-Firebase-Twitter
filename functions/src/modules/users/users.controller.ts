@@ -41,8 +41,6 @@ class UsersController {
 	getOne: RequestHandler = async (req: Request<{ uid?: string }>, res) => {
 		const { uid } = req.params;
 
-		console.log(uid);
-
 		const { user } = await usersService.getOne(uid);
 
 		res.status(200).json({ message: 'User fetched successfuly!', user });
@@ -66,8 +64,6 @@ class UsersController {
 		const user = getUserOrThrowError(req);
 
 		const body = req.body;
-
-		console.log('controller', user, body);
 
 		await usersService.update(user, body);
 

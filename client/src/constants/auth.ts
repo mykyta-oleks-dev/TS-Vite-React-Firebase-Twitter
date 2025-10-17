@@ -18,6 +18,12 @@ export const VALIDATION = {
 	LAST_NAME: {
 		REQUIRED: 'Last name is required',
 	},
+	AVATAR: {
+		REQUIRED: 'Avatar is required',
+	},
+	BIRTHDAY: {
+		REQUIRED: 'Birthday date is required'
+	}
 } as const;
 
 export const ACCEPTED_IMAGE_TYPES = new Set([
@@ -28,6 +34,9 @@ export const ACCEPTED_IMAGE_TYPES = new Set([
 ]);
 
 export const FORM_FIELD = {
+	AVATAR: {
+		LABEL: 'Avatar'
+	},
 	FIRST_NAME: {
 		PLACEHOLDER: 'Alex',
 		LABEL: 'First name',
@@ -43,6 +52,9 @@ export const FORM_FIELD = {
 	LOCATION: {
 		PLACEHOLDER: 'New-York City',
 		LABEL: 'Your location',
+	},
+	BIRTHDAY: {
+		LABEL: 'Birthday'
 	},
 	EMAIL: {
 		PLACEHOLDER: 'user@mail.com',

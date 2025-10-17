@@ -1,32 +1,37 @@
 import { auth, googleAuthProvider } from '@/config/firebase';
 import router from '@/config/router';
-// import { API_ENDPOINTS } from '@/constants/api';
+import { API_ENDPOINTS } from '@/constants/api';
 import { ROUTES } from '@/constants/routes';
 import { handleError } from '@/lib/utils';
 import type { logInData, signUpData } from '@/schemas/auth';
-// import type { AuthBody } from '@/types/API';
-// import axios from 'axios';
+import type { AuthBody } from '@/types/API';
 import {
 	GoogleAuthProvider,
-	// signInWithCustomToken,
+	signInWithCustomToken,
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	signOut,
 } from 'firebase/auth';
 import { redirect } from 'react-router';
+import { uploadAvatar } from '../firebase/storage';
+import axiosInstance from '@/config/axios';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
-		console.log(values);
-		// const res = await axios.post<AuthBody>(API_ENDPOINTS.USERS.SIGN_UP, {
-		// 	body: JSON.stringify(values),
-		// });
+		const avatar = await uploadAvatar(values.avatar);
 
-		// const data = res.data;
+		const res = await axiosInstance.post<AuthBody>(
+			API_ENDPOINTS.USERS.SIGN_UP,
+			{
+				...values,
+				avatar,
+			}
+		);
 
-		// const userCredential = await signInWithCustomToken(auth, data.token);
-		// console.log(await userCredential.user.getIdToken());
-		// redirect(ROUTES.ROOT);
+		const data = res.data;
+
+		await signInWithCustomToken(auth, data.token);
+		router.navigate(ROUTES.ROOT);
 	} catch (err) {
 		handleError(err, true);
 	}

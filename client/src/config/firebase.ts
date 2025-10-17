@@ -33,11 +33,13 @@ if (EMULATORS.HOST) {
 	// Set up auth emulation
 	if (EMULATORS.AUTH_PORT) {
 		console.log('emulating auth');
-		connectAuthEmulator(auth, `${EMULATORS.HOST}:${EMULATORS.AUTH_PORT}`);
+		connectAuthEmulator(auth, `http://${EMULATORS.HOST}:${EMULATORS.AUTH_PORT}`);
 	}
 
 	// Set up storage emulation
-	if (EMULATORS.STORAGE_PORT && Number.isInteger(+EMULATORS.STORAGE_PORT)) {
+    const storagePort = Number.parseInt(EMULATORS.STORAGE_PORT as string, 10);
+    
+    if (!Number.isNaN(storagePort)) {
 		console.log('emulating storage');
 		connectStorageEmulator(storage, EMULATORS.HOST, EMULATORS.STORAGE_PORT);
 	}

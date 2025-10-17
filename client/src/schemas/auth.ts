@@ -8,10 +8,12 @@ export const userInfoSchema = z.object({
 	location: z.string().optional(),
 	avatar: z
 		.instanceof(File)
+		.nonoptional(VALIDATION.AVATAR.REQUIRED)
 		.refine(
 			(file) => ACCEPTED_IMAGE_TYPES.has(file.type),
 			'Only .jpg, .jpeg, .png and .webp formats are supported.'
 		),
+	birthday: z.date(VALIDATION.BIRTHDAY.REQUIRED),
 });
 
 export type userInfoData = z.infer<typeof userInfoSchema>;

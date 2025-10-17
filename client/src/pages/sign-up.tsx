@@ -1,4 +1,5 @@
 import AvatarBig from '@/components/avatar-big';
+import DatePicker from '@/components/datepicker';
 import FormFieldGroup from '@/components/form-field';
 import GoogleAuthButton from '@/components/google-auth';
 import Link from '@/components/link';
@@ -6,6 +7,7 @@ import PageTitle from '@/components/page-title';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
 import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 import { handleSignUp } from '@/handlers/auth';
@@ -40,9 +42,10 @@ const SignUpPage = () => {
 								src={avatarPreview ?? 'default-avatar.png'}
 							/>
 							<FormFieldGroup
+								className="flex-1"
 								control={form.control}
 								name="avatar"
-								label="Avatar"
+								label={FORM_FIELD.AVATAR.LABEL}
 								render={(field) => (
 									<Input
 										type="file"
@@ -70,6 +73,7 @@ const SignUpPage = () => {
 								)}
 							/>
 						</div>
+
 						<div className="flex gap-3">
 							<FormFieldGroup
 								className="flex-1"
@@ -83,13 +87,15 @@ const SignUpPage = () => {
 										}
 										{...field}
 										value={
-											field.value instanceof File
+											field.value instanceof File ||
+											field.value instanceof Date
 												? undefined
 												: field.value
 										}
 									/>
 								)}
 							/>
+
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
@@ -102,7 +108,8 @@ const SignUpPage = () => {
 										}
 										{...field}
 										value={
-											field.value instanceof File
+											field.value instanceof File ||
+											field.value instanceof Date
 												? undefined
 												: field.value
 										}
@@ -110,6 +117,20 @@ const SignUpPage = () => {
 								)}
 							/>
 						</div>
+
+						<FormFieldGroup
+							control={form.control}
+							name="birthday"
+							label={FORM_FIELD.BIRTHDAY.LABEL}
+							render={(field) => (
+								<DatePicker
+									className="flex-1"
+									date={field.value as Date}
+									setDate={field.onChange}
+								/>
+							)}
+						/>
+
 						<FormFieldGroup
 							control={form.control}
 							name="email"
@@ -119,13 +140,15 @@ const SignUpPage = () => {
 									placeholder={FORM_FIELD.EMAIL.PLACEHOLDER}
 									{...field}
 									value={
-										field.value instanceof File
+										field.value instanceof File ||
+										field.value instanceof Date
 											? undefined
 											: field.value
 									}
 								/>
 							)}
 						/>
+
 						<div className="flex gap-3">
 							<FormFieldGroup
 								className="flex-1"
@@ -140,7 +163,8 @@ const SignUpPage = () => {
 										{...field}
 										type="password"
 										value={
-											field.value instanceof File
+											field.value instanceof File ||
+											field.value instanceof Date
 												? undefined
 												: field.value
 										}
@@ -160,7 +184,8 @@ const SignUpPage = () => {
 										{...field}
 										type="password"
 										value={
-											field.value instanceof File
+											field.value instanceof File ||
+											field.value instanceof Date
 												? undefined
 												: field.value
 										}
@@ -169,8 +194,13 @@ const SignUpPage = () => {
 							/>
 						</div>
 						<div className="flex gap-3">
-							<Button type="submit" className="flex-1">
-								Sign Up
+							<Button
+								type="submit"
+								className="flex-1"
+								disabled={form.formState.isSubmitting}
+							>
+								Sign Up{' '}
+								{form.formState.isSubmitting && <Spinner />}
 							</Button>
 							<Button
 								type="reset"

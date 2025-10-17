@@ -1,4 +1,5 @@
 import { IS_DEV } from '@/constants/env';
+import { AxiosError } from 'axios';
 import { clsx, type ClassValue } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
@@ -29,6 +30,10 @@ export function handleError(
 	success: false;
 	error: string;
 } {
+	if (error instanceof AxiosError) {
+		return handleError(error.response?.data ?? 'API call failed');
+	}
+
 	const message = getErrorMessage(error);
 
 	if (IS_DEV) console.error(error);

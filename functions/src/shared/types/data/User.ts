@@ -9,9 +9,9 @@ export interface UserData {
 	email: string;
 	firstName: string;
 	lastName: string;
-	about?: string;
+	about: string | null;
 	avatar: string;
-	location?: string;
+	location: string | null;
 }
 
 export interface UserDB extends UserData, DBObject {

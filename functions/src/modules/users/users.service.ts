@@ -57,7 +57,12 @@ class UsersService {
 
 		if (!userRecord) throw new AppError(REQUEST_ERRORS.CREATE_ERROR);
 
-		await usersRepository.signUp(body, userRecord.uid);
+		try {
+			await usersRepository.signUp(body, userRecord.uid);
+		} catch (err) {
+			await auth.deleteUser(userRecord.uid);
+			throw err;
+		}
 
 		const token = await auth.createCustomToken(userRecord.uid);
 
@@ -74,9 +79,7 @@ class UsersService {
 		const emailError = validateEmail(user.email);
 
 		if (!user.email || emailError) {
-			throw new AppError(
-				emailError ?? REQUEST_ERRORS.BADREQUEST_NOEMAIL
-			);
+			throw new AppError(emailError ?? REQUEST_ERRORS.BADREQUEST_NOEMAIL);
 		}
 
 		let userRecord: UserRecord | undefined = undefined;
@@ -84,7 +87,7 @@ class UsersService {
 			userRecord = await auth.updateUser(user.uid, {
 				displayName: `${body.firstName} ${body.lastName}`,
 				photoURL: body.avatar,
-				email: user.email
+				email: user.email,
 			});
 		} catch (err) {
 			if (
@@ -136,6 +139,9 @@ class UsersService {
 			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_UPDATE, errors);
 		}
 
+		const { displayName: oldDisplayName, photoURL: oldPhotoURL } =
+			await auth.getUser(user.uid);
+
 		let userRecord: UserRecord | undefined = undefined;
 		try {
 			userRecord = await auth.updateUser(user.uid, {
@@ -156,12 +162,21 @@ class UsersService {
 
 		if (!userRecord) throw new AppError(REQUEST_ERRORS.UPDATE_ERROR);
 
-		await usersRepository.update(user.uid, body);
+		try {
+			await usersRepository.update(user.uid, body);
+		} catch (err) {
+			await auth.updateUser(user.uid, {
+				displayName: oldDisplayName,
+				photoURL: oldPhotoURL,
+			});
+			throw err;
+		}
 	};
 
 	delete = async (user: DecodedIdToken) => {
 		try {
 			await auth.deleteUser(user.uid);
+			await usersRepository.delete(user.uid);
 		} catch (err) {
 			if (
 				err instanceof FirebaseAuthError &&
@@ -171,8 +186,6 @@ class UsersService {
 			}
 			throw err;
 		}
-
-		await usersRepository.delete(user.uid);
 	};
 
 	resendVerification = async (user: DecodedIdToken, redirectUrl?: string) => {

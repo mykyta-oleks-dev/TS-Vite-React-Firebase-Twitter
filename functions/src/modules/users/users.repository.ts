@@ -29,8 +29,8 @@ class UsersRepository {
 			email: values.email,
 			firstName: values.firstName,
 			lastName: values.lastName,
-			about: values.about,
-			location: values.location,
+			about: values.about ?? null,
+			location: values.location ?? null,
 			createdAt: now,
 			updatedAt: now,
 			birthday: new Date(values.birthday),
@@ -85,11 +85,9 @@ class UsersRepository {
 			avatar: values.avatar,
 			firstName: values.firstName,
 			lastName: values.lastName,
-			about: values.about,
-			location: values.location,
+			about: values.about ?? null,
+			location: values.location ?? null,
 		};
-
-		console.log('repository', userData)
 
 		await userRef.update({
 			...userData,
