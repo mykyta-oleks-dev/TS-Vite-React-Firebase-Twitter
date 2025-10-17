@@ -12,7 +12,6 @@ export interface UserData {
 	about?: string;
 	avatar: string;
 	location?: string;
-	isVerified: boolean;
 }
 
 export interface UserDB extends UserData, DBObject {
@@ -34,7 +33,6 @@ export const userConverter: FirestoreDataConverter<User> = {
 		const data = snapshot.data() as UserDB;
 		return {
 			...data,
-			id: snapshot.id,
 			birthday: data.birthday.toDate(),
 			createdAt: data.createdAt.toDate(),
 			updatedAt: data.updatedAt.toDate(),

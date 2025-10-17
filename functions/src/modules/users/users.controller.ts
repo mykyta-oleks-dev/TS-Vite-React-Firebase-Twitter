@@ -2,20 +2,44 @@ import { Request, RequestHandler } from 'express';
 import { ConflictError } from '../../middlewares/ErrorHandling';
 import { HTTP } from '../../shared/constants/HTTP';
 import { getUserOrThrowError } from '../../shared/utils/authentication';
-import { ERRORS } from './constants/Errors';
+import { REQUEST_ERRORS } from './constants/Errors';
 import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body';
 import usersService from './users.service';
 
 class UsersController {
-	signUp: RequestHandler = async (req: Request<{}, {}, SignUpBody>, res) => {
-		const body = req.body;
+	signUp: RequestHandler = async (
+		req: Request<{}, {}, SignUpBody & { redirectUrl?: string }>,
+		res
+	) => {
+		const { redirectUrl, ...body } = req.body;
 
-		const { token } = await usersService.signUp(body);
+		const { token } = await usersService.signUp(body, redirectUrl);
 
 		res.status(HTTP.CREATED).json({
 			message: 'Signed up successfuly!',
 			token,
 		});
+	};
+
+	getOne: RequestHandler = async (req: Request<{ uid?: string }>, res) => {
+		const { uid } = req.params;
+
+		console.log(uid);
+
+		const { user } = await usersService.getOne(uid);
+
+		res.status(200).json({ message: 'User fetched successfuly!', user });
+	};
+
+	getMany: RequestHandler = async (
+		req: Request<{}, {}, {}, { page?: number; limit?: number }>,
+		res
+	) => {
+		const query = req.query;
+		
+		const { users } = await usersService.getMany(query);
+
+		res.status(200).json({ message: 'Users fetched succesfuly!', users });
 	};
 
 	update: RequestHandler = async (
@@ -26,23 +50,33 @@ class UsersController {
 
 		const body = req.body;
 
+		console.log('controller', user, body)
+
 		await usersService.update(user, body);
 
-		res.status(HTTP.OK).json({ message: 'Profile updated successfuly!' });
+		res.status(HTTP.NO_CONTENT).send();
+	};
+
+	delete: RequestHandler = async (req, res) => {
+		const user = getUserOrThrowError(req);
+
+		await usersService.delete(user);
+
+		res.status(HTTP.NO_CONTENT).send();
 	};
 
 	resendVerification: RequestHandler = async (req, res) => {
 		const user = getUserOrThrowError(req);
 
 		if (user.email_verified) {
-			throw new ConflictError(ERRORS.ALREADY_VERIFIED);
+			throw new ConflictError(REQUEST_ERRORS.ALREADY_VERIFIED);
 		}
 
 		const { redirectUrl } = req.body as { redirectUrl?: string };
 
 		await usersService.resendVerification(user, redirectUrl);
 
-		res.status(HTTP.OK).json({ message: 'Verification link was resent!' });
+		res.status(HTTP.NO_CONTENT).send();
 	};
 
 	changePassword: RequestHandler = async (
@@ -59,6 +93,16 @@ class UsersController {
 			message:
 				'Password was changed successfuly! Your sessions were terminated and you have to log back in.',
 		});
+	};
+
+	resetPassword: RequestHandler = async (req, res) => {
+		const user = getUserOrThrowError(req);
+
+		const { redirectUrl } = req.body as { redirectUrl?: string };
+
+		await usersService.resetPassword(user, redirectUrl);
+
+		res.status(HTTP.NO_CONTENT).send();
 	};
 }
 

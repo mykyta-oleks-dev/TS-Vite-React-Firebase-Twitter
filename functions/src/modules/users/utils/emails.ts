@@ -34,7 +34,7 @@ export const sendVerificationEmail = async (
 						</div>`,
 				})
 				.catch(() => {
-					throw new AppError('Failed to send the verification email')
+					throw new AppError('Failed to send the verification email');
 				});
 		})
 		.catch((err) => {
@@ -45,16 +45,14 @@ export const sendResetPassword = async (email: string, redirectUrl?: string) =>
 	auth
 		.generatePasswordResetLink(
 			email,
-			// redirectUrl
-			// 	? {
-			// 			url: redirectUrl,
-			// 			handleCodeInApp: true,
-			// 	  }
-			// 	: undefined
+			redirectUrl
+				? {
+						url: redirectUrl,
+						handleCodeInApp: true,
+				  }
+				: undefined
 		)
 		.then(async (link) => {
-			// Construct email verification template, embed the link and send
-			// using custom SMTP server.
 			await transport
 				.sendMail({
 					from: `"Twitter Clone Automatic Messages" <${ETHEREAL.USER}>`,
@@ -69,7 +67,9 @@ export const sendResetPassword = async (email: string, redirectUrl?: string) =>
 						</div>`,
 				})
 				.catch(() => {
-					throw new AppError('Failed to send the reset password email')
+					throw new AppError(
+						'Failed to send the reset password email'
+					);
 				});
 		})
 		.catch((err) => {

@@ -3,6 +3,7 @@ import { Timestamp } from 'firebase-admin/firestore';
 export interface DBObject {
 	createdAt: Timestamp;
 	updatedAt: Timestamp;
+	id: string;
 }
 
 export interface AppObject {

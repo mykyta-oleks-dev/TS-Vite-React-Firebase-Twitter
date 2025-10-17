@@ -1,10 +1,7 @@
 import cors from 'cors';
 import express, { RequestHandler } from 'express';
-import {
-	errorHandler,
-	notFoundHandler
-} from './middlewares/ErrorHandling';
-import usersRoutes from './modules/users/users.routes';
+import { errorHandler, notFoundHandler } from './middlewares/ErrorHandling';
+import { usersRoutes } from './modules/users/';
 
 // Initialize Firebase Admin SDK
 

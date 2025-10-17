@@ -3,4 +3,4 @@ export const ETHEREAL = {
 	PORT: process.env.SMTP_PORT ? +process.env.SMTP_PORT : 587,
 	USER: process.env.SMTP_USER ?? 'john.smith@ethereal.com',
 	PASS: process.env.SMTP_PASS ?? 'bNsdU51CReGg5tyMXS',
-};
+} as const;

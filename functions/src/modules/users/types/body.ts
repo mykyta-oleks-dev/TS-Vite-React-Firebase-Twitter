@@ -20,7 +20,7 @@ type SignUpData = {
 
 export type SignUp = UserInfo & SignUpData;
 
-export type SignUpBody = Partial<SignUp> & { redirectUrl?: string };
+export type SignUpBody = Partial<SignUp>;
 
 export type SignUpErrors = Partial<Stringified<SignUp>>;
 

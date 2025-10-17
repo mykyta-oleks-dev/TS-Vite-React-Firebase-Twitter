@@ -1,27 +1,36 @@
-import {
-	DecodedIdToken
-} from 'firebase-admin/auth';
 import { db } from '../../config/firebase';
-import {
-	NotFoundError
-} from '../../middlewares/ErrorHandling';
+import { NotFoundError } from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
-import { User } from '../../shared/types/data/User';
+import { User, UserDB } from '../../shared/types/data/User';
+import { REQUEST_ERRORS } from './constants/Errors';
 import { SignUp, UserInfo } from './types/body';
 
 class UsersRepository {
-	signUp = async (values: SignUp, uid: string) => {
+	private static readonly _getUserSnapshot = async (uid: string) => {
+		const usersSnapshot = await db
+			.collection(COLLECTIONS.USERS)
+			.where('id', '==', uid)
+			.limit(1)
+			.get();
 
+		if (usersSnapshot.empty) {
+			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
+		}
+
+		return usersSnapshot.docs[0];
+	};
+
+	signUp = async (values: SignUp, uid: string) => {
 		const now = new Date();
 
-		const userData: Omit<User, 'id'> = {
+		const userData: User = {
+			id: uid,
 			avatar: values.avatar,
 			email: values.email,
 			firstName: values.firstName,
 			lastName: values.lastName,
 			about: values.about,
 			location: values.location,
-			isVerified: false,
 			createdAt: now,
 			updatedAt: now,
 			birthday: new Date(values.birthday),
@@ -30,16 +39,47 @@ class UsersRepository {
 		await db.collection(COLLECTIONS.USERS).add(userData);
 	};
 
-	update = async (userToken: DecodedIdToken, values: UserInfo) => {
-		const userSnapshot = await db
+	getOne = async (uid: string) => {
+		const docSnapshot = await UsersRepository._getUserSnapshot(uid);
+
+		const data = docSnapshot.data() as UserDB;
+
+		const user: User = {
+			...data,
+			birthday: data.birthday.toDate(),
+			createdAt: data.createdAt.toDate(),
+			updatedAt: data.updatedAt.toDate(),
+		};
+
+		return { user };
+	};
+
+	getMany = async (page = 1, limit = 10) => {
+		const usersSnapshot = await db
 			.collection(COLLECTIONS.USERS)
-			.where('email', '==', userToken.email)
-			.limit(1)
+			.limit(limit)
+			.offset((page - 1) * limit)
 			.get();
 
-		if (userSnapshot.empty) {
-			throw new NotFoundError('User data is not found');
+		if (usersSnapshot.empty) {
+			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
 		}
+
+		const data = usersSnapshot.docs.map((d) => d.data() as UserDB);
+
+		const users: User[] = data.map((d) => ({
+			...d,
+			birthday: d.birthday.toDate(),
+			createdAt: d.createdAt.toDate(),
+			updatedAt: d.updatedAt.toDate(),
+		}));
+
+		return { users };
+	};
+
+	update = async (uid: string, values: UserInfo) => {
+		const docSnapshot = await UsersRepository._getUserSnapshot(uid);
+		const userRef = docSnapshot.ref;
 
 		const userData: Omit<UserInfo, 'birthday'> = {
 			avatar: values.avatar,
@@ -49,12 +89,17 @@ class UsersRepository {
 			location: values.location,
 		};
 
-		const userRef = userSnapshot.docs[0].ref;
+		console.log('repository', userData)
+
 		await userRef.update({
 			...userData,
 			birthday: new Date(values.birthday),
 			updatedAt: new Date(),
 		});
+	};
+
+	delete = async (uid: string) => {
+		(await UsersRepository._getUserSnapshot(uid)).ref.delete();
 	};
 }
 

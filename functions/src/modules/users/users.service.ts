@@ -11,7 +11,7 @@ import {
 	ConflictError,
 	NotFoundError,
 } from '../../middlewares/ErrorHandling';
-import { ERRORS } from './constants/Errors';
+import { REQUEST_ERRORS } from './constants/Errors';
 import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body';
 import usersRepository from './users.repository';
 import { sendResetPassword, sendVerificationEmail } from './utils/emails';
@@ -25,11 +25,12 @@ import {
 } from './utils/validate';
 
 class UsersService {
-	signUp = async (body: SignUpBody) => {
+	signUp = async (body: SignUpBody, redirectUrl?: string) => {
 		const errors = validateSignUpBody(body);
 
 		if (!assertIsSignUp(body, errors)) {
-			throw new BadRequestError(ERRORS.BADREQUEST_SIGNUP, errors);
+			console.log(body, errors);
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_SIGNUP, errors);
 		}
 
 		let userRecord: UserRecord | undefined = undefined;
@@ -41,7 +42,7 @@ class UsersService {
 				photoURL: body.avatar,
 			});
 
-			await sendResetPassword(body.email, body.redirectUrl);
+			await sendVerificationEmail(body.email, redirectUrl);
 		} catch (err: unknown) {
 			if (
 				err instanceof FirebaseAuthError &&
@@ -51,26 +52,46 @@ class UsersService {
 					AuthClientErrorCode.EMAIL_ALREADY_EXISTS.message
 				);
 			}
+			throw err;
 		}
 
-		if (!userRecord) throw new AppError(ERRORS.CREATE_ERROR);
+		if (!userRecord) throw new AppError(REQUEST_ERRORS.CREATE_ERROR);
+
+		await usersRepository.signUp(body, userRecord.uid);
 
 		const token = await auth.createCustomToken(userRecord.uid);
 
 		return { token };
 	};
 
+	getOne = async (uid?: string) => {
+		if (!uid) throw new BadRequestError('UID is not provided');
+
+		try {
+			await auth.getUser(uid);
+		} catch (err) {
+			throw new BadRequestError('User by the UID is not found');
+		}
+
+		return usersRepository.getOne(uid);
+	};
+
+	getMany = async ({ page, limit }: { page?: number; limit?: number }) => {
+		return usersRepository.getMany(page, limit);
+	};
+
 	update = async (user: DecodedIdToken, body: UserInfoBody) => {
 		const errors = validateUserInfo(body);
 
 		if (!assertIsUserInfo(body, errors)) {
-			throw new BadRequestError(ERRORS.BADREQUEST_UPDATE, errors);
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_UPDATE, errors);
 		}
 
 		let userRecord: UserRecord | undefined = undefined;
 		try {
 			userRecord = await auth.updateUser(user.uid, {
 				displayName: `${body.firstName} ${body.lastName}`,
+				photoURL: body.avatar,
 			});
 		} catch (err) {
 			if (
@@ -81,16 +102,35 @@ class UsersService {
 					AuthClientErrorCode.INVALID_UID.message
 				);
 			}
+			throw err;
 		}
 
-		if (!userRecord) throw new AppError(ERRORS.CREATE_ERROR);
+		if (!userRecord) throw new AppError(REQUEST_ERRORS.UPDATE_ERROR);
 
-		await usersRepository.update(user, body);
+		console.log('service', userRecord);
+
+		await usersRepository.update(user.uid, body);
+	};
+
+	delete = async (user: DecodedIdToken) => {
+		try {
+			await auth.deleteUser(user.uid);
+		} catch (err) {
+			if (
+				err instanceof FirebaseAuthError &&
+				err.hasCode(AuthClientErrorCode.NOT_FOUND.code)
+			) {
+				throw new NotFoundError(AuthClientErrorCode.NOT_FOUND.message);
+			}
+			throw err;
+		}
+
+		await usersRepository.delete(user.uid);
 	};
 
 	resendVerification = async (user: DecodedIdToken, redirectUrl?: string) => {
 		if (!user.email)
-			throw new AppError('User has no email coupled to their record');
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOEMAIL);
 
 		await sendVerificationEmail(user.email, redirectUrl);
 	};
@@ -99,12 +139,22 @@ class UsersService {
 		const errors = validatePasswords(body);
 
 		if (!assertIsPasswordsData(body, errors)) {
-			throw new BadRequestError(ERRORS.BADREQUEST_RESET_PSW, errors);
+			throw new BadRequestError(
+				REQUEST_ERRORS.BADREQUEST_RESETPSW,
+				errors
+			);
 		}
 
 		await auth.updateUser(user.uid, {
 			password: body.password,
 		});
+	};
+
+	resetPassword = async (user: DecodedIdToken, redirectUrl?: string) => {
+		if (!user.email)
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOEMAIL);
+
+		await sendResetPassword(user.email, redirectUrl);
 	};
 }
 

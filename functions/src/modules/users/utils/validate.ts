@@ -4,6 +4,12 @@ import {
 	isNotDate,
 } from '../../../shared/utils/validation';
 import {
+	emailRegex,
+	PASSWORD_MIN_LENGTH,
+	urlRegex,
+	VALIDATION_ERRORS,
+} from '../constants/Errors';
+import {
 	PasswordsData,
 	PasswordsDataBody,
 	PasswordsDataErrors,
@@ -12,33 +18,30 @@ import {
 	SignUpErrors,
 	UserInfo,
 	UserInfoBody,
-	UserInfoErrors
+	UserInfoErrors,
 } from '../types/body';
 
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-const urlRegex =
-	/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=,]*)$/;
-
-const PASSWORD_MIN_LENGTH = 6;
-
 export const validateSignUpBody = (body: SignUpBody) => {
-	const { email } = body;
-
 	const errors: SignUpErrors = validateUserInfo(body);
 
-	if (isEmptyString(email)) {
-		errors.email = 'Email is required';
-	} else if (!emailRegex.test(email)) {
-		errors.email = 'Invalid email is provided';
-	}
+	const emailError = validateEmail(body.email)
+	if (emailError) errors.email = emailError;
 
 	const passwordsErrors = validatePasswords(body);
-
-	errors.password = passwordsErrors.password
-	errors.confirmPassword = passwordsErrors.confirmPassword;
+	if (passwordsErrors.password) errors.password = passwordsErrors.password;
+	if (passwordsErrors.confirmPassword) errors.confirmPassword = passwordsErrors.confirmPassword;
 
 	return errors;
+};
+
+export const validateEmail = (email?: string) => {
+	if (isEmptyString(email)) {
+		return VALIDATION_ERRORS.EMAIL.REQUIRED;
+	} else if (!emailRegex.test(email)) {
+		return VALIDATION_ERRORS.EMAIL.INVALID;
+	}
+
+	return undefined;
 };
 
 export const validateUserInfo = (body: UserInfoBody) => {
@@ -47,45 +50,48 @@ export const validateUserInfo = (body: UserInfoBody) => {
 	const errors: UserInfoErrors = {};
 
 	if (isEmptyString(firstName)) {
-		errors.firstName = 'First name is required';
+		errors.firstName = VALIDATION_ERRORS.FIRST_NAME.REQUIRED;
 	}
 
 	if (isEmptyString(lastName)) {
-		errors.lastName = 'Last name is required';
+		errors.lastName = VALIDATION_ERRORS.LAST_NAME.REQUIRED;
 	}
 
 	if (isEmptyString(avatar)) {
-		errors.avatar = 'Avatar is required';
+		errors.avatar = VALIDATION_ERRORS.AVATAR.REQUIRED;
 	} else if (!urlRegex.test(avatar)) {
-		errors.avatar = 'Avatar attribute has to be a valid URL';
+		errors.avatar = VALIDATION_ERRORS.AVATAR.INVALID;
 	}
 
 	if (isEmptyString(birthday)) {
-		errors.birthday = 'Birthday is required';
+		errors.birthday = VALIDATION_ERRORS.BIRTHDAY.REQUIRED;
 	} else if (isNotDate(birthday)) {
-		errors.birthday = 'Birthday has to be a valid Datetime string';
+		errors.birthday = VALIDATION_ERRORS.BIRTHDAY.INVALID;
 	}
 
 	return errors;
 };
 
-export const validatePasswords = ({password, confirmPassword}: PasswordsDataBody) => {
+export const validatePasswords = ({
+	password,
+	confirmPassword,
+}: PasswordsDataBody) => {
 	const errors: PasswordsDataErrors = {};
 
 	if (isEmptyString(password)) {
-		errors.password = 'Password is required';
+		errors.password = VALIDATION_ERRORS.PASSWORD.REQUIRED;
 	} else if (password.length < PASSWORD_MIN_LENGTH) {
-		errors.password = `Password has to be at least ${PASSWORD_MIN_LENGTH} characters long`;
+		errors.password = VALIDATION_ERRORS.PASSWORD.INVALID;
 	}
 
 	if (isEmptyString(confirmPassword)) {
-		errors.confirmPassword = 'Password confirmation is required';
+		errors.confirmPassword = VALIDATION_ERRORS.CONFIRM_PASSWORD.REQUIRED;
 	} else if (confirmPassword !== password) {
-		errors.confirmPassword = "Passwords don't match";
+		errors.confirmPassword = VALIDATION_ERRORS.CONFIRM_PASSWORD.INVALID;
 	}
 
 	return errors;
-}
+};
 
 export const assertIsSignUp = assertIsNotErroneous<
 	SignUp,
