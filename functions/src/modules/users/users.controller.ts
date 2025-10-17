@@ -21,6 +21,23 @@ class UsersController {
 		});
 	};
 
+	signUpGoogle: RequestHandler = async (
+		req: Request<{}, {}, UserInfoBody>,
+		res
+	) => {
+		const user = getUserOrThrowError(req);
+
+		const body = req.body;
+
+		const { token } = await usersService.signUpGoogle(user, body);
+
+		res.status(201).json({
+			message:
+				'User profile created from Google account data successfuly!',
+			token,
+		});
+	};
+
 	getOne: RequestHandler = async (req: Request<{ uid?: string }>, res) => {
 		const { uid } = req.params;
 
@@ -36,7 +53,7 @@ class UsersController {
 		res
 	) => {
 		const query = req.query;
-		
+
 		const { users } = await usersService.getMany(query);
 
 		res.status(200).json({ message: 'Users fetched succesfuly!', users });
@@ -50,7 +67,7 @@ class UsersController {
 
 		const body = req.body;
 
-		console.log('controller', user, body)
+		console.log('controller', user, body);
 
 		await usersService.update(user, body);
 

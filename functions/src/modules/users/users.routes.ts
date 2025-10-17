@@ -5,6 +5,7 @@ import usersController from './users.controller';
 const usersRoutes = Router();
 
 usersRoutes.post('/sign-up', usersController.signUp);
+usersRoutes.post('/sign-up-google', usersController.signUpGoogle);
 usersRoutes.get('/:uid', usersController.getOne)
 usersRoutes.get('/', usersController.getMany)
 usersRoutes.put('/', authenticate, usersController.update);

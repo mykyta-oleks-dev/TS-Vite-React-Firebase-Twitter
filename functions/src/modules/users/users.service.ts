@@ -19,6 +19,7 @@ import {
 	assertIsPasswordsData,
 	assertIsSignUp,
 	assertIsUserInfo,
+	validateEmail,
 	validatePasswords,
 	validateSignUpBody,
 	validateUserInfo,
@@ -29,7 +30,6 @@ class UsersService {
 		const errors = validateSignUpBody(body);
 
 		if (!assertIsSignUp(body, errors)) {
-			console.log(body, errors);
 			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_SIGNUP, errors);
 		}
 
@@ -64,12 +64,61 @@ class UsersService {
 		return { token };
 	};
 
+	signUpGoogle = async (user: DecodedIdToken, body: UserInfoBody) => {
+		const errors = validateUserInfo(body);
+
+		if (!assertIsUserInfo(body, errors)) {
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_SIGNUP, errors);
+		}
+
+		const emailError = validateEmail(user.email);
+
+		if (!user.email || emailError) {
+			throw new AppError(
+				emailError ?? REQUEST_ERRORS.BADREQUEST_NOEMAIL
+			);
+		}
+
+		let userRecord: UserRecord | undefined = undefined;
+		try {
+			userRecord = await auth.updateUser(user.uid, {
+				displayName: `${body.firstName} ${body.lastName}`,
+				photoURL: body.avatar,
+				email: user.email
+			});
+		} catch (err) {
+			if (
+				err instanceof FirebaseAuthError &&
+				err.hasCode(AuthClientErrorCode.INVALID_UID.code)
+			) {
+				throw new NotFoundError(
+					AuthClientErrorCode.INVALID_UID.message
+				);
+			}
+			throw err;
+		}
+
+		if (!userRecord) throw new AppError(REQUEST_ERRORS.UPDATE_ERROR);
+
+		await usersRepository.signUp(
+			{
+				...body,
+				email: user.email,
+			},
+			user.uid
+		);
+
+		const token = await auth.createCustomToken(userRecord.uid);
+
+		return { token };
+	};
+
 	getOne = async (uid?: string) => {
 		if (!uid) throw new BadRequestError('UID is not provided');
 
 		try {
 			await auth.getUser(uid);
-		} catch (err) {
+		} catch {
 			throw new BadRequestError('User by the UID is not found');
 		}
 
@@ -107,8 +156,6 @@ class UsersService {
 
 		if (!userRecord) throw new AppError(REQUEST_ERRORS.UPDATE_ERROR);
 
-		console.log('service', userRecord);
-
 		await usersRepository.update(user.uid, body);
 	};
 
@@ -129,8 +176,13 @@ class UsersService {
 	};
 
 	resendVerification = async (user: DecodedIdToken, redirectUrl?: string) => {
-		if (!user.email)
-			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOEMAIL);
+		const emailError = validateEmail(user.email);
+
+		if (!user.email || emailError) {
+			throw new BadRequestError(
+				emailError ?? REQUEST_ERRORS.BADREQUEST_NOEMAIL
+			);
+		}
 
 		await sendVerificationEmail(user.email, redirectUrl);
 	};
@@ -151,8 +203,13 @@ class UsersService {
 	};
 
 	resetPassword = async (user: DecodedIdToken, redirectUrl?: string) => {
-		if (!user.email)
-			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOEMAIL);
+		const emailError = validateEmail(user.email);
+
+		if (!user.email || emailError) {
+			throw new BadRequestError(
+				emailError ?? REQUEST_ERRORS.BADREQUEST_NOEMAIL
+			);
+		}
 
 		await sendResetPassword(user.email, redirectUrl);
 	};

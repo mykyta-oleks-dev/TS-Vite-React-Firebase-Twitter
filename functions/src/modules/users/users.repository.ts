@@ -20,7 +20,7 @@ class UsersRepository {
 		return usersSnapshot.docs[0];
 	};
 
-	signUp = async (values: SignUp, uid: string) => {
+	signUp = async (values: Omit<SignUp, 'password' | 'confirmPassword'>, uid: string) => {
 		const now = new Date();
 
 		const userData: User = {
