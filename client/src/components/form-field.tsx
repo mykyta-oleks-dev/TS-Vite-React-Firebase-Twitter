@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
-import type { Control, ControllerRenderProps, Path } from 'react-hook-form';
+import type {
+	Control,
+	ControllerRenderProps,
+	FieldValues,
+	Path,
+} from 'react-hook-form';
 import {
 	FormControl,
 	FormField,
@@ -8,31 +13,31 @@ import {
 	FormMessage,
 } from './ui/form';
 
-interface GenericFormFieldsProps<
-	TFormFields extends Record<string, string | number>
-> {
+interface GenericFormFieldsProps<TFormFields extends FieldValues> {
 	label?: string;
 	control: Control<TFormFields>;
 	name: Path<TFormFields>;
-	render: (field: ControllerRenderProps<TFormFields, Path<TFormFields>>) => ReactNode
+	render: (
+		field: ControllerRenderProps<TFormFields, Path<TFormFields>>
+	) => ReactNode;
+	className?: string;
 }
 
-function FormFieldGroup<TFormFields extends Record<string, string | number>>({
+function FormFieldGroup<TFormFields extends FieldValues>({
 	label,
 	control,
 	name,
 	render,
+	className,
 }: Readonly<GenericFormFieldsProps<TFormFields>>) {
 	return (
 		<FormField
 			control={control}
 			name={name}
 			render={({ field }) => (
-				<FormItem>
+				<FormItem className={className}>
 					{label && <FormLabel>{label}</FormLabel>}
-					<FormControl>
-						{render(field)}
-					</FormControl>
+					<FormControl>{render(field)}</FormControl>
 					<FormMessage />
 				</FormItem>
 			)}

@@ -1,33 +1,38 @@
-import { auth } from '@/config/firebase';
-import { API } from '@/constants/env';
-import type { signInData, signUpData } from '@/schemas/auth';
+import { auth, googleAuthProvider } from '@/config/firebase';
+import router from '@/config/router';
+// import { API_ENDPOINTS } from '@/constants/api';
+import { ROUTES } from '@/constants/routes';
+import { handleError } from '@/lib/utils';
+import type { logInData, signUpData } from '@/schemas/auth';
+// import type { AuthBody } from '@/types/API';
+// import axios from 'axios';
 import {
-	signInWithCustomToken,
+	GoogleAuthProvider,
+	// signInWithCustomToken,
 	signInWithEmailAndPassword,
+	signInWithPopup,
+	signOut,
 } from 'firebase/auth';
+import { redirect } from 'react-router';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
-		const res = await fetch(API.ROUTE, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(values),
-		});
+		console.log(values);
+		// const res = await axios.post<AuthBody>(API_ENDPOINTS.USERS.SIGN_UP, {
+		// 	body: JSON.stringify(values),
+		// });
 
-		const data = (await res.json()) as { token: string };
+		// const data = res.data;
 
-		if (!res.ok) throw data;
-
-		const userCredential = await signInWithCustomToken(auth, data.token);
-		console.log(await userCredential.user.getIdToken());
+		// const userCredential = await signInWithCustomToken(auth, data.token);
+		// console.log(await userCredential.user.getIdToken());
+		// redirect(ROUTES.ROOT);
 	} catch (err) {
-		console.error(err);
+		handleError(err, true);
 	}
 };
 
-export const handleSignIn = async (values: signInData) => {
+export const handleLogIn = async (values: logInData) => {
 	try {
 		const results = await signInWithEmailAndPassword(
 			auth,
@@ -36,7 +41,26 @@ export const handleSignIn = async (values: signInData) => {
 		);
 		const user = results.user;
 		console.log(await user.getIdToken());
+		router.navigate(ROUTES.ROOT);
 	} catch (err) {
-		console.error(err);
+		handleError(err, true);
 	}
 };
+
+export const handleGoogleAuth = async () => {
+	try {
+		await signInWithPopup(auth, googleAuthProvider).then((result) => {
+			const credential = GoogleAuthProvider.credentialFromResult(result);
+			const token = credential?.accessToken;
+			// The signed-in user info.
+			const user = result.user;
+			console.log(token, user);
+
+			redirect(ROUTES.ROOT);
+		});
+	} catch (err) {
+		handleError(err, true);
+	}
+};
+
+export const handleSignOut = () => signOut(auth);

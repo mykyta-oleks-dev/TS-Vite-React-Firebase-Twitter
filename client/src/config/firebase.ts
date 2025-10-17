@@ -1,8 +1,12 @@
 import { EMULATORS, FIREBASE } from '@/constants/env';
 import { initializeApp } from 'firebase/app';
-import { connectAuthEmulator, getAuth, GoogleAuthProvider } from 'firebase/auth';
+import {
+	connectAuthEmulator,
+	getAuth,
+	GoogleAuthProvider,
+} from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -23,11 +27,19 @@ export const firestore = getFirestore(app);
 export const googleAuthProvider = new GoogleAuthProvider();
 export const auth = getAuth(app);
 
-// Set up auth emulation
-if (EMULATORS.AUTH) {
-	console.log('emulating auth');
-	connectAuthEmulator(auth, EMULATORS.AUTH);
-}
-
 export const storage = getStorage(app);
+
+if (EMULATORS.HOST) {
+	// Set up auth emulation
+	if (EMULATORS.AUTH_PORT) {
+		console.log('emulating auth');
+		connectAuthEmulator(auth, `${EMULATORS.HOST}:${EMULATORS.AUTH_PORT}`);
+	}
+
+	// Set up storage emulation
+	if (EMULATORS.STORAGE_PORT && Number.isInteger(+EMULATORS.STORAGE_PORT)) {
+		console.log('emulating storage');
+		connectStorageEmulator(storage, EMULATORS.HOST, EMULATORS.STORAGE_PORT);
+	}
+}
 export default app;
