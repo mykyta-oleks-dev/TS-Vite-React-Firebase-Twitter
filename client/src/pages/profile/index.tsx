@@ -1,11 +1,13 @@
 import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
-import { ROUTER_KEYS } from '@/constants/routes';
+import { ROUTER_KEYS, ROUTES } from '@/constants/routes';
 import useUser from '@/stores/authStore';
 import { Navigate } from 'react-router';
 import ProfileData from './data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PasswordChange from './password-change';
+import { Button } from '@/components/ui/button';
+import Link from '@/components/link';
 
 const ProfilePage = () => {
 	const userData = useUser((s) => s.userData);
@@ -19,7 +21,11 @@ const ProfilePage = () => {
 
 	return (
 		<div>
-			<PageTitle title="Account details" />
+			<PageTitle title="Account details">
+				<Button asChild>
+					<Link to={ROUTES.PROFILE_EDIT}>Edit</Link>
+				</Button>
+			</PageTitle>
 			<Tabs defaultValue="data">
 				<TabsList className='mb-3'>
 					<TabsTrigger value="data">Profile data</TabsTrigger>

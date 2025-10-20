@@ -17,13 +17,22 @@ export const avatarRequiredSchema = z.object({
 		.nonoptional(VALIDATION.AVATAR.REQUIRED)
 		.refine(
 			(file) => ACCEPTED_IMAGE_TYPES.has(file.type),
-			'Only .jpg, .jpeg, .png and .webp formats are supported.'
+			VALIDATION.AVATAR.WRONG_FORMAT
 		),
 });
 
 export type avatarRequiredData = z.infer<typeof avatarRequiredSchema>;
 
-export const avatarOptionalSchema = avatarRequiredSchema.optional();
+export const avatarOptionalSchema = z.object({
+	avatar: z
+		.instanceof(File)
+		.optional()
+		.refine((file) => {
+			if (!file) return true;
+			if (ACCEPTED_IMAGE_TYPES.has(file.type)) return true;
+			return false;
+		}, VALIDATION.AVATAR.WRONG_FORMAT),
+});
 
 export type avatarOptionalData = z.infer<typeof avatarOptionalSchema>;
 
@@ -97,3 +106,9 @@ export const changePasswordSchema = z
 	});
 
 export type changePasswordData = z.infer<typeof changePasswordSchema>;
+
+export const editProfileSchema = userInfoSchema.extend(
+	avatarOptionalSchema.shape
+);
+
+export type editProfileData = z.infer<typeof editProfileSchema>;

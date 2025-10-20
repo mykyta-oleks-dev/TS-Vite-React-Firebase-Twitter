@@ -20,7 +20,7 @@ interface UserStore {
 const useUser = create<UserStore>((set) => ({
 	userData: null,
 	isAuthenticated: false,
-	isLoading: true,
+	isLoading: false,
 
 	setUserData: (userData) => set({ userData }),
 	setAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),

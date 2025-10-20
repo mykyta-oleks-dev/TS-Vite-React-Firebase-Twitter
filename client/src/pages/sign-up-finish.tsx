@@ -25,7 +25,12 @@ const FinishSignUpPage = () => {
 
 	const form = useForm<signUpFinishData>({
 		resolver: zodResolver(signUpFinishSchema),
-		defaultValues: {},
+		defaultValues: {
+			avatar: undefined,
+			birthday: new Date(),
+			firstName: '',
+			lastName: '',
+		},
 	});
 
 	if (authLoading) return <PageLoader />;
@@ -134,6 +139,7 @@ const FinishSignUpPage = () => {
 									className="flex-1"
 									date={field.value as Date}
 									setDate={field.onChange}
+									disabled={(date) => date > new Date()}
 								/>
 							)}
 						/>

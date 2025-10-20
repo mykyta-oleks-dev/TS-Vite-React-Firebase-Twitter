@@ -1,5 +1,6 @@
 import Layout from '@/components/layout';
 import { ROUTER_KEYS } from '@/constants/routes';
+import EditProfilePage from '@/pages/edit-profile';
 import AuthenticatedGuard from '@/pages/guard/authed';
 import UnauthenticatedGuard from '@/pages/guard/unauthed-root';
 import HomePage from '@/pages/home';
@@ -22,7 +23,10 @@ const router = createBrowserRouter([
 						<Outlet />
 					</AuthenticatedGuard>
 				),
-				children: [{ index: true, element: <ProfilePage /> }],
+				children: [
+					{ index: true, element: <ProfilePage /> },
+					{ path: ROUTER_KEYS.EDIT, element: <EditProfilePage /> },
+				],
 			},
 		],
 	},

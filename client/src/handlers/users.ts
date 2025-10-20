@@ -3,13 +3,15 @@ import {
 	resendVerification,
 	signUp,
 	signUpFinish,
+	updateUser,
 } from '@/api/users';
 import { auth, googleAuthProvider } from '@/config/firebase';
 import router from '@/config/router';
-import { ROUTER_KEYS } from '@/constants/routes';
+import { ROUTER_KEYS, ROUTES } from '@/constants/routes';
 import { handleError } from '@/lib/utils';
 import type {
 	changePasswordData,
+	editProfileData,
 	logInData,
 	signUpData,
 	signUpFinishData,
@@ -23,7 +25,8 @@ import {
 	signOut,
 } from 'firebase/auth';
 import { toast } from 'sonner';
-import { uploadAvatar } from '../firebase/storage';
+import { deleteAvatar, uploadAvatar } from '../firebase/storage';
+import type { User } from '@/types/User';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
@@ -60,7 +63,7 @@ export const handleLogIn = async (values: logInData) => {
 		);
 		const user = results.user;
 		console.log(await user.getIdToken());
-		router.navigate(ROUTER_KEYS.ROOT);
+		router.navigate(ROUTES.ROOT);
 	} catch (err) {
 		handleError(err, true);
 	}
@@ -69,7 +72,7 @@ export const handleLogIn = async (values: logInData) => {
 export const handleGoogleAuth = async () => {
 	try {
 		await signInWithPopup(auth, googleAuthProvider).then(() => {
-			router.navigate(ROUTER_KEYS.ROOT);
+			router.navigate(ROUTES.ROOT);
 		});
 	} catch (err) {
 		handleError(err, true);
@@ -108,6 +111,19 @@ export const handleChangePassword = async (
 		changePassword(values.password, values.confirmPassword).then((data) => {
 			toast.success(data.message);
 		});
+	} catch (err) {
+		handleError(err, true);
+	}
+};
+
+export const handleUpdateUser = async (user: User, values: editProfileData) => {
+	try {
+		const avatar = values.avatar
+			? await uploadAvatar(values.avatar)
+			: user.avatar;
+		await updateUser(values, avatar);
+		if (values.avatar) await deleteAvatar(user.avatar);
+		router.navigate(ROUTES.PROFILE);
 	} catch (err) {
 		handleError(err, true);
 	}

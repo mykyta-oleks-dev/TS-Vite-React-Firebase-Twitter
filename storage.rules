@@ -6,7 +6,7 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     match /avatars/{fileName} {
-      allow create, read: if true;
+      allow create, read, delete: if true;
     }
 
     match /{allPaths=**} {

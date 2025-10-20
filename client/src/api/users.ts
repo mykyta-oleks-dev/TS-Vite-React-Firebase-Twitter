@@ -1,6 +1,10 @@
 import axiosInstance from '@/config/axios';
 import { API_ENDPOINTS } from '@/constants/api';
-import type { signUpData, signUpFinishData } from '@/schemas/auth';
+import type {
+	editProfileData,
+	signUpData,
+	signUpFinishData,
+} from '@/schemas/auth';
 import type { AuthBody, DefaultBody, OneUser } from '@/types/API';
 
 export const signUp = async (values: signUpData, avatar: string) => {
@@ -63,3 +67,9 @@ export const changePassword = async (
 
 	return data;
 };
+
+export const updateUser = async (values: editProfileData, avatar: string) =>
+	await axiosInstance.put(API_ENDPOINTS.USERS.ROOT, {
+		...values,
+		avatar,
+	});

@@ -1,6 +1,6 @@
 import { storage } from '@/config/firebase';
 import { FOLDERS } from '@/constants/storage';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export const uploadAvatar = async (avatar: File) => {
 	const imageName = `${Date.now()}-${avatar.name}`;
@@ -13,3 +13,9 @@ export const uploadAvatar = async (avatar: File) => {
 
 	return imageUrl;
 };
+
+export const deleteAvatar = async (avatar: string) => {
+	const avatarRef = ref(storage, avatar);
+
+	await deleteObject(avatarRef);
+}

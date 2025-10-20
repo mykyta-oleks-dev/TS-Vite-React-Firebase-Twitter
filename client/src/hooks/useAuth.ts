@@ -31,14 +31,13 @@ const useAuth = ():
 		setLoading(true);
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			if (currentUser) {
+				setAuthenticated(true);
 				try {
 					const { data } = await getOne(currentUser.uid);
 
 					const { user: userData } = data;
 
 					const user = parseFetchUser(userData);
-
-					console.log(user);
 
 					setUserData({
 						user,
@@ -53,7 +52,6 @@ const useAuth = ():
 						navigate(ROUTES.SIGN_UP_FINISH);
 					}
 				} finally {
-					setAuthenticated(true);
 					setLoading(false);
 				}
 			} else {

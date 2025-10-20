@@ -2,6 +2,7 @@ const USERS = '/users';
 
 export const API_ENDPOINTS = {
 	USERS: {
+		ROOT: USERS,
 		SIGN_UP: `${USERS}/sign-up`,
 		SIGN_UP_GOOGLE: `${USERS}/sign-up-google`,
 		GET_ONE: (uid: string) => `${USERS}/${uid}`,

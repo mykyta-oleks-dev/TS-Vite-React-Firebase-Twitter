@@ -21,6 +21,7 @@ export const VALIDATION = {
 	},
 	AVATAR: {
 		REQUIRED: 'Avatar is required',
+		WRONG_FORMAT: 'Only .jpg, .jpeg, .png and .webp formats are supported.',
 	},
 	BIRTHDAY: {
 		REQUIRED: 'Birthday date is required',
