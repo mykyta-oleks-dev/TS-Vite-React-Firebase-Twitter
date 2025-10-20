@@ -6,7 +6,11 @@ const Link = ({ nav, ...props }: LinkProps & { nav?: boolean }) => {
 	return (
 		<Component
 			{...props}
-			className={cn("hover:underline underline-offset-2", props.className)}
+			className={cn(
+				!nav && 'hover:underline',
+				'underline-offset-2',
+				props.className
+			)}
 		>
 			{props.children}
 		</Component>

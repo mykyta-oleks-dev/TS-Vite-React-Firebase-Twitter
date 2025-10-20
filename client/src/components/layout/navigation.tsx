@@ -1,26 +1,37 @@
-
+import { ROUTES, ROUTES_LABELS } from '@/constants/routes';
+import Link from '../link';
 import {
 	NavigationMenu,
 	NavigationMenuItem,
 	NavigationMenuLink,
 	NavigationMenuList,
 } from '../ui/navigation-menu';
-import Link from '../link';
-import { ROUTES } from '@/constants/routes';
+import type { User } from '@/types/User';
 
-const Navigation = () => {
-	return ( 
-			<NavigationMenu>
-				<NavigationMenuList>
+const Navigation = ({ user }: { user?: User }) => {
+	return (
+		<NavigationMenu>
+			<NavigationMenuList>
+				<NavigationMenuItem>
+					<NavigationMenuLink asChild>
+						<Link nav to={ROUTES.ROOT}>
+							{ROUTES_LABELS[ROUTES.ROOT]}
+						</Link>
+					</NavigationMenuLink>
+				</NavigationMenuItem>
+
+				{user && (
 					<NavigationMenuItem>
 						<NavigationMenuLink asChild>
-							<Link nav to={ROUTES.ROOT}>
-								Home
+							<Link nav to={ROUTES.PROFILE}>
+								{ROUTES_LABELS[ROUTES.PROFILE]}
 							</Link>
 						</NavigationMenuLink>
 					</NavigationMenuItem>
-				</NavigationMenuList>
-			</NavigationMenu> );
-}
- 
+				)}
+			</NavigationMenuList>
+		</NavigationMenu>
+	);
+};
+
 export default Navigation;

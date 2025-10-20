@@ -13,7 +13,6 @@ axiosInstance.interceptors.request.use(async (config) => {
 	if (currentUser) {
 		const idToken = await getIdToken(currentUser);
 		config.headers.Authorization = `Bearer ${idToken}`;
-		console.log({ idToken });
 	}
 
 	return config;

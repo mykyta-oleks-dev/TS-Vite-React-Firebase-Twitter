@@ -1,16 +1,17 @@
-import { signUp, signUpFinish } from '@/api/users';
+import { resendVerification, signUp, signUpFinish } from '@/api/users';
 import { auth, googleAuthProvider } from '@/config/firebase';
 import router from '@/config/router';
-import { ROUTES } from '@/constants/routes';
+import { ROUTER_KEYS } from '@/constants/routes';
 import { handleError } from '@/lib/utils';
 import type { logInData, signUpData, signUpFinishData } from '@/schemas/auth';
 import {
 	signInWithCustomToken,
 	signInWithEmailAndPassword,
 	signInWithPopup,
-	signOut
+	signOut,
 } from 'firebase/auth';
 import { uploadAvatar } from '../firebase/storage';
+import { toast } from 'sonner';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
@@ -19,7 +20,7 @@ export const handleSignUp = async (values: signUpData) => {
 		const { data } = await signUp(values, avatar);
 
 		await signInWithCustomToken(auth, data.token);
-		router.navigate(ROUTES.ROOT);
+		router.navigate(ROUTER_KEYS.ROOT);
 	} catch (err) {
 		handleError(err, true);
 	}
@@ -32,7 +33,7 @@ export const handleSignUpFinish = async (values: signUpFinishData) => {
 		const { data } = await signUpFinish(values, avatar);
 
 		await signInWithCustomToken(auth, data.token);
-		router.navigate(ROUTES.ROOT);
+		router.navigate(ROUTER_KEYS.ROOT);
 	} catch (err) {
 		handleError(err, true);
 	}
@@ -47,7 +48,7 @@ export const handleLogIn = async (values: logInData) => {
 		);
 		const user = results.user;
 		console.log(await user.getIdToken());
-		router.navigate(ROUTES.ROOT);
+		router.navigate(ROUTER_KEYS.ROOT);
 	} catch (err) {
 		handleError(err, true);
 	}
@@ -56,7 +57,7 @@ export const handleLogIn = async (values: logInData) => {
 export const handleGoogleAuth = async () => {
 	try {
 		await signInWithPopup(auth, googleAuthProvider).then(() => {
-			router.navigate(ROUTES.ROOT);
+			router.navigate(ROUTER_KEYS.ROOT);
 		});
 	} catch (err) {
 		handleError(err, true);
@@ -64,3 +65,13 @@ export const handleGoogleAuth = async () => {
 };
 
 export const handleSignOut = () => signOut(auth);
+
+export const handleResendVerification = async () => {
+	try {
+		await resendVerification().then(() =>
+			toast.success('Verification link was sent to your email')
+		);
+	} catch (err) {
+		handleError(err, true);
+	}
+};

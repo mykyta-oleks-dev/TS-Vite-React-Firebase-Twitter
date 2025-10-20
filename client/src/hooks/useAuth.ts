@@ -1,12 +1,13 @@
 import { getOne } from '@/api/users';
 import { auth } from '@/config/firebase';
 import { ROUTES } from '@/constants/routes';
-import useAuthState, { type UserData } from '@/stores/authStore';
+import useUser, { type UserData } from '@/stores/authStore';
 import { parseFetchUser } from '@/types/User';
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { useShallow } from 'zustand/shallow';
 
 const useAuth = ():
 	| { userData: null; isAuthenticated: boolean; authLoading: true }
@@ -15,22 +16,29 @@ const useAuth = ():
 			isAuthenticated: boolean;
 			authLoading: false;
 	  } => {
-	const { userData, isAuthenticated, setUserData, setAuthenticated, logOut } =
-		useAuthState();
-	const [authLoading, setAuthLoading] = useState(false);
+	const {
+		userData,
+		isAuthenticated,
+		isLoading,
+		setUserData,
+		setAuthenticated,
+		setLoading,
+		logOut,
+	} = useUser(useShallow((s) => s));
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		setAuthLoading(true);
+		setLoading(true);
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			if (currentUser) {
-				setAuthenticated(true);
 				try {
 					const { data } = await getOne(currentUser.uid);
 
 					const { user: userData } = data;
 
 					const user = parseFetchUser(userData);
+
+					console.log(user);
 
 					setUserData({
 						user,
@@ -44,25 +52,31 @@ const useAuth = ():
 					) {
 						navigate(ROUTES.SIGN_UP_FINISH);
 					}
+				} finally {
+					setAuthenticated(true);
+					setLoading(false);
 				}
 			} else {
 				logOut();
+				setLoading(false);
 			}
-			setAuthLoading(false);
 		});
 
 		// Cleanup subscription on unmount
-		return () => unsubscribe();
-	}, [logOut, setUserData, navigate]);
+		return () => {
+			console.log('unsubscribed');
+			return unsubscribe();
+		};
+	}, [logOut, setLoading, setUserData, setAuthenticated, navigate]);
 
-	if (authLoading)
+	if (isLoading)
 		return {
 			userData: null,
 			isAuthenticated,
-			authLoading,
+			authLoading: isLoading,
 		};
 
-	return { userData, isAuthenticated, authLoading };
+	return { userData, isAuthenticated, authLoading: isLoading };
 };
 
 export default useAuth;

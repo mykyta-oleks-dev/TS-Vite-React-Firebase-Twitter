@@ -9,8 +9,8 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
-import { ROUTES } from '@/constants/routes';
-import { handleSignUp } from '@/handlers/auth';
+import { ROUTER_KEYS } from '@/constants/routes';
+import { handleSignUp } from '@/handlers/users';
 import { signUpSchema, type signUpData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -214,7 +214,12 @@ const SignUpPage = () => {
 						<GoogleAuthButton />
 						<div>
 							Already have an account?{' '}
-							<Link to={ROUTES.LOG_IN} className='text-primary'>Log In</Link>
+							<Link
+								to={ROUTER_KEYS.LOG_IN}
+								className="text-primary"
+							>
+								Log In
+							</Link>
 						</div>
 					</form>
 				</Form>

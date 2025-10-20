@@ -43,3 +43,8 @@ export const getOne = async (uid: string) => {
 
 	return { data, res };
 };
+
+export const resendVerification = async () => {
+	console.log('sent');
+	axiosInstance.post(API_ENDPOINTS.USERS.RESEND_VERIFICATION);
+};

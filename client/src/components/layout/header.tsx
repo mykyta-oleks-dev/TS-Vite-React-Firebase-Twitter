@@ -1,30 +1,31 @@
-import { BirdIcon } from 'lucide-react';
-import Navigation from './navigation';
+import { ROUTER_KEYS } from '@/constants/routes';
+import { handleSignOut } from '@/handlers/users';
 import type { User } from '@/types/User';
-import { Button } from '../ui/button';
-import { signOut } from 'firebase/auth';
-import { auth } from '@/config/firebase';
+import { BirdIcon } from 'lucide-react';
 import Link from '../link';
-import { ROUTES } from '@/constants/routes';
+import { Button } from '../ui/button';
+import Navigation from './navigation';
 
 const Header = ({ user }: { user?: User }) => {
 	return (
-		<header className="flex h-20 items-center gap-5 px-5 py-5 mb-5 bg-primary text-primary-foreground">
+		<header className="flex h-15 items-center gap-5 px-5 py-5 mb-5 bg-primary text-primary-foreground">
 			<div>
 				<BirdIcon />
 			</div>
-			<Navigation />
+			<Navigation user={user} />
 			<div className="ml-auto flex items-center gap-2">
 				{user && (
 					<>
 						<h6>Hello, {user.firstName}</h6>
-						<Button variant='secondary' onClick={() => signOut(auth)}>Log Out</Button>
+						<Button variant="secondary" onClick={handleSignOut}>
+							Log Out
+						</Button>
 					</>
 				)}
 				{!user && (
 					<>
-						<Link to={ROUTES.LOG_IN}>Log In</Link>
-						<Link to={ROUTES.SIGN_UP}>Sign Up</Link>
+						<Link to={ROUTER_KEYS.LOG_IN}>Log In</Link>
+						<Link to={ROUTER_KEYS.SIGN_UP}>Sign Up</Link>
 					</>
 				)}
 			</div>

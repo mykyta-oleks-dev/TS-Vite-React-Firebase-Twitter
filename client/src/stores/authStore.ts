@@ -6,22 +6,26 @@ export type UserData = {
 	emailVerified: boolean;
 } | null;
 
-interface AuthStore {
+interface UserStore {
 	userData: UserData;
 	isAuthenticated: boolean;
+	isLoading: boolean;
 
 	setUserData: (authState: UserData) => void;
 	setAuthenticated: (isAuthenticated: boolean) => void;
+	setLoading: (isLoading: boolean) => void;
 	logOut: () => void;
 }
 
-const useAuthState = create<AuthStore>((set) => ({
+const useUser = create<UserStore>((set) => ({
 	userData: null,
 	isAuthenticated: false,
+	isLoading: true,
 
 	setUserData: (userData) => set({ userData }),
 	setAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
+	setLoading: (isLoading: boolean) => set({ isLoading }),
 	logOut: () => set({ userData: null, isAuthenticated: false }),
 }));
 
-export default useAuthState;
+export default useUser;

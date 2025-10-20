@@ -1,4 +1,4 @@
-import { handleGoogleAuth } from '@/handlers/auth';
+import { handleGoogleAuth } from '@/handlers/users';
 import { Button } from './ui/button/button';
 import { FaGoogle } from 'react-icons/fa';
 

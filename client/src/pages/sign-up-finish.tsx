@@ -9,8 +9,8 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
-import { ROUTES } from '@/constants/routes';
-import { handleSignUpFinish } from '@/handlers/auth';
+import { ROUTER_KEYS } from '@/constants/routes';
+import { handleSignUpFinish } from '@/handlers/users';
 import useAuth from '@/hooks/useAuth';
 import { signUpFinishSchema, type signUpFinishData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,7 @@ import { useForm } from 'react-hook-form';
 import { Navigate } from 'react-router';
 
 const FinishSignUpPage = () => {
-	const {isAuthenticated, authLoading} = useAuth();
+	const { isAuthenticated, authLoading } = useAuth();
 
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
@@ -28,9 +28,9 @@ const FinishSignUpPage = () => {
 		defaultValues: {},
 	});
 
-	if (authLoading) return <PageLoader />
+	if (authLoading) return <PageLoader />;
 
-	if (!isAuthenticated) return <Navigate to={ROUTES.LOG_IN} />;
+	if (!isAuthenticated) return <Navigate to={ROUTER_KEYS.LOG_IN} />;
 
 	return (
 		<div className="w-full min-h-screen p-5 flex justify-center items-center">
@@ -158,7 +158,10 @@ const FinishSignUpPage = () => {
 						<hr />
 						<div>
 							Already have an account?{' '}
-							<Link to={ROUTES.LOG_IN} className="text-primary">
+							<Link
+								to={ROUTER_KEYS.LOG_IN}
+								className="text-primary"
+							>
 								Log In
 							</Link>
 						</div>

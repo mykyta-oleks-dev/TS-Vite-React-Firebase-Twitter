@@ -5,8 +5,8 @@ import PageTitle from '@/components/page-title';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ROUTES } from '@/constants/routes';
-import { handleLogIn } from '@/handlers/auth';
+import { ROUTER_KEYS } from '@/constants/routes';
+import { handleLogIn } from '@/handlers/users';
 import { logInSchema, type logInData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -65,7 +65,12 @@ const LogInPage = () => {
 						<GoogleAuthButton isLogin />
 						<div>
 							Don&apos;t have an account?{' '}
-							<Link to={ROUTES.SIGN_UP} className='text-primary'>Sign Up</Link>
+							<Link
+								to={ROUTER_KEYS.SIGN_UP}
+								className="text-primary"
+							>
+								Sign Up
+							</Link>
 						</div>
 					</form>
 				</Form>

@@ -1,17 +1,17 @@
 import PageLoader from '@/components/page-loader';
-import { ROUTES } from '@/constants/routes';
-import useAuth from '@/hooks/useAuth';
+import { ROUTER_KEYS } from '@/constants/routes';
+import useUser from '@/stores/authStore';
 import type { PropsWithChildren } from 'react';
 import { Navigate } from 'react-router';
 
-const AuthedGuard = ({ children }: PropsWithChildren) => {
-	const { isAuthenticated, authLoading } = useAuth();
+const AuthenticatedGuard = ({ children }: PropsWithChildren) => {
+	const { isAuthenticated, isLoading } = useUser();
 
-	if (authLoading) return <PageLoader />;
+	if (isLoading) return <PageLoader />;
 
-	if (!isAuthenticated) return children;
-	
-	return <Navigate to={ROUTES.ROOT} />;
+	if (isAuthenticated) return children;
+
+	return <Navigate to={ROUTER_KEYS.ROOT} />;
 };
 
-export default AuthedGuard;
+export default AuthenticatedGuard;

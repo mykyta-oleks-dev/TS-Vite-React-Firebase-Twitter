@@ -9,7 +9,7 @@ const AvatarBig = ({
 	className?: string
 }) => {
 	return (
-		<div className={cn("h-20 w-20 overflow-hidden rounded-full shrink-0", className)}>
+		<div className={cn("size-20 overflow-hidden rounded-full shrink-0", className)}>
 			<img src={src} alt="User's avatar" className="object-cover h-full w-full" />
 		</div>
 	);

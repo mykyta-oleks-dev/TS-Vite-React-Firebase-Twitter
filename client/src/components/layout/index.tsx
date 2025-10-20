@@ -4,8 +4,8 @@ import useAuth from '@/hooks/useAuth';
 import PageLoader from '../page-loader';
 
 const Layout = () => {
-	const { userData: authState, authLoading } = useAuth();
-	const user = authState?.user;
+	const { userData, authLoading } = useAuth();
+	const user = userData?.user;
 
 	if (authLoading) return <PageLoader />;
 

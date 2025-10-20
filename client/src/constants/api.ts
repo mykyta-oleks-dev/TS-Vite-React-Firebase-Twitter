@@ -1,10 +1,11 @@
-const USERS_ROUTES = '/users'
+const USERS = '/users'
 
 export const API_ENDPOINTS = {
 	USERS: {
-		SIGN_UP: `${USERS_ROUTES}/sign-up`,
-		SIGN_UP_GOOGLE: `${USERS_ROUTES}/sign-up-google`,
-		GET_ONE: (uid: string) => `${USERS_ROUTES}/${uid}`,
+		SIGN_UP: `${USERS}/sign-up`,
+		SIGN_UP_GOOGLE: `${USERS}/sign-up-google`,
+		GET_ONE: (uid: string) => `${USERS}/${uid}`,
+		RESEND_VERIFICATION: `${USERS}/resend-verification`
 	}
 } as const;
 
