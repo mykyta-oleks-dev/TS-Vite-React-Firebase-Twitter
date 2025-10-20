@@ -9,7 +9,7 @@ const HomePage = () => {
 
 	return (
 		<div>
-			<h1>Hello {user ? user.displayName : 'world'}</h1>
+			<h1>Hello {user ? `${user.firstName} ${user.lastName}` : 'world'}</h1>
 
 			{authLoading && <p>Loading authentication...</p>}
 

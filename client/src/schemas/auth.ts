@@ -6,6 +6,12 @@ export const userInfoSchema = z.object({
 	lastName: z.string(VALIDATION.LAST_NAME.REQUIRED),
 	about: z.string().optional(),
 	location: z.string().optional(),
+	birthday: z.date(VALIDATION.BIRTHDAY.REQUIRED),
+});
+
+export type userInfoData = z.infer<typeof userInfoSchema>;
+
+export const avatarRequiredSchema = z.object({
 	avatar: z
 		.instanceof(File)
 		.nonoptional(VALIDATION.AVATAR.REQUIRED)
@@ -13,10 +19,13 @@ export const userInfoSchema = z.object({
 			(file) => ACCEPTED_IMAGE_TYPES.has(file.type),
 			'Only .jpg, .jpeg, .png and .webp formats are supported.'
 		),
-	birthday: z.date(VALIDATION.BIRTHDAY.REQUIRED),
 });
 
-export type userInfoData = z.infer<typeof userInfoSchema>;
+export type avatarRequiredData = z.infer<typeof avatarRequiredSchema>;
+
+export const avatarOptionalSchema = avatarRequiredSchema.optional();
+
+export type avatarOptionalData = z.infer<typeof avatarOptionalSchema>;
 
 export const logInSchema = z.object({
 	email: z.email(VALIDATION.EMAIL.REQUIRED),
@@ -29,6 +38,7 @@ export type logInData = z.infer<typeof logInSchema>;
 
 export const signUpSchema = logInSchema
 	.extend(userInfoSchema.shape)
+	.extend(avatarRequiredSchema.shape)
 	.extend({
 		confirmPassword: z
 			.string(VALIDATION.CONFIRM_PASSWORD.REQUIRED)
@@ -41,10 +51,15 @@ export const signUpSchema = logInSchema
 		if (val.password !== val.confirmPassword) {
 			ctx.addIssue({
 				code: 'custom',
-				message: "Passwords don't match",
+				message: VALIDATION.CONFIRM_PASSWORD.DONT_MATCH,
 				path: ['confirmPassword'],
 			});
 		}
 	});
 
 export type signUpData = z.infer<typeof signUpSchema>;
+
+export const signUpFinishSchema = userInfoSchema
+	.extend(avatarRequiredSchema.shape);
+
+export type signUpFinishData = z.infer<typeof signUpFinishSchema>;

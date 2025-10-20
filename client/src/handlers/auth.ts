@@ -1,34 +1,35 @@
+import { signUp, signUpFinish } from '@/api/users';
 import { auth, googleAuthProvider } from '@/config/firebase';
 import router from '@/config/router';
-import { API_ENDPOINTS } from '@/constants/api';
 import { ROUTES } from '@/constants/routes';
 import { handleError } from '@/lib/utils';
-import type { logInData, signUpData } from '@/schemas/auth';
-import type { AuthBody } from '@/types/API';
+import type { logInData, signUpData, signUpFinishData } from '@/schemas/auth';
 import {
-	GoogleAuthProvider,
 	signInWithCustomToken,
 	signInWithEmailAndPassword,
 	signInWithPopup,
-	signOut,
+	signOut
 } from 'firebase/auth';
-import { redirect } from 'react-router';
 import { uploadAvatar } from '../firebase/storage';
-import axiosInstance from '@/config/axios';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
 		const avatar = await uploadAvatar(values.avatar);
 
-		const res = await axiosInstance.post<AuthBody>(
-			API_ENDPOINTS.USERS.SIGN_UP,
-			{
-				...values,
-				avatar,
-			}
-		);
+		const { data } = await signUp(values, avatar);
 
-		const data = res.data;
+		await signInWithCustomToken(auth, data.token);
+		router.navigate(ROUTES.ROOT);
+	} catch (err) {
+		handleError(err, true);
+	}
+};
+
+export const handleSignUpFinish = async (values: signUpFinishData) => {
+	try {
+		const avatar = await uploadAvatar(values.avatar);
+
+		const { data } = await signUpFinish(values, avatar);
 
 		await signInWithCustomToken(auth, data.token);
 		router.navigate(ROUTES.ROOT);
@@ -54,14 +55,8 @@ export const handleLogIn = async (values: logInData) => {
 
 export const handleGoogleAuth = async () => {
 	try {
-		await signInWithPopup(auth, googleAuthProvider).then((result) => {
-			const credential = GoogleAuthProvider.credentialFromResult(result);
-			const token = credential?.accessToken;
-			// The signed-in user info.
-			const user = result.user;
-			console.log(token, user);
-
-			redirect(ROUTES.ROOT);
+		await signInWithPopup(auth, googleAuthProvider).then(() => {
+			router.navigate(ROUTES.ROOT);
 		});
 	} catch (err) {
 		handleError(err, true);

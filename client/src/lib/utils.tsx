@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import { clsx, type ClassValue } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
+import { assertIsApiError } from './assertions';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -23,6 +24,14 @@ export function getErrorMessage(error: unknown): string {
 	return 'An unexpected error!';
 }
 
+export function getErrorPayload(error: unknown) {
+	if (assertIsApiError(error)) {
+		return error.payload;
+	}
+
+	return undefined;
+}
+
 export function handleError(
 	error: unknown,
 	showToast?: boolean
@@ -38,7 +47,21 @@ export function handleError(
 
 	if (IS_DEV) console.error(error);
 
-	if (showToast) toast.error(message);
+	if (showToast) {
+		const payload = getErrorPayload(error);
+
+		toast.error(message, {
+			description: payload ? (
+				<ul>
+					{Object.entries(payload).map(([key, value]) => (
+						<li key={`error-payload.${key}`}>
+							{key}: {value}
+						</li>
+					))}
+				</ul>
+			) : undefined,
+		});
+	}
 
 	return {
 		success: false,

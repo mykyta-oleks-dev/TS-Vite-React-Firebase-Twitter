@@ -6,4 +6,4 @@ export const ROUTES = {
 	RESEND_VERIFICATION: '/resend-verification',
 	CHANGE_PASSWORD: '/change-password',
 	RESET_PASSWORD: '/reset-password',
-}
+} as const;

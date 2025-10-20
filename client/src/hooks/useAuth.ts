@@ -1,5 +1,10 @@
+import { getOne } from '@/api/users';
 import { auth } from '@/config/firebase';
-import { onAuthStateChanged, type User } from 'firebase/auth';
+import router from '@/config/router';
+import { ROUTES } from '@/constants/routes';
+import { parseFetchUser, type User } from '@/types/User';
+import axios from 'axios';
+import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 
 const useAuth = ():
@@ -10,8 +15,29 @@ const useAuth = ():
 
 	useEffect(() => {
 		setAuthLoading(true);
-		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-			setUser(currentUser);
+		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+			if (currentUser) {
+				try {
+					const { data } = await getOne(currentUser.uid);
+
+					const { user: userData } = data;
+
+					const user = parseFetchUser(userData);
+
+					setUser(user);
+				} catch (err) {
+					if (
+						axios.isAxiosError(err) &&
+						err.status &&
+						err.status === 404
+					) {
+						console.log(err);
+						router.navigate(ROUTES.SIGN_UP_GOOGLE_FINISH);
+					}
+				}
+			} else {
+				setUser(null);
+			}
 			setAuthLoading(false);
 		});
 

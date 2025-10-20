@@ -4,8 +4,8 @@ import { auth } from './firebase';
 import { getIdToken } from 'firebase/auth';
 
 const axiosInstance = axios.create({
-	baseURL: API.ROUTE
-})
+	baseURL: API.ROUTE,
+});
 
 axiosInstance.interceptors.request.use(async (config) => {
 	const currentUser = auth.currentUser;
@@ -13,9 +13,10 @@ axiosInstance.interceptors.request.use(async (config) => {
 	if (currentUser) {
 		const idToken = await getIdToken(currentUser);
 		config.headers.Authorization = `Bearer ${idToken}`;
+		console.log({ idToken });
 	}
 
 	return config;
-})
+});
 
 export default axiosInstance;

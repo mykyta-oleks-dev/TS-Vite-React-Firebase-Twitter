@@ -1,7 +1,6 @@
 import AvatarBig from '@/components/avatar-big';
 import DatePicker from '@/components/datepicker';
 import FormFieldGroup from '@/components/form-field';
-import GoogleAuthButton from '@/components/google-auth';
 import Link from '@/components/link';
 import PageTitle from '@/components/page-title';
 import { Button } from '@/components/ui/button';
@@ -10,31 +9,30 @@ import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
-import { handleSignUp } from '@/handlers/auth';
-import { signUpSchema, type signUpData } from '@/schemas/auth';
+import { handleSignUpFinish } from '@/handlers/auth';
+import { signUpFinishSchema, type signUpFinishData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-const SignUpPage = () => {
+const FinishSignUpPage = () => {
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
-	const form = useForm<signUpData>({
-		resolver: zodResolver(signUpSchema),
-		defaultValues: {
-			email: '',
-			password: '',
-			confirmPassword: '',
-		},
+	const form = useForm<signUpFinishData>({
+		resolver: zodResolver(signUpFinishSchema),
+		defaultValues: {},
 	});
 
 	return (
 		<div className="w-full min-h-screen p-5 flex justify-center items-center">
 			<div className="p-5 min-w-2xl border border-primary rounded-xl">
-				<PageTitle title="Sign Up" />
+				<PageTitle
+					title="Crucial user info"
+					sub="Last step in the sign up process..."
+				/>
 				<Form {...form}>
 					<form
-						onSubmit={form.handleSubmit(handleSignUp)}
+						onSubmit={form.handleSubmit(handleSignUpFinish)}
 						className="flex flex-col gap-3"
 					>
 						<div className="flex items-center gap-3">
@@ -131,68 +129,6 @@ const SignUpPage = () => {
 							)}
 						/>
 
-						<FormFieldGroup
-							control={form.control}
-							name="email"
-							label={FORM_FIELD.EMAIL.LABEL}
-							render={(field) => (
-								<Input
-									placeholder={FORM_FIELD.EMAIL.PLACEHOLDER}
-									{...field}
-									value={
-										field.value instanceof File ||
-										field.value instanceof Date
-											? undefined
-											: field.value
-									}
-								/>
-							)}
-						/>
-
-						<div className="flex gap-3">
-							<FormFieldGroup
-								className="flex-1"
-								control={form.control}
-								name="password"
-								label={FORM_FIELD.PASSWORD.LABEL}
-								render={(field) => (
-									<Input
-										placeholder={
-											FORM_FIELD.PASSWORD.PLACEHOLDER
-										}
-										{...field}
-										type="password"
-										value={
-											field.value instanceof File ||
-											field.value instanceof Date
-												? undefined
-												: field.value
-										}
-									/>
-								)}
-							/>
-							<FormFieldGroup
-								className="flex-1"
-								control={form.control}
-								name="confirmPassword"
-								label={FORM_FIELD.CONFIRM_PASSWORD.LABEL}
-								render={(field) => (
-									<Input
-										placeholder={
-											FORM_FIELD.PASSWORD.PLACEHOLDER
-										}
-										{...field}
-										type="password"
-										value={
-											field.value instanceof File ||
-											field.value instanceof Date
-												? undefined
-												: field.value
-										}
-									/>
-								)}
-							/>
-						</div>
 						<div className="flex gap-3">
 							<Button
 								type="submit"
@@ -211,7 +147,6 @@ const SignUpPage = () => {
 							</Button>
 						</div>
 						<hr />
-						<GoogleAuthButton />
 						<div>
 							Already have an account?{' '}
 							<Link to={ROUTES.LOG_IN}>Log In</Link>
@@ -223,4 +158,4 @@ const SignUpPage = () => {
 	);
 };
 
-export default SignUpPage;
+export default FinishSignUpPage;

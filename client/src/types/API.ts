@@ -16,9 +16,9 @@ export interface AuthBody extends DefaultBody {
 }
 
 export interface OneUser extends DefaultBody {
-	userData: UserApi;
+	user: UserApi;
 }
 
 export interface ManyUsers extends DefaultBody {
-	usersData: UserApi[];
+	users: UserApi[];
 }

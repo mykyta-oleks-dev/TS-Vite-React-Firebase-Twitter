@@ -11,6 +11,7 @@ export const VALIDATION = {
 	},
 	CONFIRM_PASSWORD: {
 		REQUIRED: 'A password confirmation is required',
+		DONT_MATCH: "Passwords don't match",
 	},
 	FIRST_NAME: {
 		REQUIRED: 'First name is required',

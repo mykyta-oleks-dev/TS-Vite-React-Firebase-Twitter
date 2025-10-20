@@ -6,7 +6,7 @@ import { ROUTES } from './constants/Routes';
 const usersRoutes = Router();
 
 usersRoutes.post(ROUTES.SIGN_UP, usersController.signUp);
-usersRoutes.post(ROUTES.SIGN_UP_GOOGLE, usersController.signUpGoogle);
+usersRoutes.post(ROUTES.SIGN_UP_GOOGLE, authenticate, usersController.signUpGoogle);
 usersRoutes.get(ROUTES.DYNAMIC, usersController.getOne)
 usersRoutes.get(ROUTES.ROOT, usersController.getMany)
 usersRoutes.put(ROUTES.ROOT, authenticate, usersController.update);
