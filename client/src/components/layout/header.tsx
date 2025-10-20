@@ -5,6 +5,7 @@ import { BirdIcon } from 'lucide-react';
 import Link from '../link';
 import { Button } from '../ui/button';
 import Navigation from './navigation';
+import { ModeToggle } from '../theme-toggle';
 
 const Header = ({ user }: { user?: User }) => {
 	return (
@@ -28,6 +29,7 @@ const Header = ({ user }: { user?: User }) => {
 						<Link to={ROUTER_KEYS.SIGN_UP}>Sign Up</Link>
 					</>
 				)}
+				<ModeToggle />
 			</div>
 		</header>
 	);
