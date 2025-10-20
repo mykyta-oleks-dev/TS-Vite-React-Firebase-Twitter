@@ -1,15 +1,17 @@
 import { ChevronDownIcon } from 'lucide-react';
-import { Button } from './ui/button/button';
+import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Calendar } from './ui/calendar';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
+import type { DayPicker } from 'react-day-picker';
 
 const DatePicker = ({
 	date,
 	setDate,
 	className,
-}: {
+	disabled
+}: React.ComponentProps<typeof DayPicker> & {
 	date?: Date;
 	setDate: (date?: Date) => void;
 	className?: string;
@@ -37,6 +39,7 @@ const DatePicker = ({
 			>
 				<Calendar
 					mode="single"
+					disabled={disabled}
 					selected={date}
 					captionLayout="dropdown"
 					onSelect={(date) => {

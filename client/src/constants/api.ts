@@ -1,12 +1,13 @@
-const USERS = '/users'
+const USERS = '/users';
 
 export const API_ENDPOINTS = {
 	USERS: {
 		SIGN_UP: `${USERS}/sign-up`,
 		SIGN_UP_GOOGLE: `${USERS}/sign-up-google`,
 		GET_ONE: (uid: string) => `${USERS}/${uid}`,
-		RESEND_VERIFICATION: `${USERS}/resend-verification`
-	}
+		RESEND_VERIFICATION: `${USERS}/resend-verification`,
+		CHANGE_PASSWORD: `${USERS}/change-password`,
+	},
 } as const;
 
 export const HTTP = {

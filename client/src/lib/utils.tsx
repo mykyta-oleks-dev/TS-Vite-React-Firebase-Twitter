@@ -3,13 +3,29 @@ import { AxiosError } from 'axios';
 import { clsx, type ClassValue } from 'clsx';
 import { toast } from 'sonner';
 import { twMerge } from 'tailwind-merge';
-import { assertIsApiError } from './assertions';
+import { assertIsApiError, assertIsFirebaseError } from './assertions';
+import { FirebaseError } from 'firebase/app';
+import { AuthErrorCodes } from 'firebase/auth';
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+const getFirebaseErrorMessage = (error: FirebaseError) => {
+	if (error.code === AuthErrorCodes.INVALID_PASSWORD)
+		return 'Wrong current password provided!';
+
+	if (error.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS)
+		return 'Invalid credentials provided!';
+
+	return error.message;
+};
+
 export function getErrorMessage(error: unknown): string {
+	if (assertIsFirebaseError(error)) {
+		return getFirebaseErrorMessage(error);
+	}
+
 	if (
 		typeof error === 'object' &&
 		error !== null &&

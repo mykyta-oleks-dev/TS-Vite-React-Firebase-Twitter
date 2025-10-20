@@ -1,17 +1,29 @@
-import { resendVerification, signUp, signUpFinish } from '@/api/users';
+import {
+	changePassword,
+	resendVerification,
+	signUp,
+	signUpFinish,
+} from '@/api/users';
 import { auth, googleAuthProvider } from '@/config/firebase';
 import router from '@/config/router';
 import { ROUTER_KEYS } from '@/constants/routes';
 import { handleError } from '@/lib/utils';
-import type { logInData, signUpData, signUpFinishData } from '@/schemas/auth';
+import type {
+	changePasswordData,
+	logInData,
+	signUpData,
+	signUpFinishData,
+} from '@/schemas/auth';
 import {
+	EmailAuthProvider,
+	reauthenticateWithCredential,
 	signInWithCustomToken,
 	signInWithEmailAndPassword,
 	signInWithPopup,
 	signOut,
 } from 'firebase/auth';
-import { uploadAvatar } from '../firebase/storage';
 import { toast } from 'sonner';
+import { uploadAvatar } from '../firebase/storage';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
@@ -71,6 +83,31 @@ export const handleResendVerification = async () => {
 		await resendVerification().then(() =>
 			toast.success('Verification link was sent to your email')
 		);
+	} catch (err) {
+		handleError(err, true);
+	}
+};
+
+export const handleChangePassword = async (
+	email: string,
+	values: changePasswordData
+) => {
+	try {
+		const user = auth.currentUser;
+		if (!user || user.providerId === 'google.com') {
+			throw new Error('User not signed in with email/password.');
+		}
+
+		const credentials = EmailAuthProvider.credential(
+			email,
+			values.oldPassword
+		);
+
+		await reauthenticateWithCredential(user, credentials);
+
+		changePassword(values.password, values.confirmPassword).then((data) => {
+			toast.success(data.message);
+		});
 	} catch (err) {
 		handleError(err, true);
 	}

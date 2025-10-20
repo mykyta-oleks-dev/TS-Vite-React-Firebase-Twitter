@@ -59,7 +59,41 @@ export const signUpSchema = logInSchema
 
 export type signUpData = z.infer<typeof signUpSchema>;
 
-export const signUpFinishSchema = userInfoSchema
-	.extend(avatarRequiredSchema.shape);
+export const signUpFinishSchema = userInfoSchema.extend(
+	avatarRequiredSchema.shape
+);
 
 export type signUpFinishData = z.infer<typeof signUpFinishSchema>;
+
+export const changePasswordSchema = z
+	.object({
+		oldPassword: z
+			.string(VALIDATION.PASSWORD.REQUIRED)
+			.min(
+				VALIDATION.PASSWORD.MIN.VALUE,
+				VALIDATION.PASSWORD.MIN.MESSAGE
+			),
+		password: z
+			.string(VALIDATION.PASSWORD.REQUIRED)
+			.min(
+				VALIDATION.PASSWORD.MIN.VALUE,
+				VALIDATION.PASSWORD.MIN.MESSAGE
+			),
+		confirmPassword: z
+			.string(VALIDATION.CONFIRM_PASSWORD.REQUIRED)
+			.min(
+				VALIDATION.PASSWORD.MIN.VALUE,
+				VALIDATION.PASSWORD.MIN.MESSAGE
+			),
+	})
+	.superRefine((val, ctx) => {
+		if (val.password !== val.confirmPassword) {
+			ctx.addIssue({
+				code: 'custom',
+				message: VALIDATION.CONFIRM_PASSWORD.DONT_MATCH,
+				path: ['confirmPassword'],
+			});
+		}
+	});
+
+export type changePasswordData = z.infer<typeof changePasswordSchema>;

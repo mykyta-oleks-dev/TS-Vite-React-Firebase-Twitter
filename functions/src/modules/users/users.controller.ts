@@ -104,7 +104,7 @@ class UsersController {
 
 		res.status(HTTP.OK).json({
 			message:
-				'Password was changed successfuly! Your sessions were terminated and you have to log back in.',
+				'Password was changed successfuly! Your sessions were terminated and you may have to log back in.',
 		});
 	};
 

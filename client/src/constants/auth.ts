@@ -23,8 +23,8 @@ export const VALIDATION = {
 		REQUIRED: 'Avatar is required',
 	},
 	BIRTHDAY: {
-		REQUIRED: 'Birthday date is required'
-	}
+		REQUIRED: 'Birthday date is required',
+	},
 } as const;
 
 export const ACCEPTED_IMAGE_TYPES = new Set([
@@ -36,7 +36,7 @@ export const ACCEPTED_IMAGE_TYPES = new Set([
 
 export const FORM_FIELD = {
 	AVATAR: {
-		LABEL: 'Avatar'
+		LABEL: 'Avatar',
 	},
 	FIRST_NAME: {
 		PLACEHOLDER: 'Alex',
@@ -55,7 +55,7 @@ export const FORM_FIELD = {
 		LABEL: 'Your location',
 	},
 	BIRTHDAY: {
-		LABEL: 'Birthday'
+		LABEL: 'Birthday',
 	},
 	EMAIL: {
 		PLACEHOLDER: 'user@mail.com',
@@ -64,6 +64,9 @@ export const FORM_FIELD = {
 	PASSWORD: {
 		PLACEHOLDER: '●●●●●●',
 		LABEL: 'Password',
+	},
+	OLD_PASSWORD: {
+		LABEL: 'Current password',
 	},
 	CONFIRM_PASSWORD: {
 		LABEL: 'Confirm Password',

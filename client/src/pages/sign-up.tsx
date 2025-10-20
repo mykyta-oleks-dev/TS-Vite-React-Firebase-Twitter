@@ -22,6 +22,10 @@ const SignUpPage = () => {
 	const form = useForm<signUpData>({
 		resolver: zodResolver(signUpSchema),
 		defaultValues: {
+			avatar: undefined,
+			birthday: new Date(),
+			firstName: '',
+			lastName: '',
 			email: '',
 			password: '',
 			confirmPassword: '',
@@ -127,6 +131,7 @@ const SignUpPage = () => {
 									className="flex-1"
 									date={field.value as Date}
 									setDate={field.onChange}
+									disabled={(date) => date < new Date()}
 								/>
 							)}
 						/>

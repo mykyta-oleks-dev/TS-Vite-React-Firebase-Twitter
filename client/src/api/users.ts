@@ -1,7 +1,7 @@
 import axiosInstance from '@/config/axios';
 import { API_ENDPOINTS } from '@/constants/api';
 import type { signUpData, signUpFinishData } from '@/schemas/auth';
-import type { AuthBody, OneUser } from '@/types/API';
+import type { AuthBody, DefaultBody, OneUser } from '@/types/API';
 
 export const signUp = async (values: signUpData, avatar: string) => {
 	const res = await axiosInstance.post<AuthBody>(
@@ -44,7 +44,22 @@ export const getOne = async (uid: string) => {
 	return { data, res };
 };
 
-export const resendVerification = async () => {
-	console.log('sent');
+export const resendVerification = async () =>
 	axiosInstance.post(API_ENDPOINTS.USERS.RESEND_VERIFICATION);
+
+export const changePassword = async (
+	password: string,
+	confirmPassword: string
+) => {
+	const res = await axiosInstance.post<DefaultBody>(
+		API_ENDPOINTS.USERS.CHANGE_PASSWORD,
+		{
+			password,
+			confirmPassword,
+		}
+	);
+
+	const data = res.data;
+
+	return data;
 };

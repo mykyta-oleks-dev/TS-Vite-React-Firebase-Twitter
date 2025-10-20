@@ -4,6 +4,8 @@ import { ROUTER_KEYS } from '@/constants/routes';
 import useUser from '@/stores/authStore';
 import { Navigate } from 'react-router';
 import ProfileData from './data';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import PasswordChange from './password-change';
 
 const ProfilePage = () => {
 	const userData = useUser((s) => s.userData);
@@ -17,8 +19,21 @@ const ProfilePage = () => {
 
 	return (
 		<div>
-			<PageTitle title="Your profile page" />
-			<ProfileData user={user} emailVerified={emailVerified} />
+			<PageTitle title="Account details" />
+			<Tabs defaultValue="data">
+				<TabsList className='mb-3'>
+					<TabsTrigger value="data">Profile data</TabsTrigger>
+					<TabsTrigger value="security">
+						Security information
+					</TabsTrigger>
+				</TabsList>
+				<TabsContent value="data">
+					<ProfileData user={user} emailVerified={emailVerified} />
+				</TabsContent>
+				<TabsContent value="security">
+					<PasswordChange user={user} />
+				</TabsContent>
+			</Tabs>
 		</div>
 	);
 };
