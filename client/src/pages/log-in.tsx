@@ -65,7 +65,7 @@ const LogInPage = () => {
 						<GoogleAuthButton isLogin />
 						<div>
 							Don&apos;t have an account?{' '}
-							<Link to={ROUTES.SIGN_UP}>Sign Up</Link>
+							<Link to={ROUTES.SIGN_UP} className='text-primary'>Sign Up</Link>
 						</div>
 					</form>
 				</Form>

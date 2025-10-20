@@ -1,22 +1,30 @@
 import { getOne } from '@/api/users';
 import { auth } from '@/config/firebase';
-import router from '@/config/router';
 import { ROUTES } from '@/constants/routes';
-import { parseFetchUser, type User } from '@/types/User';
+import useAuthState, { type UserData } from '@/stores/authStore';
+import { parseFetchUser } from '@/types/User';
 import axios from 'axios';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 const useAuth = ():
-	| { user: null; authLoading: true }
-	| { user: User | null; authLoading: false } => {
-	const [user, setUser] = useState<User | null>(null);
+	| { userData: null; isAuthenticated: boolean; authLoading: true }
+	| {
+			userData: UserData | null;
+			isAuthenticated: boolean;
+			authLoading: false;
+	  } => {
+	const { userData, isAuthenticated, setUserData, setAuthenticated, logOut } =
+		useAuthState();
 	const [authLoading, setAuthLoading] = useState(false);
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		setAuthLoading(true);
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			if (currentUser) {
+				setAuthenticated(true);
 				try {
 					const { data } = await getOne(currentUser.uid);
 
@@ -24,34 +32,37 @@ const useAuth = ():
 
 					const user = parseFetchUser(userData);
 
-					setUser(user);
+					setUserData({
+						user,
+						emailVerified: currentUser.emailVerified,
+					});
 				} catch (err) {
 					if (
 						axios.isAxiosError(err) &&
 						err.status &&
 						err.status === 404
 					) {
-						console.log(err);
-						router.navigate(ROUTES.SIGN_UP_GOOGLE_FINISH);
+						navigate(ROUTES.SIGN_UP_FINISH);
 					}
 				}
 			} else {
-				setUser(null);
+				logOut();
 			}
 			setAuthLoading(false);
 		});
 
 		// Cleanup subscription on unmount
 		return () => unsubscribe();
-	}, []);
+	}, [logOut, setUserData, navigate]);
 
 	if (authLoading)
 		return {
-			user: null,
+			userData: null,
+			isAuthenticated,
 			authLoading,
 		};
 
-	return { user, authLoading };
+	return { userData, isAuthenticated, authLoading };
 };
 
 export default useAuth;

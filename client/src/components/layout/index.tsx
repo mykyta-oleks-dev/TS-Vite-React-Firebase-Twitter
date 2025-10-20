@@ -1,0 +1,22 @@
+import { Outlet } from 'react-router';
+import Header from './header';
+import useAuth from '@/hooks/useAuth';
+import PageLoader from '../page-loader';
+
+const Layout = () => {
+	const { userData: authState, authLoading } = useAuth();
+	const user = authState?.user;
+
+	if (authLoading) return <PageLoader />;
+
+	return (
+		<div className="min-h-screen flex flex-col">
+			<Header user={user} />
+			<main className="flex-1 px-5">
+				<Outlet />
+			</main>
+		</div>
+	);
+};
+
+export default Layout;

@@ -2,6 +2,7 @@ import AvatarBig from '@/components/avatar-big';
 import DatePicker from '@/components/datepicker';
 import FormFieldGroup from '@/components/form-field';
 import Link from '@/components/link';
+import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
@@ -10,18 +11,26 @@ import { Spinner } from '@/components/ui/spinner';
 import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 import { handleSignUpFinish } from '@/handlers/auth';
+import useAuth from '@/hooks/useAuth';
 import { signUpFinishSchema, type signUpFinishData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Navigate } from 'react-router';
 
 const FinishSignUpPage = () => {
+	const {isAuthenticated, authLoading} = useAuth();
+
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
 	const form = useForm<signUpFinishData>({
 		resolver: zodResolver(signUpFinishSchema),
 		defaultValues: {},
 	});
+
+	if (authLoading) return <PageLoader />
+
+	if (!isAuthenticated) return <Navigate to={ROUTES.LOG_IN} />;
 
 	return (
 		<div className="w-full min-h-screen p-5 flex justify-center items-center">
@@ -149,7 +158,9 @@ const FinishSignUpPage = () => {
 						<hr />
 						<div>
 							Already have an account?{' '}
-							<Link to={ROUTES.LOG_IN}>Log In</Link>
+							<Link to={ROUTES.LOG_IN} className="text-primary">
+								Log In
+							</Link>
 						</div>
 					</form>
 				</Form>

@@ -30,7 +30,7 @@ const SignUpPage = () => {
 
 	return (
 		<div className="w-full min-h-screen p-5 flex justify-center items-center">
-			<div className="p-5 min-w-2xl border border-primary rounded-xl">
+			<div className="p-5 md:min-w-2xl border border-primary rounded-xl">
 				<PageTitle title="Sign Up" />
 				<Form {...form}>
 					<form
@@ -149,7 +149,7 @@ const SignUpPage = () => {
 							)}
 						/>
 
-						<div className="flex gap-3">
+						<div className="flex gap-3 flex-col md:flex-row">
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
@@ -214,7 +214,7 @@ const SignUpPage = () => {
 						<GoogleAuthButton />
 						<div>
 							Already have an account?{' '}
-							<Link to={ROUTES.LOG_IN}>Log In</Link>
+							<Link to={ROUTES.LOG_IN} className='text-primary'>Log In</Link>
 						</div>
 					</form>
 				</Form>

@@ -6,5 +6,5 @@ export const ROUTES = {
 	ROOT,
 	LOG_IN,
 	SIGN_UP,
-	SIGN_UP_GOOGLE_FINISH: `${SIGN_UP}/finish`,
+	SIGN_UP_FINISH: `${SIGN_UP}/finish`,
 } as const;

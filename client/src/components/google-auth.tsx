@@ -1,5 +1,5 @@
 import { handleGoogleAuth } from '@/handlers/auth';
-import { Button } from './ui/button';
+import { Button } from './ui/button/button';
 import { FaGoogle } from 'react-icons/fa';
 
 const GoogleAuthButton = ({ isLogin }: { isLogin?: boolean }) => {
