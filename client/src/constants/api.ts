@@ -1,4 +1,5 @@
 const USERS = '/users';
+const POSTS = '/posts';
 
 export const API_ENDPOINTS = {
 	USERS: {
@@ -9,6 +10,9 @@ export const API_ENDPOINTS = {
 		RESEND_VERIFICATION: `${USERS}/resend-verification`,
 		CHANGE_PASSWORD: `${USERS}/change-password`,
 		RESET_PASSWORD: `${USERS}/reset-password`,
+	},
+	POSTS: {
+		ROOT: POSTS,
 	},
 } as const;
 

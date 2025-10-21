@@ -22,3 +22,7 @@ export interface OneUser extends DefaultBody {
 export interface ManyUsers extends DefaultBody {
 	users: UserApi[];
 }
+
+export interface CreatePost extends DefaultBody {
+	postId: string;
+}

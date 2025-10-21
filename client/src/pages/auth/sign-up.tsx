@@ -4,13 +4,13 @@ import FormFieldGroup from '@/components/form-field';
 import GoogleAuthButton from '@/components/google-auth';
 import Link from '@/components/link';
 import PageTitle from '@/components/page-title';
+import SubmitButton from '@/components/submit-button';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/spinner';
-import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
-import { ACCEPTED_IMAGE_TYPES } from '@/constants/validation/common';
 import { ROUTES } from '@/constants/routes';
+import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
+import { ACCEPTED_IMAGE_TYPES } from '@/constants/validation/common';
 import { handleSignUp } from '@/handlers/users';
 import { signUpSchema, type signUpData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,11 +49,11 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name={AUTH_FORM_FIELD.AVATAR.NAME}
-								label={AUTH_FORM_FIELD.AVATAR.LABEL}
+								name={AUTH_FORM_FIELDS.AVATAR.NAME}
+								label={AUTH_FORM_FIELDS.AVATAR.LABEL}
 								render={(field) => (
 									<Input
-										type={AUTH_FORM_FIELD.AVATAR.TYPE}
+										type={AUTH_FORM_FIELDS.AVATAR.TYPE}
 										accept={[...ACCEPTED_IMAGE_TYPES].join(
 											','
 										)}
@@ -83,12 +83,12 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name={AUTH_FORM_FIELD.FIRST_NAME.NAME}
-								label={AUTH_FORM_FIELD.FIRST_NAME.LABEL}
+								name={AUTH_FORM_FIELDS.FIRST_NAME.NAME}
+								label={AUTH_FORM_FIELDS.FIRST_NAME.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											AUTH_FORM_FIELD.FIRST_NAME
+											AUTH_FORM_FIELDS.FIRST_NAME
 												.PLACEHOLDER
 										}
 										{...field}
@@ -105,12 +105,12 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name={AUTH_FORM_FIELD.LAST_NAME.NAME}
-								label={AUTH_FORM_FIELD.LAST_NAME.LABEL}
+								name={AUTH_FORM_FIELDS.LAST_NAME.NAME}
+								label={AUTH_FORM_FIELDS.LAST_NAME.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											AUTH_FORM_FIELD.LAST_NAME
+											AUTH_FORM_FIELDS.LAST_NAME
 												.PLACEHOLDER
 										}
 										{...field}
@@ -127,8 +127,8 @@ const SignUpPage = () => {
 
 						<FormFieldGroup
 							control={form.control}
-							name={AUTH_FORM_FIELD.BIRTHDAY.NAME}
-							label={AUTH_FORM_FIELD.BIRTHDAY.LABEL}
+							name={AUTH_FORM_FIELDS.BIRTHDAY.NAME}
+							label={AUTH_FORM_FIELDS.BIRTHDAY.LABEL}
 							render={(field) => (
 								<DatePicker
 									className="flex-1"
@@ -141,12 +141,12 @@ const SignUpPage = () => {
 
 						<FormFieldGroup
 							control={form.control}
-							name={AUTH_FORM_FIELD.EMAIL.NAME}
-							label={AUTH_FORM_FIELD.EMAIL.LABEL}
+							name={AUTH_FORM_FIELDS.EMAIL.NAME}
+							label={AUTH_FORM_FIELDS.EMAIL.LABEL}
 							render={(field) => (
 								<Input
 									placeholder={
-										AUTH_FORM_FIELD.EMAIL.PLACEHOLDER
+										AUTH_FORM_FIELDS.EMAIL.PLACEHOLDER
 									}
 									{...field}
 									value={
@@ -163,15 +163,16 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name={AUTH_FORM_FIELD.PASSWORD.NAME}
-								label={AUTH_FORM_FIELD.PASSWORD.LABEL}
+								name={AUTH_FORM_FIELDS.PASSWORD.NAME}
+								label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
+											AUTH_FORM_FIELDS.PASSWORD
+												.PLACEHOLDER
 										}
 										{...field}
-										type={AUTH_FORM_FIELD.PASSWORD.TYPE}
+										type={AUTH_FORM_FIELDS.PASSWORD.TYPE}
 										value={
 											field.value instanceof File ||
 											field.value instanceof Date
@@ -184,15 +185,16 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name={AUTH_FORM_FIELD.CONFIRM_PASSWORD.NAME}
-								label={AUTH_FORM_FIELD.CONFIRM_PASSWORD.LABEL}
+								name={AUTH_FORM_FIELDS.CONFIRM_PASSWORD.NAME}
+								label={AUTH_FORM_FIELDS.CONFIRM_PASSWORD.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
+											AUTH_FORM_FIELDS.PASSWORD
+												.PLACEHOLDER
 										}
 										{...field}
-										type={AUTH_FORM_FIELD.PASSWORD.TYPE}
+										type={AUTH_FORM_FIELDS.PASSWORD.TYPE}
 										value={
 											field.value instanceof File ||
 											field.value instanceof Date
@@ -204,14 +206,12 @@ const SignUpPage = () => {
 							/>
 						</div>
 						<div className="flex gap-3">
-							<Button
-								type="submit"
+							<SubmitButton
 								className="flex-1"
-								disabled={form.formState.isSubmitting}
+								isSubmitting={form.formState.isSubmitting}
 							>
-								Sign Up{' '}
-								{form.formState.isSubmitting && <Spinner />}
-							</Button>
+								Sign Up
+							</SubmitButton>
 							<Button
 								type="reset"
 								variant="outline"

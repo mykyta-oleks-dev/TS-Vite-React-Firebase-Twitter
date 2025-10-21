@@ -1,12 +1,11 @@
 import FormFieldGroup from '@/components/form-field';
 import Link from '@/components/link';
 import PageTitle from '@/components/page-title';
-import { Button } from '@/components/ui/button';
+import SubmitButton from '@/components/submit-button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/spinner';
 import { ROUTER_KEYS } from '@/constants/routes';
-import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
+import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
 import { handleResetPassword } from '@/handlers/users';
 import { resetPasswordSchema, type resetPasswordData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,20 +30,23 @@ const ResetPasswordPage = () => {
 					>
 						<FormFieldGroup
 							control={form.control}
-							name={AUTH_FORM_FIELD.EMAIL.NAME}
-							label={AUTH_FORM_FIELD.EMAIL.LABEL}
+							name={AUTH_FORM_FIELDS.EMAIL.NAME}
+							label={AUTH_FORM_FIELDS.EMAIL.LABEL}
 							render={(field) => (
-								<Input placeholder={AUTH_FORM_FIELD.EMAIL.PLACEHOLDER} {...field} />
+								<Input
+									placeholder={
+										AUTH_FORM_FIELDS.EMAIL.PLACEHOLDER
+									}
+									{...field}
+								/>
 							)}
 						/>
-						<Button
-							type="submit"
+						<SubmitButton
 							className="flex-1"
-							disabled={form.formState.isSubmitting}
+							isSubmitting={form.formState.isSubmitting}
 						>
 							Submit
-							{form.formState.isSubmitting && <Spinner />}
-						</Button>
+						</SubmitButton>
 						<hr />
 						<div>
 							<Link

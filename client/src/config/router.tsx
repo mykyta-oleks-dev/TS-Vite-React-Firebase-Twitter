@@ -33,13 +33,15 @@ const router = createBrowserRouter([
 			},
 			{
 				path: ROUTER_KEYS.POSTS,
-				element: (
-					<VerifiedGuard>
-						<Outlet />
-					</VerifiedGuard>
-				),
 				children: [
-					{ path: ROUTER_KEYS.CREATE, element: <CreatePostPage /> },
+					{
+						path: ROUTER_KEYS.CREATE,
+						element: (
+							<VerifiedGuard>
+								<CreatePostPage />
+							</VerifiedGuard>
+						),
+					},
 				],
 			},
 		],

@@ -2,12 +2,12 @@ import FormFieldGroup from '@/components/form-field';
 import GoogleAuthButton from '@/components/google-auth';
 import Link from '@/components/link';
 import PageTitle from '@/components/page-title';
+import SubmitButton from '@/components/submit-button';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
-import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
+import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
 import { handleLogIn } from '@/handlers/users';
 import { logInSchema, type logInData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,21 +33,28 @@ const LogInPage = () => {
 					>
 						<FormFieldGroup
 							control={form.control}
-							name={AUTH_FORM_FIELD.EMAIL.NAME}
-							label={AUTH_FORM_FIELD.EMAIL.LABEL}
+							name={AUTH_FORM_FIELDS.EMAIL.NAME}
+							label={AUTH_FORM_FIELDS.EMAIL.LABEL}
 							render={(field) => (
-								<Input placeholder={AUTH_FORM_FIELD.EMAIL.PLACEHOLDER} {...field} />
+								<Input
+									placeholder={
+										AUTH_FORM_FIELDS.EMAIL.PLACEHOLDER
+									}
+									{...field}
+								/>
 							)}
 						/>
 						<FormFieldGroup
 							control={form.control}
-							name={AUTH_FORM_FIELD.PASSWORD.NAME}
-							label={AUTH_FORM_FIELD.PASSWORD.LABEL}
+							name={AUTH_FORM_FIELDS.PASSWORD.NAME}
+							label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
 							render={(field) => (
 								<Input
-									placeholder={AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER}
+									placeholder={
+										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
+									}
 									{...field}
-									type={AUTH_FORM_FIELD.PASSWORD.TYPE}
+									type={AUTH_FORM_FIELDS.PASSWORD.TYPE}
 								/>
 							)}
 						/>
@@ -58,14 +65,12 @@ const LogInPage = () => {
 							Forgot the password?
 						</Link>
 						<div className="flex gap-5">
-							<Button
-								type="submit"
+							<SubmitButton
 								className="flex-1"
-								disabled={form.formState.isSubmitting}
+								isSubmitting={form.formState.isSubmitting}
 							>
 								Log In
-								{form.formState.isSubmitting && <Spinner />}
-							</Button>
+							</SubmitButton>
 							<Button
 								type="reset"
 								variant="outline"

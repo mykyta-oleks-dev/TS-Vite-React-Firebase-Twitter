@@ -28,12 +28,13 @@ import {
 	signOut,
 } from 'firebase/auth';
 import { toast } from 'sonner';
-import { deleteAvatar, uploadAvatar } from '../firebase/storage';
+import { deleteFile, uploadFile } from '../firebase/storage';
 import type { User } from '@/types/User';
+import { FOLDERS } from '@/constants/storage';
 
 export const handleSignUp = async (values: signUpData) => {
 	try {
-		const avatar = await uploadAvatar(values.avatar);
+		const avatar = await uploadFile(values.avatar, FOLDERS.AVATARS);
 
 		const { data } = await signUp(values, avatar);
 
@@ -46,7 +47,7 @@ export const handleSignUp = async (values: signUpData) => {
 
 export const handleSignUpFinish = async (values: signUpFinishData) => {
 	try {
-		const avatar = await uploadAvatar(values.avatar);
+		const avatar = await uploadFile(values.avatar, FOLDERS.AVATARS);
 
 		const { data } = await signUpFinish(values, avatar);
 
@@ -74,10 +75,12 @@ export const handleLogIn = async (values: logInData) => {
 
 export const handleGoogleAuth = async () => {
 	try {
-		await signInWithPopup(auth, googleAuthProvider).then(async (userCredential) => {
-			console.log(await userCredential.user.getIdToken());
-			router.navigate(ROUTES.ROOT);
-		});
+		await signInWithPopup(auth, googleAuthProvider).then(
+			async (userCredential) => {
+				console.log(await userCredential.user.getIdToken());
+				router.navigate(ROUTES.ROOT);
+			}
+		);
 	} catch (err) {
 		handleError(err, true);
 	}
@@ -127,13 +130,13 @@ export const handleUpdateUser = async (
 ) => {
 	try {
 		const avatar = values.avatar
-			? await uploadAvatar(values.avatar)
+			? await uploadFile(values.avatar, FOLDERS.AVATARS)
 			: user.avatar;
 		await updateUser(values, avatar);
-		if (values.avatar) await deleteAvatar(user.avatar);
+		if (values.avatar) await deleteFile(user.avatar);
 
 		callback?.(values, avatar);
-		
+
 		router.navigate(ROUTES.PROFILE);
 	} catch (err) {
 		handleError(err, true);
@@ -152,18 +155,21 @@ export const handleResetPassword = async (values: resetPasswordData) => {
 	}
 };
 
-export const handleDeleteAccount = async (avatar: string, callback?: () => void) => {
+export const handleDeleteAccount = async (
+	avatar: string,
+	callback?: () => void
+) => {
 	try {
 		await deleteUser();
-		await deleteAvatar(avatar);
+		await deleteFile(avatar);
 		await signOut(auth);
 
 		callback?.();
 
 		toast.success('Your account was successfuly deleted');
-		
+
 		router.navigate(ROUTES.ROOT);
 	} catch (err) {
 		handleError(err, true);
 	}
-}
+};

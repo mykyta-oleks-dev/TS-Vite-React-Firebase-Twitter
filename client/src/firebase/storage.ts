@@ -1,21 +1,25 @@
 import { storage } from '@/config/firebase';
-import { FOLDERS } from '@/constants/storage';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+	deleteObject,
+	getDownloadURL,
+	ref,
+	uploadBytes,
+} from 'firebase/storage';
 
-export const uploadAvatar = async (avatar: File) => {
-	const imageName = `${Date.now()}-${avatar.name}`;
-	const imagePath = `${FOLDERS.AVATARS}/${imageName}`;
+export const uploadFile = async (file: File, folder: string) => {
+	const fileName = `${Date.now()}-${file.name}`;
+	const filePath = `${folder}/${fileName}`;
 
-	const avatarRef = ref(storage, imagePath);
+	const fileRef = ref(storage, filePath);
 
-	const result = await uploadBytes(avatarRef, avatar);
-	const imageUrl = await getDownloadURL(result.ref);
+	const result = await uploadBytes(fileRef, file);
+	const fileUrl = await getDownloadURL(result.ref);
 
-	return imageUrl;
+	return fileUrl;
 };
 
-export const deleteAvatar = async (avatar: string) => {
-	const avatarRef = ref(storage, avatar);
+export const deleteFile = async (file: string) => {
+	const fileRef = ref(storage, file);
 
-	await deleteObject(avatarRef);
-}
+	await deleteObject(fileRef);
+};

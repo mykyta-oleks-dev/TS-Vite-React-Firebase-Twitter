@@ -27,7 +27,7 @@ export const AUTH_VALIDATION = {
 	},
 } as const;
 
-export const AUTH_FORM_FIELD = {
+export const AUTH_FORM_FIELDS = {
 	AVATAR: {
 		TYPE: 'file',
 		NAME: 'avatar',

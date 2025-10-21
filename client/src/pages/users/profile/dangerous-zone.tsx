@@ -1,4 +1,5 @@
 import FormFieldGroup from '@/components/form-field';
+import SubmitButton from '@/components/submit-button';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -13,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
+import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
 import { handleChangePassword, handleDeleteAccount } from '@/handlers/users';
 import { changePasswordSchema, type changePasswordData } from '@/schemas/auth';
 import useUser from '@/stores/authStore';
@@ -49,12 +50,12 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<FormFieldGroup
 							control={form.control}
 							name="oldPassword"
-							label={AUTH_FORM_FIELD.OLD_PASSWORD.LABEL}
+							label={AUTH_FORM_FIELDS.OLD_PASSWORD.LABEL}
 							render={(field) => (
 								<Input
 									{...field}
 									placeholder={
-										AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
+										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
 									}
 									type="password"
 								/>
@@ -63,12 +64,12 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<FormFieldGroup
 							control={form.control}
 							name="password"
-							label={AUTH_FORM_FIELD.PASSWORD.LABEL}
+							label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
 							render={(field) => (
 								<Input
 									{...field}
 									placeholder={
-										AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
+										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
 									}
 									type="password"
 								/>
@@ -77,25 +78,24 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<FormFieldGroup
 							control={form.control}
 							name="confirmPassword"
-							label={AUTH_FORM_FIELD.CONFIRM_PASSWORD.LABEL}
+							label={AUTH_FORM_FIELDS.CONFIRM_PASSWORD.LABEL}
 							render={(field) => (
 								<Input
 									{...field}
 									placeholder={
-										AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
+										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
 									}
 									type="password"
 								/>
 							)}
 						/>
-						<Button
-							type="submit"
+						<SubmitButton
 							variant="destructive"
 							className="md:w-max"
-							disabled={form.formState.isSubmitting}
+							isSubmitting={form.formState.isSubmitting}
 						>
 							Change Password
-						</Button>
+						</SubmitButton>
 					</form>
 				</Form>
 			</div>
