@@ -1,14 +1,14 @@
 import Layout from '@/components/layout';
 import { ROUTER_KEYS } from '@/constants/routes';
-import EditProfilePage from '@/pages/edit-profile';
+import EditProfilePage from '@/pages/users/edit-profile';
 import AuthenticatedGuard from '@/pages/guard/authed';
 import UnauthenticatedGuard from '@/pages/guard/unauthed-root';
 import HomePage from '@/pages/home';
-import LogInPage from '@/pages/log-in';
-import ProfilePage from '@/pages/profile';
-import ResetPasswordPage from '@/pages/reset-password';
-import SignUpPage from '@/pages/sign-up';
-import FinishSignUpPage from '@/pages/sign-up-finish';
+import LogInPage from '@/pages/auth/log-in';
+import ProfilePage from '@/pages/users/profile';
+import ResetPasswordPage from '@/pages/auth/reset-password';
+import SignUpPage from '@/pages/auth/sign-up';
+import FinishSignUpPage from '@/pages/auth/sign-up-finish';
 import { createBrowserRouter, Outlet } from 'react-router';
 
 const router = createBrowserRouter([
