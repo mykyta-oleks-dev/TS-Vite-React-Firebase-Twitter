@@ -7,8 +7,6 @@ import { Navigate } from 'react-router';
 const UnauthenticatedGuard = ({ children }: PropsWithChildren) => {
 	const { isAuthenticated, authLoading } = useAuth();
 
-	console.log({ isAuthenticated, authLoading });
-
 	if (authLoading) return <PageLoader />;
 
 	if (!isAuthenticated) return children;

@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express, { RequestHandler } from 'express';
 import { errorHandler, notFoundHandler } from './middlewares/ErrorHandling';
-import { usersRoutes } from './modules';
+import { postsRoutes, usersRoutes } from './modules';
 
 // Initialize Firebase Admin SDK
 
@@ -19,6 +19,7 @@ const helloHandler: RequestHandler = (_req, res) => {
 
 app.get('/', helloHandler);
 app.use('/users', usersRoutes);
+app.use('/posts', postsRoutes);
 
 // Unknown routes handling
 app.use(notFoundHandler);

@@ -43,6 +43,7 @@ const useAuth = ():
 						user,
 						emailVerified: currentUser.emailVerified,
 					});
+					setLoading(false);
 				} catch (err) {
 					if (
 						axios.isAxiosError(err) &&
@@ -50,9 +51,8 @@ const useAuth = ():
 						err.status === 404
 					) {
 						navigate(ROUTES.SIGN_UP_FINISH);
+						setLoading(false);
 					}
-				} finally {
-					setLoading(false);
 				}
 			} else {
 				logOut();

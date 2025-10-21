@@ -74,7 +74,8 @@ export const handleLogIn = async (values: logInData) => {
 
 export const handleGoogleAuth = async () => {
 	try {
-		await signInWithPopup(auth, googleAuthProvider).then(() => {
+		await signInWithPopup(auth, googleAuthProvider).then(async (userCredential) => {
+			console.log(await userCredential.user.getIdToken());
 			router.navigate(ROUTES.ROOT);
 		});
 	} catch (err) {

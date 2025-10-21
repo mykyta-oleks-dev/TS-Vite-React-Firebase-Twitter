@@ -1,3 +1,4 @@
+import { urlRegex } from '../../../shared/constants/Errors';
 import {
 	assertIsNotErroneous,
 	isEmptyString,
@@ -6,7 +7,6 @@ import {
 import {
 	emailRegex,
 	PASSWORD_MIN_LENGTH,
-	urlRegex,
 	VALIDATION_ERRORS,
 } from '../constants/Errors';
 import {

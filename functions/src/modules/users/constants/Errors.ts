@@ -1,12 +1,8 @@
 export const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-export const urlRegex =
-	/^https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=,]*)$/;
-
 export const PASSWORD_MIN_LENGTH = 6;
 
 export const REQUEST_ERRORS = {
-	UNAUTH: 'You have to be authenticated to perform this action',
 	BADREQUEST_SIGNUP: 'Data provided for sign up is invalid',
 	BADREQUEST_UPDATE: 'Data provided for update is invalid',
 	BADREQUEST_RESETPSW: 'Passwords data provided for reset is invalid',
