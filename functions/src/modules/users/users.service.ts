@@ -24,6 +24,8 @@ import {
 	validateSignUpBody,
 	validateUserInfo,
 } from './utils/validate';
+import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation';
+import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors';
 
 class UsersService {
 	signUp = async (body: SignUpBody, redirectUrl?: string) => {
@@ -117,19 +119,30 @@ class UsersService {
 	};
 
 	getOne = async (uid?: string) => {
-		if (!uid) throw new BadRequestError('UID is not provided');
+		if (!uid) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOUID);
 
 		try {
 			await auth.getUser(uid);
 		} catch {
-			throw new BadRequestError('User by the UID is not found');
+			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
 		}
 
 		return usersRepository.getOne(uid);
 	};
 
-	getMany = async ({ page, limit }: { page?: number; limit?: number }) => {
-		return usersRepository.getMany(page, limit);
+	getMany = async (query: { page?: string; limit?: string }) => {
+		const errors = validateQuery(query);
+
+		if (isNotEmptyObj(errors)) {
+			throw new BadRequestError(SHARED_REQ_ERRORS.BADREQUEST_QUERY, errors);
+		}
+
+		const { page, limit } = query;
+
+		const pageParsed = page ? Number.parseInt(page) : undefined;
+		const limitParsed = limit ? Number.parseInt(limit) : undefined;
+
+		return usersRepository.getMany(pageParsed, limitParsed);
 	};
 
 	update = async (user: DecodedIdToken, body: UserInfoBody) => {

@@ -1,7 +1,7 @@
 import { db } from '../../config/firebase';
 import { NotFoundError } from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
-import { User, UserDB } from '../../shared/types/data/User';
+import { User, userConverter } from '../../shared/types/data/User';
 import { REQUEST_ERRORS } from './constants/Errors';
 import { SignUp, UserInfo } from './types/body';
 
@@ -45,14 +45,7 @@ class UsersRepository {
 	getOne = async (uid: string) => {
 		const docSnapshot = await UsersRepository._getUserSnapshot(uid);
 
-		const data = docSnapshot.data() as UserDB;
-
-		const user: User = {
-			...data,
-			birthday: data.birthday.toDate(),
-			createdAt: data.createdAt.toDate(),
-			updatedAt: data.updatedAt.toDate(),
-		};
+		const user = userConverter.fromFirestore(docSnapshot);
 
 		return { user };
 	};
@@ -65,17 +58,10 @@ class UsersRepository {
 			.get();
 
 		if (usersSnapshot.empty) {
-			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
+			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_MANY);
 		}
 
-		const data = usersSnapshot.docs.map((d) => d.data() as UserDB);
-
-		const users: User[] = data.map((d) => ({
-			...d,
-			birthday: d.birthday.toDate(),
-			createdAt: d.createdAt.toDate(),
-			updatedAt: d.updatedAt.toDate(),
-		}));
+		const users = usersSnapshot.docs.map((d) => userConverter.fromFirestore(d));
 
 		return { users };
 	};

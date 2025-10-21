@@ -47,7 +47,7 @@ class UsersController {
 	};
 
 	getMany: RequestHandler = async (
-		req: Request<{}, {}, {}, { page?: number; limit?: number }>,
+		req: Request<{}, {}, {}, { page?: string; limit?: string }>,
 		res
 	) => {
 		const query = req.query;

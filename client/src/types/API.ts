@@ -1,3 +1,4 @@
+import type { PostApi } from './Post';
 import type { UserApi } from './User';
 
 export interface DefaultBody {
@@ -25,4 +26,12 @@ export interface ManyUsers extends DefaultBody {
 
 export interface CreatePost extends DefaultBody {
 	postId: string;
+}
+
+export interface OnePost extends DefaultBody {
+	post: PostApi;
+}
+
+export interface ManyPosts extends DefaultBody {
+	posts: PostApi[];
 }

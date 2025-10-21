@@ -1,6 +1,6 @@
 import { Request, RequestHandler } from 'express';
 import { getUserOrThrowError } from '../../shared/utils/authentication';
-import { PostInfoBody } from './types/body';
+import { PostInfoBody, PostQuery } from './types/body';
 import postsService from './posts.service';
 
 class PostsController {
@@ -18,6 +18,25 @@ class PostsController {
 			message: 'Successfuly created a post!',
 			postId: id,
 		});
+	};
+
+	getOne: RequestHandler = async (req: Request<{ id?: string }>, res) => {
+		const { id } = req.params;
+
+		const { post } = await postsService.getOne(id);
+
+		res.status(200).json({ message: 'Post fetched successfuly!', post });
+	};
+
+	getMany: RequestHandler = async (
+		req: Request<{}, {}, {}, PostQuery>,
+		res
+	) => {
+		const query = req.query;
+
+		const { posts } = await postsService.getMany(query);
+
+		res.status(200).json({ message: 'Posts fetched succesfuly!', posts });
 	};
 }
 
