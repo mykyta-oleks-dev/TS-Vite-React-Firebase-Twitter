@@ -6,6 +6,7 @@ import UnauthenticatedGuard from '@/pages/guard/unauthed-root';
 import HomePage from '@/pages/home';
 import LogInPage from '@/pages/log-in';
 import ProfilePage from '@/pages/profile';
+import ResetPasswordPage from '@/pages/reset-password';
 import SignUpPage from '@/pages/sign-up';
 import FinishSignUpPage from '@/pages/sign-up-finish';
 import { createBrowserRouter, Outlet } from 'react-router';
@@ -35,6 +36,14 @@ const router = createBrowserRouter([
 		element: (
 			<UnauthenticatedGuard>
 				<LogInPage />
+			</UnauthenticatedGuard>
+		),
+	},
+	{
+		path: ROUTER_KEYS.RESET_PASSWORD,
+		element: (
+			<UnauthenticatedGuard>
+				<ResetPasswordPage />
 			</UnauthenticatedGuard>
 		),
 	},

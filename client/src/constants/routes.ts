@@ -2,8 +2,9 @@ export const ROUTER_KEYS = {
 	ROOT: '/',
 	LOG_IN: 'log-in',
 	SIGN_UP: 'sign-up',
+	RESET_PASSWORD: 'reset-password',
+	
 	EDIT: 'edit',
-
 	PROFILE: 'profile',
 	FINISH: 'finish',
 } as const;
@@ -13,6 +14,7 @@ export const ROUTES = {
 	LOG_IN: `/${ROUTER_KEYS.LOG_IN}`,
 	SIGN_UP: `/${ROUTER_KEYS.SIGN_UP}`,
 	SIGN_UP_FINISH: `/${ROUTER_KEYS.SIGN_UP}/${ROUTER_KEYS.FINISH}`,
+	RESET_PASSWORD: `/${ROUTER_KEYS.RESET_PASSWORD}`,
 
 	PROFILE: `/${ROUTER_KEYS.PROFILE}`,
 	PROFILE_EDIT: `/${ROUTER_KEYS.PROFILE}/${ROUTER_KEYS.EDIT}`,

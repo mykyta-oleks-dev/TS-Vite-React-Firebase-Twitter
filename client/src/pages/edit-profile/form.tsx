@@ -13,8 +13,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { handleUpdateUser } from '@/handlers/users';
+import useUser from '@/stores/authStore';
 
 const ProfileForm = ({ user }: { user: User }) => {
+	const updateUser = useUser((s) => s.updateUser);
+
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(
 		user.avatar
 	);
@@ -36,7 +39,13 @@ const ProfileForm = ({ user }: { user: User }) => {
 			<form
 				className="grid grid-cols-2 gap-3"
 				onSubmit={form.handleSubmit((data) =>
-					handleUpdateUser(user, data)
+					handleUpdateUser(user, data, (data, avatar) => {
+						updateUser({
+							...user,
+							...data,
+							avatar,
+						});
+					})
 				)}
 			>
 				<div className="col-span-2 lg:col-span-1 flex items-center gap-3">

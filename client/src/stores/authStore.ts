@@ -14,7 +14,8 @@ interface UserStore {
 	setUserData: (authState: UserData) => void;
 	setAuthenticated: (isAuthenticated: boolean) => void;
 	setLoading: (isLoading: boolean) => void;
-	logOut: () => void;
+	updateUser: (user: User) => void;
+	reset: () => void;
 }
 
 const useUser = create<UserStore>((set) => ({
@@ -25,7 +26,16 @@ const useUser = create<UserStore>((set) => ({
 	setUserData: (userData) => set({ userData }),
 	setAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
 	setLoading: (isLoading: boolean) => set({ isLoading }),
-	logOut: () => set({ userData: null, isAuthenticated: false }),
+	updateUser: (user) =>
+		set((prev) => ({
+			userData: prev.userData
+				? {
+						...prev.userData,
+						user,
+				  }
+				: prev.userData,
+		})),
+	reset: () => set({ userData: null, isAuthenticated: false }),
 }));
 
 export default useUser;

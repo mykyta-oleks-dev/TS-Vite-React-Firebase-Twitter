@@ -215,16 +215,16 @@ class UsersService {
 		});
 	};
 
-	resetPassword = async (user: DecodedIdToken, redirectUrl?: string) => {
-		const emailError = validateEmail(user.email);
+	resetPassword = async (email?: string, redirectUrl?: string) => {
+		const emailError = validateEmail(email);
 
-		if (!user.email || emailError) {
+		if (!email || emailError) {
 			throw new BadRequestError(
 				emailError ?? REQUEST_ERRORS.BADREQUEST_NOEMAIL
 			);
 		}
 
-		await sendResetPassword(user.email, redirectUrl);
+		await sendResetPassword(email, redirectUrl);
 	};
 }
 

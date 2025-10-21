@@ -112,3 +112,9 @@ export const editProfileSchema = userInfoSchema.extend(
 );
 
 export type editProfileData = z.infer<typeof editProfileSchema>;
+
+export const resetPasswordSchema = z.object({
+	email: z.email(VALIDATION.EMAIL.REQUIRED),
+})
+
+export type resetPasswordData = z.infer<typeof resetPasswordSchema>

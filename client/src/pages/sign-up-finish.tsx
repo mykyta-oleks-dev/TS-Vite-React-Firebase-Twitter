@@ -9,7 +9,7 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
-import { ROUTER_KEYS } from '@/constants/routes';
+import { ROUTES } from '@/constants/routes';
 import { handleSignUpFinish } from '@/handlers/users';
 import useAuth from '@/hooks/useAuth';
 import { signUpFinishSchema, type signUpFinishData } from '@/schemas/auth';
@@ -35,7 +35,7 @@ const FinishSignUpPage = () => {
 
 	if (authLoading) return <PageLoader />;
 
-	if (!isAuthenticated) return <Navigate to={ROUTER_KEYS.LOG_IN} />;
+	if (!isAuthenticated) return <Navigate to={ROUTES.LOG_IN} />;
 
 	return (
 		<div className="w-full min-h-screen p-5 flex justify-center items-center">
@@ -165,7 +165,7 @@ const FinishSignUpPage = () => {
 						<div>
 							Already have an account?{' '}
 							<Link
-								to={ROUTER_KEYS.LOG_IN}
+								to={ROUTES.LOG_IN}
 								className="text-primary"
 							>
 								Log In

@@ -1,6 +1,8 @@
 import {
 	changePassword,
+	deleteUser,
 	resendVerification,
+	resetPassword,
 	signUp,
 	signUpFinish,
 	updateUser,
@@ -13,6 +15,7 @@ import type {
 	changePasswordData,
 	editProfileData,
 	logInData,
+	resetPasswordData,
 	signUpData,
 	signUpFinishData,
 } from '@/schemas/auth';
@@ -116,15 +119,50 @@ export const handleChangePassword = async (
 	}
 };
 
-export const handleUpdateUser = async (user: User, values: editProfileData) => {
+export const handleUpdateUser = async (
+	user: User,
+	values: editProfileData,
+	callback?: (data: editProfileData, avatar: string) => void
+) => {
 	try {
 		const avatar = values.avatar
 			? await uploadAvatar(values.avatar)
 			: user.avatar;
 		await updateUser(values, avatar);
 		if (values.avatar) await deleteAvatar(user.avatar);
+
+		callback?.(values, avatar);
+		
 		router.navigate(ROUTES.PROFILE);
 	} catch (err) {
 		handleError(err, true);
 	}
 };
+
+export const handleResetPassword = async (values: resetPasswordData) => {
+	try {
+		await resetPassword(values).then(() =>
+			toast.success('The password reset link was sent at provided email.')
+		);
+
+		router.navigate(ROUTES.LOG_IN);
+	} catch (err) {
+		handleError(err, true);
+	}
+};
+
+export const handleDeleteAccount = async (avatar: string, callback?: () => void) => {
+	try {
+		await deleteUser();
+		await deleteAvatar(avatar);
+		await signOut(auth);
+
+		callback?.();
+
+		toast.success('Your account was successfuly deleted');
+		
+		router.navigate(ROUTES.ROOT);
+	} catch (err) {
+		handleError(err, true);
+	}
+}

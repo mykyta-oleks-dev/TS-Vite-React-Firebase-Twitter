@@ -2,6 +2,7 @@ import axiosInstance from '@/config/axios';
 import { API_ENDPOINTS } from '@/constants/api';
 import type {
 	editProfileData,
+	resetPasswordData,
 	signUpData,
 	signUpFinishData,
 } from '@/schemas/auth';
@@ -73,3 +74,11 @@ export const updateUser = async (values: editProfileData, avatar: string) =>
 		...values,
 		avatar,
 	});
+
+export const resetPassword = async (values: resetPasswordData) =>
+	await axiosInstance.post(API_ENDPOINTS.USERS.RESET_PASSWORD, {
+		...values,
+	});
+
+export const deleteUser = async () => 
+	await axiosInstance.delete(API_ENDPOINTS.USERS.ROOT)

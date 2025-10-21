@@ -109,11 +109,9 @@ class UsersController {
 	};
 
 	resetPassword: RequestHandler = async (req, res) => {
-		const user = getUserOrThrowError(req);
+		const { redirectUrl, email } = req.body as { redirectUrl?: string; email?: string };
 
-		const { redirectUrl } = req.body as { redirectUrl?: string };
-
-		await usersService.resetPassword(user, redirectUrl);
+		await usersService.resetPassword(email, redirectUrl);
 
 		res.status(HTTP.NO_CONTENT).send();
 	};

@@ -5,7 +5,8 @@ import PageTitle from '@/components/page-title';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ROUTER_KEYS } from '@/constants/routes';
+import { Spinner } from '@/components/ui/spinner';
+import { ROUTES } from '@/constants/routes';
 import { handleLogIn } from '@/handlers/users';
 import { logInSchema, type logInData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -49,9 +50,20 @@ const LogInPage = () => {
 								/>
 							)}
 						/>
+						<Link
+							to={ROUTES.RESET_PASSWORD}
+							className="text-primary"
+						>
+							Forgot the password?
+						</Link>
 						<div className="flex gap-5">
-							<Button type="submit" className="flex-1">
+							<Button
+								type="submit"
+								className="flex-1"
+								disabled={form.formState.isSubmitting}
+							>
 								Log In
+								{form.formState.isSubmitting && <Spinner />}
 							</Button>
 							<Button
 								type="reset"
@@ -65,10 +77,7 @@ const LogInPage = () => {
 						<GoogleAuthButton isLogin />
 						<div>
 							Don&apos;t have an account?{' '}
-							<Link
-								to={ROUTER_KEYS.SIGN_UP}
-								className="text-primary"
-							>
+							<Link to={ROUTES.SIGN_UP} className="text-primary">
 								Sign Up
 							</Link>
 						</div>

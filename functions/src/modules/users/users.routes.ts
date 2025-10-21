@@ -23,7 +23,6 @@ usersRoutes.post(
 );
 usersRoutes.post(
 	ROUTES.RESET_PASSWORD,
-	authenticate,
 	usersController.resetPassword
 );
 

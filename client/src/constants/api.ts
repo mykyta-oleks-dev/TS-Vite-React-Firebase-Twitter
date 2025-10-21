@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
 		GET_ONE: (uid: string) => `${USERS}/${uid}`,
 		RESEND_VERIFICATION: `${USERS}/resend-verification`,
 		CHANGE_PASSWORD: `${USERS}/change-password`,
+		RESET_PASSWORD: `${USERS}/reset-password`,
 	},
 } as const;
 

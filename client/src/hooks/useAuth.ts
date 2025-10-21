@@ -23,7 +23,7 @@ const useAuth = ():
 		setUserData,
 		setAuthenticated,
 		setLoading,
-		logOut,
+		reset: logOut,
 	} = useUser(useShallow((s) => s));
 	const navigate = useNavigate();
 

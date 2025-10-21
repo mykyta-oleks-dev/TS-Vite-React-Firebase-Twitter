@@ -5,7 +5,7 @@ import useUser from '@/stores/authStore';
 import { Navigate } from 'react-router';
 import ProfileData from './data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import PasswordChange from './password-change';
+import PasswordChange from './dangerous-zone';
 import { Button } from '@/components/ui/button';
 import Link from '@/components/link';
 
@@ -29,14 +29,14 @@ const ProfilePage = () => {
 			<Tabs defaultValue="data">
 				<TabsList className='mb-3'>
 					<TabsTrigger value="data">Profile data</TabsTrigger>
-					<TabsTrigger value="security">
-						Security information
+					<TabsTrigger value="dangerous">
+						Dangerous zone
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value="data">
 					<ProfileData user={user} emailVerified={emailVerified} />
 				</TabsContent>
-				<TabsContent value="security">
+				<TabsContent value="dangerous">
 					<PasswordChange user={user} />
 				</TabsContent>
 			</Tabs>
