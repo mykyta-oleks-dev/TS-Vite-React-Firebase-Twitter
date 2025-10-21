@@ -6,6 +6,7 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTER_KEYS } from '@/constants/routes';
+import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
 import { handleResetPassword } from '@/handlers/users';
 import { resetPasswordSchema, type resetPasswordData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,10 +31,10 @@ const ResetPasswordPage = () => {
 					>
 						<FormFieldGroup
 							control={form.control}
-							name="email"
-							label="Email"
+							name={AUTH_FORM_FIELD.EMAIL.NAME}
+							label={AUTH_FORM_FIELD.EMAIL.LABEL}
 							render={(field) => (
-								<Input placeholder="user@mail.com" {...field} />
+								<Input placeholder={AUTH_FORM_FIELD.EMAIL.PLACEHOLDER} {...field} />
 							)}
 						/>
 						<Button

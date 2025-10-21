@@ -7,6 +7,7 @@ import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import { ROUTES } from '@/constants/routes';
+import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
 import { handleLogIn } from '@/handlers/users';
 import { logInSchema, type logInData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,21 +33,21 @@ const LogInPage = () => {
 					>
 						<FormFieldGroup
 							control={form.control}
-							name="email"
-							label="Email"
+							name={AUTH_FORM_FIELD.EMAIL.NAME}
+							label={AUTH_FORM_FIELD.EMAIL.LABEL}
 							render={(field) => (
-								<Input placeholder="user@mail.com" {...field} />
+								<Input placeholder={AUTH_FORM_FIELD.EMAIL.PLACEHOLDER} {...field} />
 							)}
 						/>
 						<FormFieldGroup
 							control={form.control}
-							name="password"
-							label="Password"
+							name={AUTH_FORM_FIELD.PASSWORD.NAME}
+							label={AUTH_FORM_FIELD.PASSWORD.LABEL}
 							render={(field) => (
 								<Input
-									placeholder=""
+									placeholder={AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER}
 									{...field}
-									type="password"
+									type={AUTH_FORM_FIELD.PASSWORD.TYPE}
 								/>
 							)}
 						/>

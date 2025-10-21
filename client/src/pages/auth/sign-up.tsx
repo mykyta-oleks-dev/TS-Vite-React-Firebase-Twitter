@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
+import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
+import { ACCEPTED_IMAGE_TYPES } from '@/constants/validation/common';
 import { ROUTES } from '@/constants/routes';
 import { handleSignUp } from '@/handlers/users';
 import { signUpSchema, type signUpData } from '@/schemas/auth';
@@ -48,11 +49,11 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="avatar"
-								label={FORM_FIELD.AVATAR.LABEL}
+								name={AUTH_FORM_FIELD.AVATAR.NAME}
+								label={AUTH_FORM_FIELD.AVATAR.LABEL}
 								render={(field) => (
 									<Input
-										type="file"
+										type={AUTH_FORM_FIELD.AVATAR.TYPE}
 										accept={[...ACCEPTED_IMAGE_TYPES].join(
 											','
 										)}
@@ -82,12 +83,13 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="firstName"
-								label={FORM_FIELD.FIRST_NAME.LABEL}
+								name={AUTH_FORM_FIELD.FIRST_NAME.NAME}
+								label={AUTH_FORM_FIELD.FIRST_NAME.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											FORM_FIELD.FIRST_NAME.PLACEHOLDER
+											AUTH_FORM_FIELD.FIRST_NAME
+												.PLACEHOLDER
 										}
 										{...field}
 										value={
@@ -103,12 +105,13 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="lastName"
-								label={FORM_FIELD.LAST_NAME.LABEL}
+								name={AUTH_FORM_FIELD.LAST_NAME.NAME}
+								label={AUTH_FORM_FIELD.LAST_NAME.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											FORM_FIELD.LAST_NAME.PLACEHOLDER
+											AUTH_FORM_FIELD.LAST_NAME
+												.PLACEHOLDER
 										}
 										{...field}
 										value={
@@ -124,8 +127,8 @@ const SignUpPage = () => {
 
 						<FormFieldGroup
 							control={form.control}
-							name="birthday"
-							label={FORM_FIELD.BIRTHDAY.LABEL}
+							name={AUTH_FORM_FIELD.BIRTHDAY.NAME}
+							label={AUTH_FORM_FIELD.BIRTHDAY.LABEL}
 							render={(field) => (
 								<DatePicker
 									className="flex-1"
@@ -138,11 +141,13 @@ const SignUpPage = () => {
 
 						<FormFieldGroup
 							control={form.control}
-							name="email"
-							label={FORM_FIELD.EMAIL.LABEL}
+							name={AUTH_FORM_FIELD.EMAIL.NAME}
+							label={AUTH_FORM_FIELD.EMAIL.LABEL}
 							render={(field) => (
 								<Input
-									placeholder={FORM_FIELD.EMAIL.PLACEHOLDER}
+									placeholder={
+										AUTH_FORM_FIELD.EMAIL.PLACEHOLDER
+									}
 									{...field}
 									value={
 										field.value instanceof File ||
@@ -158,15 +163,15 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="password"
-								label={FORM_FIELD.PASSWORD.LABEL}
+								name={AUTH_FORM_FIELD.PASSWORD.NAME}
+								label={AUTH_FORM_FIELD.PASSWORD.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											FORM_FIELD.PASSWORD.PLACEHOLDER
+											AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
 										}
 										{...field}
-										type="password"
+										type={AUTH_FORM_FIELD.PASSWORD.TYPE}
 										value={
 											field.value instanceof File ||
 											field.value instanceof Date
@@ -179,15 +184,15 @@ const SignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="confirmPassword"
-								label={FORM_FIELD.CONFIRM_PASSWORD.LABEL}
+								name={AUTH_FORM_FIELD.CONFIRM_PASSWORD.NAME}
+								label={AUTH_FORM_FIELD.CONFIRM_PASSWORD.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											FORM_FIELD.PASSWORD.PLACEHOLDER
+											AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
 										}
 										{...field}
-										type="password"
+										type={AUTH_FORM_FIELD.PASSWORD.TYPE}
 										value={
 											field.value instanceof File ||
 											field.value instanceof Date
@@ -219,10 +224,7 @@ const SignUpPage = () => {
 						<GoogleAuthButton />
 						<div>
 							Already have an account?{' '}
-							<Link
-								to={ROUTES.LOG_IN}
-								className="text-primary"
-							>
+							<Link to={ROUTES.LOG_IN} className="text-primary">
 								Log In
 							</Link>
 						</div>

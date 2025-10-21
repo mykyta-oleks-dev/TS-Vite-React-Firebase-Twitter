@@ -1,4 +1,4 @@
-export const VALIDATION = {
+export const AUTH_VALIDATION = {
 	EMAIL: {
 		REQUIRED: 'A valid email is required',
 	},
@@ -21,55 +21,59 @@ export const VALIDATION = {
 	},
 	AVATAR: {
 		REQUIRED: 'Avatar is required',
-		WRONG_FORMAT: 'Only .jpg, .jpeg, .png and .webp formats are supported.',
 	},
 	BIRTHDAY: {
 		REQUIRED: 'Birthday date is required',
 	},
 } as const;
 
-export const ACCEPTED_IMAGE_TYPES = new Set([
-	'image/jpeg',
-	'image/jpg',
-	'image/png',
-	'image/webp',
-]);
-
-export const FORM_FIELD = {
+export const AUTH_FORM_FIELD = {
 	AVATAR: {
+		TYPE: 'file',
+		NAME: 'avatar',
 		LABEL: 'Avatar',
 	},
 	FIRST_NAME: {
+		NAME: 'firstName',
 		PLACEHOLDER: 'Alex',
 		LABEL: 'First name',
 	},
 	LAST_NAME: {
+		NAME: 'lastName',
 		PLACEHOLDER: 'Johns',
 		LABEL: 'Last name',
 	},
 	ABOUT: {
+		NAME: 'about',
 		PLACEHOLDER: 'Influencer, IT-specialist...',
 		LABEL: 'About you',
 	},
 	LOCATION: {
+		NAME: 'location',
 		PLACEHOLDER: 'New-York City',
 		LABEL: 'Your location',
 	},
 	BIRTHDAY: {
+		NAME: 'birthday',
 		LABEL: 'Birthday',
 	},
 	EMAIL: {
+		NAME: 'email',
 		PLACEHOLDER: 'user@mail.com',
 		LABEL: 'Email',
 	},
 	PASSWORD: {
+		NAME: 'password',
+		TYPE: 'password',
 		PLACEHOLDER: '●●●●●●',
 		LABEL: 'Password',
 	},
 	OLD_PASSWORD: {
+		NAME: 'oldPassword',
 		LABEL: 'Current password',
 	},
 	CONFIRM_PASSWORD: {
+		NAME: 'confirmPassword',
 		LABEL: 'Confirm Password',
 	},
 } as const;

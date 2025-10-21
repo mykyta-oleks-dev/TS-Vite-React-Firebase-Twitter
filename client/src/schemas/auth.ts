@@ -1,12 +1,13 @@
-import { ACCEPTED_IMAGE_TYPES, VALIDATION } from '@/constants/auth';
+import { AUTH_VALIDATION } from '@/constants/validation/auth';
+import { ACCEPTED_IMAGE_TYPES, VALIDATION_WRONG_FORMAT } from '@/constants/validation/common';
 import { z } from 'zod';
 
 export const userInfoSchema = z.object({
-	firstName: z.string(VALIDATION.FIRST_NAME.REQUIRED),
-	lastName: z.string(VALIDATION.LAST_NAME.REQUIRED),
+	firstName: z.string(AUTH_VALIDATION.FIRST_NAME.REQUIRED),
+	lastName: z.string(AUTH_VALIDATION.LAST_NAME.REQUIRED),
 	about: z.string().optional(),
 	location: z.string().optional(),
-	birthday: z.date(VALIDATION.BIRTHDAY.REQUIRED),
+	birthday: z.date(AUTH_VALIDATION.BIRTHDAY.REQUIRED),
 });
 
 export type userInfoData = z.infer<typeof userInfoSchema>;
@@ -14,10 +15,10 @@ export type userInfoData = z.infer<typeof userInfoSchema>;
 export const avatarRequiredSchema = z.object({
 	avatar: z
 		.instanceof(File)
-		.nonoptional(VALIDATION.AVATAR.REQUIRED)
+		.nonoptional(AUTH_VALIDATION.AVATAR.REQUIRED)
 		.refine(
 			(file) => ACCEPTED_IMAGE_TYPES.has(file.type),
-			VALIDATION.AVATAR.WRONG_FORMAT
+			VALIDATION_WRONG_FORMAT
 		),
 });
 
@@ -31,16 +32,19 @@ export const avatarOptionalSchema = z.object({
 			if (!file) return true;
 			if (ACCEPTED_IMAGE_TYPES.has(file.type)) return true;
 			return false;
-		}, VALIDATION.AVATAR.WRONG_FORMAT),
+		}, VALIDATION_WRONG_FORMAT),
 });
 
 export type avatarOptionalData = z.infer<typeof avatarOptionalSchema>;
 
 export const logInSchema = z.object({
-	email: z.email(VALIDATION.EMAIL.REQUIRED),
+	email: z.email(AUTH_VALIDATION.EMAIL.REQUIRED),
 	password: z
-		.string(VALIDATION.PASSWORD.REQUIRED)
-		.min(VALIDATION.PASSWORD.MIN.VALUE, VALIDATION.PASSWORD.MIN.MESSAGE),
+		.string(AUTH_VALIDATION.PASSWORD.REQUIRED)
+		.min(
+			AUTH_VALIDATION.PASSWORD.MIN.VALUE,
+			AUTH_VALIDATION.PASSWORD.MIN.MESSAGE
+		),
 });
 
 export type logInData = z.infer<typeof logInSchema>;
@@ -50,17 +54,17 @@ export const signUpSchema = logInSchema
 	.extend(avatarRequiredSchema.shape)
 	.extend({
 		confirmPassword: z
-			.string(VALIDATION.CONFIRM_PASSWORD.REQUIRED)
+			.string(AUTH_VALIDATION.CONFIRM_PASSWORD.REQUIRED)
 			.min(
-				VALIDATION.PASSWORD.MIN.VALUE,
-				VALIDATION.PASSWORD.MIN.MESSAGE
+				AUTH_VALIDATION.PASSWORD.MIN.VALUE,
+				AUTH_VALIDATION.PASSWORD.MIN.MESSAGE
 			),
 	})
 	.superRefine((val, ctx) => {
 		if (val.password !== val.confirmPassword) {
 			ctx.addIssue({
 				code: 'custom',
-				message: VALIDATION.CONFIRM_PASSWORD.DONT_MATCH,
+				message: AUTH_VALIDATION.CONFIRM_PASSWORD.DONT_MATCH,
 				path: ['confirmPassword'],
 			});
 		}
@@ -77,29 +81,29 @@ export type signUpFinishData = z.infer<typeof signUpFinishSchema>;
 export const changePasswordSchema = z
 	.object({
 		oldPassword: z
-			.string(VALIDATION.PASSWORD.REQUIRED)
+			.string(AUTH_VALIDATION.PASSWORD.REQUIRED)
 			.min(
-				VALIDATION.PASSWORD.MIN.VALUE,
-				VALIDATION.PASSWORD.MIN.MESSAGE
+				AUTH_VALIDATION.PASSWORD.MIN.VALUE,
+				AUTH_VALIDATION.PASSWORD.MIN.MESSAGE
 			),
 		password: z
-			.string(VALIDATION.PASSWORD.REQUIRED)
+			.string(AUTH_VALIDATION.PASSWORD.REQUIRED)
 			.min(
-				VALIDATION.PASSWORD.MIN.VALUE,
-				VALIDATION.PASSWORD.MIN.MESSAGE
+				AUTH_VALIDATION.PASSWORD.MIN.VALUE,
+				AUTH_VALIDATION.PASSWORD.MIN.MESSAGE
 			),
 		confirmPassword: z
-			.string(VALIDATION.CONFIRM_PASSWORD.REQUIRED)
+			.string(AUTH_VALIDATION.CONFIRM_PASSWORD.REQUIRED)
 			.min(
-				VALIDATION.PASSWORD.MIN.VALUE,
-				VALIDATION.PASSWORD.MIN.MESSAGE
+				AUTH_VALIDATION.PASSWORD.MIN.VALUE,
+				AUTH_VALIDATION.PASSWORD.MIN.MESSAGE
 			),
 	})
 	.superRefine((val, ctx) => {
 		if (val.password !== val.confirmPassword) {
 			ctx.addIssue({
 				code: 'custom',
-				message: VALIDATION.CONFIRM_PASSWORD.DONT_MATCH,
+				message: AUTH_VALIDATION.CONFIRM_PASSWORD.DONT_MATCH,
 				path: ['confirmPassword'],
 			});
 		}
@@ -114,7 +118,7 @@ export const editProfileSchema = userInfoSchema.extend(
 export type editProfileData = z.infer<typeof editProfileSchema>;
 
 export const resetPasswordSchema = z.object({
-	email: z.email(VALIDATION.EMAIL.REQUIRED),
-})
+	email: z.email(AUTH_VALIDATION.EMAIL.REQUIRED),
+});
 
-export type resetPasswordData = z.infer<typeof resetPasswordSchema>
+export type resetPasswordData = z.infer<typeof resetPasswordSchema>;

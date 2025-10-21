@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import type { User } from '@/types/User';
 import { Form } from '@/components/ui/form';
 import FormFieldGroup from '@/components/form-field';
-import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
+import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
+import { ACCEPTED_IMAGE_TYPES } from '@/constants/validation/common';
 import { Input } from '@/components/ui/input';
 import AvatarBig from '@/components/avatar-big';
 import { useState } from 'react';
@@ -53,11 +54,11 @@ const ProfileForm = ({ user }: { user: User }) => {
 					<FormFieldGroup
 						className="flex-1"
 						control={form.control}
-						name="avatar"
-						label={FORM_FIELD.AVATAR.LABEL}
+						name={AUTH_FORM_FIELD.AVATAR.NAME}
+						label={AUTH_FORM_FIELD.AVATAR.LABEL}
 						render={(field) => (
 							<Input
-								type="file"
+								type={AUTH_FORM_FIELD.AVATAR.TYPE}
 								accept={[...ACCEPTED_IMAGE_TYPES].join(',')}
 								onChange={(e) => {
 									const file = e.target.files?.[0];
@@ -84,8 +85,8 @@ const ProfileForm = ({ user }: { user: User }) => {
 				<FormFieldGroup
 					className="col-span-2 lg:col-span-1"
 					control={form.control}
-					name="birthday"
-					label={FORM_FIELD.BIRTHDAY.LABEL}
+					name={AUTH_FORM_FIELD.BIRTHDAY.NAME}
+					label={AUTH_FORM_FIELD.BIRTHDAY.LABEL}
 					render={(field) => (
 						<DatePicker
 							className="flex-1"
@@ -98,11 +99,11 @@ const ProfileForm = ({ user }: { user: User }) => {
 				<FormFieldGroup
 					className="col-span-2 md:col-span-1"
 					control={form.control}
-					name="firstName"
-					label={FORM_FIELD.FIRST_NAME.LABEL}
+					name={AUTH_FORM_FIELD.FIRST_NAME.NAME}
+					label={AUTH_FORM_FIELD.FIRST_NAME.LABEL}
 					render={(field) => (
 						<Input
-							placeholder={FORM_FIELD.FIRST_NAME.PLACEHOLDER}
+							placeholder={AUTH_FORM_FIELD.FIRST_NAME.PLACEHOLDER}
 							{...field}
 							value={
 								field.value instanceof File ||
@@ -117,11 +118,11 @@ const ProfileForm = ({ user }: { user: User }) => {
 				<FormFieldGroup
 					className="col-span-2 md:col-span-1"
 					control={form.control}
-					name="lastName"
-					label={FORM_FIELD.LAST_NAME.LABEL}
+					name={AUTH_FORM_FIELD.LAST_NAME.NAME}
+					label={AUTH_FORM_FIELD.LAST_NAME.LABEL}
 					render={(field) => (
 						<Input
-							placeholder={FORM_FIELD.LAST_NAME.PLACEHOLDER}
+							placeholder={AUTH_FORM_FIELD.LAST_NAME.PLACEHOLDER}
 							{...field}
 							value={
 								field.value instanceof File ||
@@ -136,11 +137,11 @@ const ProfileForm = ({ user }: { user: User }) => {
 				<FormFieldGroup
 					className="col-span-2"
 					control={form.control}
-					name="location"
-					label={FORM_FIELD.LOCATION.LABEL}
+					name={AUTH_FORM_FIELD.LOCATION.NAME}
+					label={AUTH_FORM_FIELD.LOCATION.LABEL}
 					render={(field) => (
 						<Input
-							placeholder={FORM_FIELD.LOCATION.PLACEHOLDER}
+							placeholder={AUTH_FORM_FIELD.LOCATION.PLACEHOLDER}
 							{...field}
 							value={
 								field.value instanceof File ||
@@ -155,12 +156,12 @@ const ProfileForm = ({ user }: { user: User }) => {
 				<FormFieldGroup
 					className="col-span-2"
 					control={form.control}
-					name="about"
-					label={FORM_FIELD.ABOUT.LABEL}
+					name={AUTH_FORM_FIELD.ABOUT.NAME}
+					label={AUTH_FORM_FIELD.ABOUT.LABEL}
 					render={(field) => (
 						<Textarea
 							{...field}
-							placeholder={FORM_FIELD.ABOUT.PLACEHOLDER}
+							placeholder={AUTH_FORM_FIELD.ABOUT.PLACEHOLDER}
 							value={
 								field.value instanceof File ||
 								field.value instanceof Date

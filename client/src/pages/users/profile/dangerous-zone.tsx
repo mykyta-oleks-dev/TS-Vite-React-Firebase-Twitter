@@ -13,7 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { FORM_FIELD } from '@/constants/auth';
+import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
 import { handleChangePassword, handleDeleteAccount } from '@/handlers/users';
 import { changePasswordSchema, type changePasswordData } from '@/schemas/auth';
 import useUser from '@/stores/authStore';
@@ -49,12 +49,12 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<FormFieldGroup
 							control={form.control}
 							name="oldPassword"
-							label={FORM_FIELD.OLD_PASSWORD.LABEL}
+							label={AUTH_FORM_FIELD.OLD_PASSWORD.LABEL}
 							render={(field) => (
 								<Input
 									{...field}
 									placeholder={
-										FORM_FIELD.PASSWORD.PLACEHOLDER
+										AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
 									}
 									type="password"
 								/>
@@ -63,12 +63,12 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<FormFieldGroup
 							control={form.control}
 							name="password"
-							label={FORM_FIELD.PASSWORD.LABEL}
+							label={AUTH_FORM_FIELD.PASSWORD.LABEL}
 							render={(field) => (
 								<Input
 									{...field}
 									placeholder={
-										FORM_FIELD.PASSWORD.PLACEHOLDER
+										AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
 									}
 									type="password"
 								/>
@@ -77,12 +77,12 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<FormFieldGroup
 							control={form.control}
 							name="confirmPassword"
-							label={FORM_FIELD.CONFIRM_PASSWORD.LABEL}
+							label={AUTH_FORM_FIELD.CONFIRM_PASSWORD.LABEL}
 							render={(field) => (
 								<Input
 									{...field}
 									placeholder={
-										FORM_FIELD.PASSWORD.PLACEHOLDER
+										AUTH_FORM_FIELD.PASSWORD.PLACEHOLDER
 									}
 									type="password"
 								/>
@@ -91,7 +91,7 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<Button
 							type="submit"
 							variant="destructive"
-							className='md:w-max'
+							className="md:w-max"
 							disabled={form.formState.isSubmitting}
 						>
 							Change Password
@@ -124,8 +124,10 @@ const PasswordChange = ({ user }: { user: User }) => {
 						<AlertDialogFooter>
 							<AlertDialogCancel>Cancel</AlertDialogCancel>
 							<AlertDialogAction
-								onClick={() => handleDeleteAccount(user.avatar, reset)}
-								variant='destructive'
+								onClick={() =>
+									handleDeleteAccount(user.avatar, reset)
+								}
+								variant="destructive"
 							>
 								Continue
 							</AlertDialogAction>

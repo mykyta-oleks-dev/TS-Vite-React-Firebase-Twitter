@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import { ACCEPTED_IMAGE_TYPES, FORM_FIELD } from '@/constants/auth';
+import { AUTH_FORM_FIELD } from '@/constants/validation/auth';
 import { ROUTES } from '@/constants/routes';
 import { handleSignUpFinish } from '@/handlers/users';
 import useAuth from '@/hooks/useAuth';
@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Navigate } from 'react-router';
+import { ACCEPTED_IMAGE_TYPES } from '@/constants/validation/common';
 
 const FinishSignUpPage = () => {
 	const { isAuthenticated, authLoading } = useAuth();
@@ -56,11 +57,11 @@ const FinishSignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="avatar"
-								label={FORM_FIELD.AVATAR.LABEL}
+								name={AUTH_FORM_FIELD.AVATAR.NAME}
+								label={AUTH_FORM_FIELD.AVATAR.LABEL}
 								render={(field) => (
 									<Input
-										type="file"
+										type={AUTH_FORM_FIELD.AVATAR.TYPE}
 										accept={[...ACCEPTED_IMAGE_TYPES].join(
 											','
 										)}
@@ -90,12 +91,13 @@ const FinishSignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="firstName"
-								label={FORM_FIELD.FIRST_NAME.LABEL}
+								name={AUTH_FORM_FIELD.FIRST_NAME.NAME}
+								label={AUTH_FORM_FIELD.FIRST_NAME.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											FORM_FIELD.FIRST_NAME.PLACEHOLDER
+											AUTH_FORM_FIELD.FIRST_NAME
+												.PLACEHOLDER
 										}
 										{...field}
 										value={
@@ -111,12 +113,13 @@ const FinishSignUpPage = () => {
 							<FormFieldGroup
 								className="flex-1"
 								control={form.control}
-								name="lastName"
-								label={FORM_FIELD.LAST_NAME.LABEL}
+								name={AUTH_FORM_FIELD.LAST_NAME.NAME}
+								label={AUTH_FORM_FIELD.LAST_NAME.LABEL}
 								render={(field) => (
 									<Input
 										placeholder={
-											FORM_FIELD.LAST_NAME.PLACEHOLDER
+											AUTH_FORM_FIELD.LAST_NAME
+												.PLACEHOLDER
 										}
 										{...field}
 										value={
@@ -132,8 +135,8 @@ const FinishSignUpPage = () => {
 
 						<FormFieldGroup
 							control={form.control}
-							name="birthday"
-							label={FORM_FIELD.BIRTHDAY.LABEL}
+							name={AUTH_FORM_FIELD.BIRTHDAY.NAME}
+							label={AUTH_FORM_FIELD.BIRTHDAY.LABEL}
 							render={(field) => (
 								<DatePicker
 									className="flex-1"
@@ -164,10 +167,7 @@ const FinishSignUpPage = () => {
 						<hr />
 						<div>
 							Already have an account?{' '}
-							<Link
-								to={ROUTES.LOG_IN}
-								className="text-primary"
-							>
+							<Link to={ROUTES.LOG_IN} className="text-primary">
 								Log In
 							</Link>
 						</div>
