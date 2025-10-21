@@ -1,0 +1,22 @@
+import type { APIObject, AppObject } from './common';
+
+interface PostPrimitives {
+	id: string;
+	title: string;
+	content: string;
+	photo?: string;
+
+	userId: string;
+	userName: string;
+}
+
+export interface PostApi extends PostPrimitives, APIObject {}
+
+export interface Post extends PostPrimitives, AppObject {}
+
+export const parseFetchPost = (postData: PostApi): Post => ({
+	...postData,
+
+	createdAt: new Date(postData.createdAt),
+	updatedAt: new Date(postData.updatedAt),
+});

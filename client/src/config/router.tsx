@@ -10,6 +10,8 @@ import ResetPasswordPage from '@/pages/auth/reset-password';
 import SignUpPage from '@/pages/auth/sign-up';
 import FinishSignUpPage from '@/pages/auth/sign-up-finish';
 import { createBrowserRouter, Outlet } from 'react-router';
+import CreatePostPage from '@/pages/posts/create';
+import VerifiedGuard from '@/pages/guard/verified';
 
 const router = createBrowserRouter([
 	{
@@ -27,6 +29,17 @@ const router = createBrowserRouter([
 				children: [
 					{ index: true, element: <ProfilePage /> },
 					{ path: ROUTER_KEYS.EDIT, element: <EditProfilePage /> },
+				],
+			},
+			{
+				path: ROUTER_KEYS.POSTS,
+				element: (
+					<VerifiedGuard>
+						<Outlet />
+					</VerifiedGuard>
+				),
+				children: [
+					{ path: ROUTER_KEYS.CREATE, element: <CreatePostPage /> },
 				],
 			},
 		],

@@ -1,3 +1,5 @@
+import type { APIObject, AppObject } from "./common";
+
 interface UserPrimitives {
 	id: string;
 	email: string;
@@ -8,15 +10,11 @@ interface UserPrimitives {
 	location?: string;
 }
 
-export interface UserApi extends UserPrimitives {
-	createdAt: string;
-	updatedAt: string;
+export interface UserApi extends UserPrimitives, APIObject {
 	birthday: string;
 }
 
-export interface User extends UserPrimitives {
-	createdAt: Date;
-	updatedAt: Date;
+export interface User extends UserPrimitives, AppObject {
 	birthday: Date;
 }
 
