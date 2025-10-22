@@ -18,6 +18,7 @@ export interface AuthBody extends DefaultBody {
 
 export interface OneUser extends DefaultBody {
 	user: UserApi;
+	isVerified: boolean;
 }
 
 export interface ManyUsers extends DefaultBody {

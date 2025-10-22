@@ -14,12 +14,13 @@ export const createPost = async (values: postData, photo: string | null) => {
 	return data;
 };
 
-export const getPosts = async (page = 1, limit = 10, userId?: string) => {
+export const getPosts = async (page = 1, limit = 10, search: string | null, userId?: string) => {
 	const res = await axiosInstance.get<ManyPosts>(API_ENDPOINTS.POSTS.ROOT, {
 		params: {
 			page,
 			limit,
 			userId: userId ?? null,
+			search: search ?? null,
 		},
 	});
 

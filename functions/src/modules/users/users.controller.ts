@@ -41,9 +41,9 @@ class UsersController {
 	getOne: RequestHandler = async (req: Request<{ uid?: string }>, res) => {
 		const { uid } = req.params;
 
-		const { user } = await usersService.getOne(uid);
+		const { user, isVerified } = await usersService.getOne(uid);
 
-		res.status(200).json({ message: 'User fetched successfuly!', user });
+		res.status(200).json({ message: 'User fetched successfuly!', user, isVerified });
 	};
 
 	getMany: RequestHandler = async (

@@ -14,6 +14,7 @@ import {
 	PaginationNext,
 	PaginationPrevious,
 } from './ui/pagination';
+import { MAX } from '@/constants/pagination';
 
 type PostsListPaginationProps = Readonly<{
 	searchParams: URLSearchParams;
@@ -25,7 +26,7 @@ type PostsListPaginationProps = Readonly<{
 const SearchParamsPagination = ({
 	searchParams,
 	page,
-	maxPage = 999,
+	maxPage = MAX,
 	neighbours = 2,
 }: PostsListPaginationProps) => {
 	const pages = Array.from(
@@ -37,17 +38,23 @@ const SearchParamsPagination = ({
 
 	const lastPage = pages.at(-1);
 
+	const isOnFirstPage = page <= 1;
+
+	const isOnLastPage = page >= maxPage;
+
 	return (
 		<Pagination>
 			<PaginationContent>
 				<PaginationItem>
 					<PaginationFirst
 						to={generatePageParamsString(searchParams, 1)}
+						aria-disabled={isOnFirstPage}
 					/>
 				</PaginationItem>
 				<PaginationItem>
 					<PaginationPrevious
 						to={generatePrevPageParamsString(searchParams, page)}
+						aria-disabled={isOnFirstPage}
 					/>
 				</PaginationItem>
 
@@ -81,11 +88,13 @@ const SearchParamsPagination = ({
 							page,
 							maxPage
 						)}
+						aria-disabled={isOnLastPage}
 					/>
 				</PaginationItem>
 				<PaginationItem>
 					<PaginationLast
 						to={generatePageParamsString(searchParams, maxPage)}
+						aria-disabled={isOnLastPage}
 					/>
 				</PaginationItem>
 			</PaginationContent>

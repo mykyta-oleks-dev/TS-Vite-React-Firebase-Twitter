@@ -36,6 +36,7 @@ class PostsRepository {
 			updatedAt: now,
 			userId: user.uid,
 			userName: user.displayName ?? user.email ?? user.uid,
+			userAvatar: user.photoURL ?? null,
 		};
 
 		await newPostRef.set(postData);

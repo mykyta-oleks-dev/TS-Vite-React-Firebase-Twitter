@@ -123,19 +123,25 @@ class UsersService {
 		if (!uid) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOUID);
 
 		try {
-			await auth.getUser(uid);
+			const user = await auth.getUser(uid);
+
+			return {
+				isVerified: user.emailVerified,
+				...(await usersRepository.getOne(uid)),
+			};
 		} catch {
 			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
 		}
-
-		return usersRepository.getOne(uid);
 	};
 
 	getMany = async (query: { page?: string; limit?: string }) => {
 		const errors = validateQuery(query);
 
 		if (isNotEmptyObj(errors)) {
-			throw new BadRequestError(SHARED_REQ_ERRORS.BADREQUEST_QUERY, errors);
+			throw new BadRequestError(
+				SHARED_REQ_ERRORS.BADREQUEST_QUERY,
+				errors
+			);
 		}
 
 		const { page, limit } = query;

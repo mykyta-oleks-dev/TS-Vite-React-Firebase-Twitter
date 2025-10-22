@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ForbiddenError, UnauthorizedError } from "./ErrorHandling";
+import { auth } from "../config/firebase";
 
 const isVerified = async (req: Request, _res: Response, next: NextFunction) => {
 	const user = req.user;
@@ -8,7 +9,9 @@ const isVerified = async (req: Request, _res: Response, next: NextFunction) => {
 		throw new UnauthorizedError('Unauthorized: No token provided')
 	}
 
-	if (!user.email_verified) {
+	const freshUser = await auth.getUser(user.uid);
+
+	if (!freshUser.emailVerified) {
 		throw new ForbiddenError('Forbidden: User has not verified their email');
 	}
 

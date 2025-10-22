@@ -8,6 +8,7 @@ interface PostPrimitives {
 
 	userId: string;
 	userName: string;
+	userAvatar?: string;
 }
 
 export interface PostApi extends PostPrimitives, APIObject {}

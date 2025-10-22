@@ -35,7 +35,11 @@ const useAuth = ():
 				try {
 					const { data } = await getOne(currentUser.uid);
 
-					const { user: userData } = data;
+					const { user: userData, isVerified } = data;
+
+					if (currentUser.emailVerified !== isVerified) {
+						currentUser.getIdToken(true);
+					}
 
 					const user = parseFetchUser(userData);
 

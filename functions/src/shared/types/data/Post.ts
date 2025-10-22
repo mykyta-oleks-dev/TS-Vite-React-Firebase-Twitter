@@ -8,6 +8,7 @@ export interface PostData {
 
 	userId: string;
 	userName: string;
+	userAvatar: string | null;
 }
 
 export interface PostDB extends PostData, DBObject {};
