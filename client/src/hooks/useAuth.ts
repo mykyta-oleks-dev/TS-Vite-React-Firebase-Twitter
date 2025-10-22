@@ -1,4 +1,4 @@
-import { getOne } from '@/api/users';
+import { getOneUser } from '@/api/users';
 import { auth } from '@/config/firebase';
 import { ROUTES } from '@/constants/routes';
 import useUser, { type UserData } from '@/stores/authStore';
@@ -33,7 +33,7 @@ const useAuth = ():
 			if (currentUser) {
 				setAuthenticated(true);
 				try {
-					const { data } = await getOne(currentUser.uid);
+					const { data } = await getOneUser(currentUser.uid);
 
 					const { user: userData, isVerified } = data;
 

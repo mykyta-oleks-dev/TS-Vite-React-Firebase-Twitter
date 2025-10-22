@@ -137,7 +137,7 @@ export const handleUpdateUser = async (
 
 		callback?.(values, avatar);
 
-		router.navigate(ROUTES.PROFILE);
+		router.navigate(ROUTES.MY_PROFILE);
 	} catch (err) {
 		handleError(err, true);
 	}

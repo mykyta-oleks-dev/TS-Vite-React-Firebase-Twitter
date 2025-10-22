@@ -1,17 +1,18 @@
 import Layout from '@/components/layout';
 import { ROUTER_KEYS } from '@/constants/routes';
-import EditProfilePage from '@/pages/users/edit-profile';
+import EditProfilePage from '@/pages/profiles/my/edit';
 import AuthenticatedGuard from '@/pages/guard/authed';
 import UnauthenticatedGuard from '@/pages/guard/unauthed-root';
 import HomePage from '@/pages/home';
 import LogInPage from '@/pages/auth/log-in';
-import ProfilePage from '@/pages/users/profile';
+import MyProfilePage from '@/pages/profiles/my';
 import ResetPasswordPage from '@/pages/auth/reset-password';
 import SignUpPage from '@/pages/auth/sign-up';
 import FinishSignUpPage from '@/pages/auth/sign-up-finish';
-import { createBrowserRouter, Outlet } from 'react-router';
+import { createBrowserRouter } from 'react-router';
 import CreatePostPage from '@/pages/posts/create';
 import VerifiedGuard from '@/pages/guard/verified';
+import OtherProfilePage from '@/pages/profiles/view-others';
 
 const router = createBrowserRouter([
 	{
@@ -21,14 +22,27 @@ const router = createBrowserRouter([
 			{ index: true, element: <HomePage /> },
 			{
 				path: ROUTER_KEYS.PROFILE,
-				element: (
-					<AuthenticatedGuard>
-						<Outlet />
-					</AuthenticatedGuard>
-				),
 				children: [
-					{ index: true, element: <ProfilePage /> },
-					{ path: ROUTER_KEYS.EDIT, element: <EditProfilePage /> },
+					{
+						index: true,
+						element: (
+							<AuthenticatedGuard>
+								<MyProfilePage />
+							</AuthenticatedGuard>
+						),
+					},
+					{
+						path: ROUTER_KEYS.EDIT,
+						element: (
+							<AuthenticatedGuard>
+								<EditProfilePage />
+							</AuthenticatedGuard>
+						),
+					},
+					{
+						path: ROUTER_KEYS.DYNAMIC_UID,
+						element: <OtherProfilePage />,
+					}
 				],
 			},
 			{

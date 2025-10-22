@@ -1,5 +1,7 @@
 import type { Post } from '@/types/Post';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import Link from '../link';
+import { ROUTES } from '@/constants/routes';
 
 const PostCard = ({ post }: { post: Post }) => {
 	const content = post.content
@@ -7,18 +9,18 @@ const PostCard = ({ post }: { post: Post }) => {
 		.map((p, idx) => <p key={`post-${post.id}-${idx}`}>{p}</p>);
 
 	return (
-		<div className="flex flex-col gap-3 p-3 border transition hover:border-primary rounded-md">
-			<div className="flex gap-3 items-center">
+		<div className="p-3 border transition hover:border-primary rounded-md">
+			<Link to={ROUTES.VIEW_PROFILE(post.userId)} className="flex gap-3 items-center">
 				<Avatar>
 					<AvatarImage src={post.userAvatar} />
 					<AvatarFallback>
 						{post.userName.substring(0, 2)}
 					</AvatarFallback>
 				</Avatar>
-				<div className="flex flex-col">
+				<div className="flex flex-col items-start">
 					<span className="text-sm font-semibold">{post.userName}</span>
 					<time
-						className="text-xs text-gray-500"
+						className="text-xs text-gray-500 no-underline hover:no-underline"
 						dateTime={post.createdAt.toISOString()}
 					>
 						{post.createdAt.toLocaleDateString('en-US', {
@@ -31,20 +33,24 @@ const PostCard = ({ post }: { post: Post }) => {
 						})}
 					</time>
 				</div>
+			</Link>
+
+			<hr className='my-3' />
+			
+			<div className="flex flex-col gap-3">
+				{post.photo && (
+					<>
+						<img
+							className="object-cover md:h-80 lg:h-64"
+							src={post.photo}
+							alt={post.title}
+						/>
+						<hr />
+					</>
+				)}
+				<h3 className="text-md font-semibold">{post.title}</h3>
+				<div className="text-sm line-clamp-5 text-ellipsis">{content}</div>
 			</div>
-			<hr />
-			{post.photo && (
-				<>
-					<img
-						className="object-cover md:h-80 lg:h-64"
-						src={post.photo}
-						alt={post.title}
-					/>
-					<hr />
-				</>
-			)}
-			<h3 className="text-md font-semibold">{post.title}</h3>
-			<div className="text-sm line-clamp-5 text-ellipsis">{content}</div>
 		</div>
 	);
 };

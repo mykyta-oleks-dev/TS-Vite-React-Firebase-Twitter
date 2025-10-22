@@ -23,8 +23,8 @@ const Navigation = ({ user }: { user?: User }) => {
 				{user && (
 					<NavigationMenuItem>
 						<NavigationMenuLink asChild>
-							<Link nav to={ROUTES.PROFILE}>
-								{ROUTES_LABELS[ROUTES.PROFILE]}
+							<Link nav to={ROUTES.MY_PROFILE}>
+								{ROUTES_LABELS[ROUTES.MY_PROFILE]}
 							</Link>
 						</NavigationMenuLink>
 					</NavigationMenuItem>

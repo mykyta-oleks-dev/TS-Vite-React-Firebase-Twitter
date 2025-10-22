@@ -15,14 +15,24 @@ import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
-import { handleChangePassword, handleDeleteAccount } from '@/handlers/users';
+import {
+	handleChangePassword,
+	handleDeleteAccount,
+	handleResendVerification,
+} from '@/handlers/users';
 import { changePasswordSchema, type changePasswordData } from '@/schemas/auth';
 import useUser from '@/stores/authStore';
 import type { User } from '@/types/User';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
-const PasswordChange = ({ user }: { user: User }) => {
+const DangerousZone = ({
+	user,
+	emailVerified,
+}: {
+	user: User;
+	emailVerified: boolean;
+}) => {
 	const reset = useUser((s) => s.reset);
 
 	const form = useForm<changePasswordData>({
@@ -36,6 +46,25 @@ const PasswordChange = ({ user }: { user: User }) => {
 
 	return (
 		<div className="flex flex-col gap-5">
+			<div className="flex items-center gap-3">
+				Status:
+				{emailVerified ? (
+					<span className="text-green-500">Verified</span>
+				) : (
+					<span className="flex items-center gap-3">
+						Unverified
+						<Button
+							className="ml-3"
+							onClick={handleResendVerification}
+						>
+							Send verification link
+						</Button>
+					</span>
+				)}
+			</div>
+
+			<hr />
+
 			<div>
 				<h3 className="mb-3 font-semibold text-xl">
 					Change your password
@@ -139,4 +168,4 @@ const PasswordChange = ({ user }: { user: User }) => {
 	);
 };
 
-export default PasswordChange;
+export default DangerousZone;

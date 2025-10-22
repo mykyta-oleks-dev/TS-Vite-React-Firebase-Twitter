@@ -39,7 +39,7 @@ export const signUpFinish = async (
 	return { data, res };
 };
 
-export const getOne = async (uid: string) => {
+export const getOneUser = async (uid: string) => {
 	const res = await axiosInstance.get<OneUser>(
 		API_ENDPOINTS.USERS.GET_ONE(uid)
 	);
@@ -80,5 +80,5 @@ export const resetPassword = async (values: resetPasswordData) =>
 		...values,
 	});
 
-export const deleteUser = async () => 
-	await axiosInstance.delete(API_ENDPOINTS.USERS.ROOT)
+export const deleteUser = async () =>
+	await axiosInstance.delete(API_ENDPOINTS.USERS.ROOT);

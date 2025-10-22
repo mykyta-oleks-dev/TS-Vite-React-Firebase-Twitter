@@ -1,7 +1,5 @@
 import AvatarBig from '@/components/avatar-big';
 import PostsList from '@/components/posts';
-import { Button } from '@/components/ui/button';
-import { handleResendVerification } from '@/handlers/users';
 import type { User } from '@/types/User';
 import { Check } from 'lucide-react';
 
@@ -22,15 +20,8 @@ const ProfileData = ({
 							<span className="text-2xl font-semibold">
 								{user.firstName} {user.lastName}
 							</span>
-							{emailVerified ? (
+							{emailVerified && (
 								<Check className="text-primary" />
-							) : (
-								<Button
-									className="ml-3"
-									onClick={handleResendVerification}
-								>
-									Send verification link
-								</Button>
 							)}
 						</h3>
 						<p>{user.email}</p>
@@ -53,7 +44,7 @@ const ProfileData = ({
 				<h4 className="text-lg font-semibold">About:</h4>
 				<p>{user.about ?? 'Nothing to tell'}</p>
 			</div>
-			<PostsList className='col-span-full' userId={user.id} />
+			{emailVerified && <PostsList className='col-span-full' userId={user.id} />}
 		</div>
 	);
 };
