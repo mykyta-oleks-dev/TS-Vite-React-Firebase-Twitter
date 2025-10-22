@@ -15,8 +15,6 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 const PostForm = ({ post, onSubmit }: { post?: Post; onSubmit: SubmitHandler<postData> }) => {
 	const [preview, setPreview] = useState<string | null>(post?.photo ?? null);
 
-	console.log(onSubmit);
-
 	const form = useForm<postData>({
 		resolver: zodResolver(postSchema),
 		defaultValues: {

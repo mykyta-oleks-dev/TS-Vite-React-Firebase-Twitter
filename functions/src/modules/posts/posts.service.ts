@@ -42,7 +42,7 @@ class PostsService {
 		const pageParsed = page ? Number.parseInt(page) : undefined;
 		const limitParsed = limit ? Number.parseInt(limit) : undefined;
 
-		return postsRepository.getMany(pageParsed, limitParsed, query.userId);
+		return postsRepository.getMany(pageParsed, limitParsed, query.userId, query.search);
 	};
 }
 

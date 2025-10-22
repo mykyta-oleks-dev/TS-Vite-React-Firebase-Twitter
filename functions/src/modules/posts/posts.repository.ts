@@ -1,9 +1,11 @@
-import { UserRecord } from 'firebase-functions/v1/auth';
+import { UserRecord } from 'firebase-admin/auth';
+import { getAlgoliaClient, getIndex } from '../../config/algolia';
 import { db } from '../../config/firebase';
 import { NotFoundError } from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
 import { Post, postConverter } from '../../shared/types/data/Post';
 import { REQUEST_ERRORS } from './constants/Errors';
+import { AlgoliaPost } from './types/algolia';
 import { PostInfo } from './types/body';
 
 class PostsRepository {
@@ -38,6 +40,25 @@ class PostsRepository {
 
 		await newPostRef.set(postData);
 
+		const algoliaClient = getAlgoliaClient(true);
+		const indexName = getIndex();
+
+		try {
+			const body: AlgoliaPost = {
+				id: postData.id,
+				title: postData.title,
+				content: postData.content,
+			};
+
+			await algoliaClient.saveObject({
+				indexName,
+				body,
+			});
+		} catch (err) {
+			newPostRef.delete();
+			throw err;
+		}
+
 		return { id };
 	};
 
@@ -49,7 +70,11 @@ class PostsRepository {
 		return { post };
 	};
 
-	getMany = async (page = 1, limit = 10, userId?: string) => {
+	private readonly _getMany = async (
+		page = 1,
+		limit = 10,
+		userId?: string
+	) => {
 		let postsQuery = db
 			.collection(COLLECTIONS.POSTS)
 			.orderBy('createdAt', 'desc');
@@ -65,7 +90,7 @@ class PostsRepository {
 		const postsSnapshot = await postsQuery.get();
 
 		if (postsSnapshot.empty) {
-			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_MANY);
+			return { posts: [] };
 		}
 
 		const posts = postsSnapshot.docs.map((d) =>
@@ -73,6 +98,58 @@ class PostsRepository {
 		);
 
 		return { posts };
+	};
+
+	private readonly _getManyWithSearch = async (
+		search: string,
+		page = 1,
+		limit = 10,
+		userId?: string,
+	) => {
+		const algoliaClient = getAlgoliaClient();
+		const indexName = getIndex();
+
+		const results = await algoliaClient.searchSingleIndex<AlgoliaPost>({
+			indexName,
+			searchParams: {
+				query: search,
+				hitsPerPage: Math.max(limit, 1),
+				page: Math.max(page - 1, 0),
+			},
+		});
+
+		const { hits } = results;
+
+		if (hits.length === 0) {
+			return { posts: [] };
+		}
+
+		const postIds = hits.map((hit) => hit.id);
+
+		let postsQuery = db
+			.collection(COLLECTIONS.POSTS)
+			.orderBy('createdAt', 'desc')
+		
+		if (userId) {
+			postsQuery = postsQuery.where('userId', '==', userId);
+		}
+
+		postsQuery = postsQuery.where('id', 'in', postIds);
+
+		const snapshot = await postsQuery.get();
+		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
+
+		return { posts };
+	};
+
+	getMany = async (
+		page = 1,
+		limit = 10,
+		userId?: string,
+		search?: string
+	) => {
+		if (!search) return this._getMany(page, limit, userId);
+		return this._getManyWithSearch(search, page, limit, userId);
 	};
 }
 

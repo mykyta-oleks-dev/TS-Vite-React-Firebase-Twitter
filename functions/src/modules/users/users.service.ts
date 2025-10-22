@@ -2,8 +2,9 @@ import {
 	AuthClientErrorCode,
 	DecodedIdToken,
 	FirebaseAuthError,
+	UserRecord,
 } from 'firebase-admin/auth';
-import { UserRecord } from 'firebase-functions/v1/auth';
+
 import { auth } from '../../config/firebase';
 import {
 	AppError,

@@ -56,7 +56,7 @@ export function handleError(
 	error: string;
 } {
 	if (error instanceof AxiosError) {
-		return handleError(error.response?.data ?? 'API call failed');
+		return handleError(error.response?.data ?? 'API call failed', showToast);
 	}
 
 	const message = getErrorMessage(error);

@@ -8,4 +8,4 @@ export type PostInfoBody = Partial<PostInfo>;
 
 export type PostInfoErrors = Partial<Stringified<PostInfo>>;
 
-export type PostQuery = Query & { userId?: string };
+export type PostQuery = Query & { userId?: string; search?: string };

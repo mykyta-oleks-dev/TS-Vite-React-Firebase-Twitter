@@ -50,8 +50,8 @@ const useAuth = ():
 						err.status &&
 						err.status === 404
 					) {
-						navigate(ROUTES.SIGN_UP_FINISH);
 						setLoading(false);
+						navigate(ROUTES.SIGN_UP_FINISH);
 					}
 				}
 			} else {
@@ -62,7 +62,6 @@ const useAuth = ():
 
 		// Cleanup subscription on unmount
 		return () => {
-			console.log('unsubscribed');
 			return unsubscribe();
 		};
 	}, [logOut, setLoading, setUserData, setAuthenticated, navigate]);
