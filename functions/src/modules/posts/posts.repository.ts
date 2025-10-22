@@ -83,28 +83,28 @@ class PostsRepository {
 			postsQuery = postsQuery.where('userId', '==', userId);
 		}
 
-		postsQuery = postsQuery
+		const finalPostsQuery = postsQuery
 			.limit(Math.max(limit, 1))
 			.offset(Math.max(page - 1, 0) * limit);
 
-		const postsSnapshot = await postsQuery.get();
+		const postsSnapshot = await finalPostsQuery.get();
 
-		if (postsSnapshot.empty) {
-			return { posts: [] };
-		}
+		const total = (await postsQuery.count().get()).data().count;
+
+		const pages = Math.ceil(total / limit);
 
 		const posts = postsSnapshot.docs.map((d) =>
 			postConverter.fromFirestore(d)
 		);
 
-		return { posts };
+		return { posts, total, pages };
 	};
 
 	private readonly _getManyWithSearch = async (
 		search: string,
 		page = 1,
 		limit = 10,
-		userId?: string,
+		userId?: string
 	) => {
 		const algoliaClient = getAlgoliaClient();
 		const indexName = getIndex();
@@ -118,18 +118,16 @@ class PostsRepository {
 			},
 		});
 
-		const { hits } = results;
+		console.log({ results });
 
-		if (hits.length === 0) {
-			return { posts: [] };
-		}
+		const { hits } = results;
 
 		const postIds = hits.map((hit) => hit.id);
 
 		let postsQuery = db
 			.collection(COLLECTIONS.POSTS)
-			.orderBy('createdAt', 'desc')
-		
+			.orderBy('createdAt', 'desc');
+
 		if (userId) {
 			postsQuery = postsQuery.where('userId', '==', userId);
 		}
@@ -139,7 +137,7 @@ class PostsRepository {
 		const snapshot = await postsQuery.get();
 		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
 
-		return { posts };
+		return { posts, total: results.nbHits ?? 0, pages: results.nbPages ?? 0 };
 	};
 
 	getMany = async (
@@ -148,8 +146,11 @@ class PostsRepository {
 		userId?: string,
 		search?: string
 	) => {
-		if (!search) return this._getMany(page, limit, userId);
-		return this._getManyWithSearch(search, page, limit, userId);
+		const results = search
+			? await this._getManyWithSearch(search, page, limit, userId)
+			: await this._getMany(page, limit, userId);
+
+		return results;
 	};
 }
 

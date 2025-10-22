@@ -34,9 +34,9 @@ class PostsController {
 	) => {
 		const query = req.query;
 
-		const { posts } = await postsService.getMany(query);
+		const { posts, pages, total } = await postsService.getMany(query);
 
-		res.status(200).json({ message: 'Posts fetched succesfuly!', posts });
+		res.status(200).json({ message: 'Posts fetched succesfuly!', posts, pages, total });
 	};
 }
 

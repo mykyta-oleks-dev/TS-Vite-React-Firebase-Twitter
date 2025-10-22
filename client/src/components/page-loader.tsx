@@ -2,7 +2,7 @@ import { Spinner } from './ui/spinner';
 
 const PageLoader = () => {
 	return (
-		<div className="h-screen w-screen bg-white flex items-center justify-center">
+		<div className="absolute inset-0 backdrop-blur-xs flex items-center justify-center z-10">
 			<Spinner className="size-10" />
 		</div>
 	);

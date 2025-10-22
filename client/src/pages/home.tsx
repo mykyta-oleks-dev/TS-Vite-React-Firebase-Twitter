@@ -1,5 +1,6 @@
 import Link from '@/components/link';
 import PageTitle from '@/components/page-title';
+import PostsList from '@/components/posts';
 import { Button } from '@/components/ui/button';
 import { ROUTES, ROUTES_LABELS } from '@/constants/routes';
 import useUser from '@/stores/authStore';
@@ -18,6 +19,7 @@ const HomePage = () => {
 					</Button>
 				)}
 			</PageTitle>
+			<PostsList />
 		</div>
 	);
 };

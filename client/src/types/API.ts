@@ -34,4 +34,6 @@ export interface OnePost extends DefaultBody {
 
 export interface ManyPosts extends DefaultBody {
 	posts: PostApi[];
+	total: number;
+	pages: number;
 }
