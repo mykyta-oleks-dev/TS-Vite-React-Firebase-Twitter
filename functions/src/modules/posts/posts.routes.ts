@@ -17,5 +17,11 @@ postsRoutes.put(
 	isAuthor(COLLECTIONS.POSTS, 'id'),
 	postsController.update
 );
+postsRoutes.delete(
+	ROUTES.DYNAMIC,
+	authenticate,
+	isAuthor(COLLECTIONS.POSTS, 'id'),
+	postsController.delete
+);
 
 export default postsRoutes;

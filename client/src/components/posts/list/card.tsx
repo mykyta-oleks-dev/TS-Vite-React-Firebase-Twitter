@@ -1,10 +1,9 @@
-import type { Post } from '@/types/Post';
-import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
-import Link from '../../link';
 import { ROUTES } from '@/constants/routes';
-import { Button } from '@/components/ui/button';
-import { PenLineIcon, Trash2Icon } from 'lucide-react';
+import type { Post } from '@/types/Post';
 import type { User } from '@/types/User';
+import Link from '../../link';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import PostCreatorActions from '../creator-actions';
 
 const PostCard = ({ post, user }: { post: Post; user?: User }) => {
 	const content = post.content
@@ -66,27 +65,7 @@ const PostCard = ({ post, user }: { post: Post; user?: User }) => {
 			</Link>
 
 			<div className="flex gap-3">
-				{user && user.id === post.userId && (
-					<>
-						<Button
-							size="icon"
-							variant="ghost"
-							className="rounded-full text-primary hover:text-primary ml-auto"
-							asChild
-						>
-							<Link to={ROUTES.POST_EDIT(post.id)}>
-								<PenLineIcon />
-							</Link>
-						</Button>
-						<Button
-							size="icon"
-							variant="ghost"
-							className="rounded-full text-destructive hover:text-destructive"
-						>
-							<Trash2Icon />
-						</Button>
-					</>
-				)}
+				{user && user.id === post.userId && <PostCreatorActions post={post} />}
 			</div>
 		</div>
 	);

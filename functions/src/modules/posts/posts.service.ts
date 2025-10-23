@@ -61,6 +61,12 @@ class PostsService {
 
 		return postsRepository.update(id, body);
 	};
+
+	delete = async (id?: string) => {
+		if (!id) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOID);
+
+		await postsRepository.delete(id);
+	};
 }
 
 const postsService = new PostsService();

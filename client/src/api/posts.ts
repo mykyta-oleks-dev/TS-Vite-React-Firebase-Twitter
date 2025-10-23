@@ -49,12 +49,18 @@ export const updatePost = async (
 	values: postData,
 	photo?: string | null
 ) => {
-	const res = await axiosInstance.put<WritePost>(API_ENDPOINTS.POSTS.GET_ONE(id), {
-		...values,
-		photo: photo ?? null
-	});
+	const res = await axiosInstance.put<WritePost>(
+		API_ENDPOINTS.POSTS.GET_ONE(id),
+		{
+			...values,
+			photo: photo ?? null,
+		}
+	);
 
 	const data = res.data;
 
 	return data;
 };
+
+export const deletePost = async (id: string) =>
+	await axiosInstance.delete(API_ENDPOINTS.POSTS.GET_ONE(id));

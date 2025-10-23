@@ -31,7 +31,7 @@ class UsersController {
 
 		const { token } = await usersService.signUpGoogle(user, body);
 
-		res.status(201).json({
+		res.status(HTTP.CREATED).json({
 			message:
 				'User profile created from Google account data successfuly!',
 			token,
@@ -43,7 +43,7 @@ class UsersController {
 
 		const { user, isVerified } = await usersService.getOne(uid);
 
-		res.status(200).json({ message: 'User fetched successfuly!', user, isVerified });
+		res.status(HTTP.OK).json({ message: 'User fetched successfuly!', user, isVerified });
 	};
 
 	getMany: RequestHandler = async (
@@ -54,7 +54,7 @@ class UsersController {
 
 		const { users } = await usersService.getMany(query);
 
-		res.status(200).json({ message: 'Users fetched succesfuly!', users });
+		res.status(HTTP.OK).json({ message: 'Users fetched succesfuly!', users });
 	};
 
 	update: RequestHandler = async (

@@ -2,6 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { getUserOrThrowError } from '../../shared/utils/authentication';
 import { PostInfoBody, PostQuery } from './types/body';
 import postsService from './posts.service';
+import { HTTP } from '../../shared/constants/HTTP';
 
 class PostsController {
 	create: RequestHandler = async (
@@ -14,7 +15,7 @@ class PostsController {
 
 		const { id } = await postsService.create(user, body);
 
-		res.status(201).json({
+		res.status(HTTP.CREATED).json({
 			message: 'Successfuly created a post!',
 			postId: id,
 		});
@@ -25,7 +26,7 @@ class PostsController {
 
 		const { post } = await postsService.getOne(id);
 
-		res.status(200).json({ message: 'Post fetched successfuly!', post });
+		res.status(HTTP.OK).json({ message: 'Post fetched successfuly!', post });
 	};
 
 	getMany: RequestHandler = async (
@@ -36,7 +37,12 @@ class PostsController {
 
 		const { posts, pages, total } = await postsService.getMany(query);
 
-		res.status(200).json({ message: 'Posts fetched succesfuly!', posts, pages, total });
+		res.status(HTTP.OK).json({
+			message: 'Posts fetched succesfuly!',
+			posts,
+			pages,
+			total,
+		});
 	};
 
 	update: RequestHandler = async (
@@ -49,11 +55,19 @@ class PostsController {
 
 		await postsService.update(body, id);
 
-		res.status(200).json({
+		res.status(HTTP.OK).json({
 			message: 'Successfuly updated a post!',
 			postId: id,
 		});
-	}
+	};
+
+	delete: RequestHandler = async (req: Request<{ id?: string }>, res) => {
+		const { id } = req.params;
+
+		await postsService.delete(id);
+
+		res.status(HTTP.NO_CONTENT).send();
+	};
 }
 
 const postsController = new PostsController();

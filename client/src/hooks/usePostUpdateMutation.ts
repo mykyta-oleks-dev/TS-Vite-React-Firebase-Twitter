@@ -21,8 +21,6 @@ const usePostUpdateMutation = (original?: Post) => {
 			mutationFn: async (values: postData) => {
 				if (!original) return;
 
-				console.log(values.photo, withPhoto, original.photo);
-
 				const photo = values.photo
 					? await uploadFile(values.photo, FOLDERS.POSTS)
 					: withPhoto

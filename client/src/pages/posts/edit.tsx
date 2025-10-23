@@ -21,7 +21,7 @@ const EditPostPage = () => {
 
 	return (
 		<div>
-			<PageTitle title="Create a new post" />
+			<PageTitle title={`Edit a post "${post.title}"`} />
 			<PostForm
 				post={post}
 				onSubmit={(data) =>

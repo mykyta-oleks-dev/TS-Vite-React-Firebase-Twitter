@@ -1,7 +1,7 @@
 import { UserRecord } from 'firebase-admin/auth';
 import { getAlgoliaClient, getIndex } from '../../config/algolia';
 import { auth, db } from '../../config/firebase';
-import { NotFoundError } from '../../middlewares/ErrorHandling';
+import { AppError, NotFoundError } from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
 import {
 	Post,
@@ -139,6 +139,14 @@ class PostsRepository {
 
 		const postIds = hits.map((hit) => hit.id);
 
+		if (!postIds.length) {
+			return {
+				posts: [],
+				total: results.nbHits ?? 0,
+				pages: results.nbPages ?? 0,
+			};
+		}
+
 		let postsQuery = db
 			.collection(COLLECTIONS.POSTS)
 			.orderBy('createdAt', 'desc')
@@ -189,11 +197,6 @@ class PostsRepository {
 		const postRef = postSnapshot.ref;
 
 		const postData = postConverter.fromFirestore(postSnapshot);
-
-		console.log({
-			valuesPhoto: values.photo,
-			oldPhoto: postData.photo,
-		});
 
 		const photo =
 			values.photo === undefined ? postData.photo : values.photo;
@@ -252,6 +255,36 @@ class PostsRepository {
 		}
 
 		return { id: postRef.id };
+	};
+
+	delete = async (id: string) => {
+		const postSnapshot = await PostsRepository._getPostSnapshot(id);
+		const postRef = postSnapshot.ref;
+
+		const algoliaClient = getAlgoliaClient(true);
+		const indexName = getIndex();
+
+		const { hits } = await algoliaClient.searchSingleIndex<AlgoliaPost>({
+			indexName,
+			searchParams: {
+				filters: `id:${postRef.id}`,
+			},
+		});
+
+		if (hits.length === 1) {
+			const hit = hits[0];
+
+			await algoliaClient.deleteObject({
+				indexName,
+				objectID: hit.objectID,
+			});
+		} else if (hits.length > 1) {
+			throw new AppError(
+				'Multiple objects found with same ID, contact developers to address the issue'
+			);
+		}
+
+		await postRef.delete();
 	};
 }
 
