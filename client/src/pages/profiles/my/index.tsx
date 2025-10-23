@@ -1,6 +1,6 @@
 import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
-import { ROUTER_KEYS, ROUTES } from '@/constants/routes';
+import { ROUTES } from '@/constants/routes';
 import useUser from '@/stores/authStore';
 import { Navigate } from 'react-router';
 import ProfileData from '../components/data';
@@ -15,7 +15,7 @@ const MyProfilePage = () => {
 
 	if (isLoading) return <PageLoader />;
 
-	if (!userData) return <Navigate to={ROUTER_KEYS.LOG_IN} />;
+	if (!userData) return <Navigate to={ROUTES.LOG_IN} />;
 
 	const { user, emailVerified } = userData;
 

@@ -1,5 +1,5 @@
 import AvatarBig from '@/components/avatar-big';
-import PostsList from '@/components/posts';
+import PostsList from '@/components/posts/list';
 import type { User } from '@/types/User';
 import { Check } from 'lucide-react';
 
@@ -44,7 +44,9 @@ const ProfileData = ({
 				<h4 className="text-lg font-semibold">About:</h4>
 				<p>{user.about ?? 'Nothing to tell'}</p>
 			</div>
-			{emailVerified && <PostsList className='col-span-full' userId={user.id} />}
+			{emailVerified && (
+				<PostsList className="col-span-full" userId={user.id} />
+			)}
 		</div>
 	);
 };

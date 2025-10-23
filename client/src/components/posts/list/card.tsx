@@ -1,6 +1,6 @@
 import type { Post } from '@/types/Post';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import Link from '../link';
+import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
+import Link from '../../link';
 import { ROUTES } from '@/constants/routes';
 
 const PostCard = ({ post }: { post: Post }) => {

@@ -4,8 +4,8 @@ import usePaginationSearchParams from '@/hooks/usePaginationSearchParams';
 import { cn } from '@/lib/utils';
 import { parseFetchPost, type Post } from '@/types/Post';
 import { useQuery } from '@tanstack/react-query';
-import PageLoader from '../page-loader';
-import SearchParamsPagination from '../search-params-pagination';
+import PageLoader from '../../page-loader';
+import SearchParamsPagination from '../../search-params-pagination';
 import PostCard from './card';
 import PostsSearch from './search';
 
@@ -24,7 +24,7 @@ const PostsList = ({
 
 	const { data, isPending } = useQuery({
 		queryKey: [API_ENDPOINTS.POSTS.ROOT, { page, limit, userId, search }],
-		queryFn: async () => getPosts(page, limit, search, userId),
+		queryFn: async () => getPosts(search, userId, page, limit),
 	});
 
 	const posts = data?.posts.map((p) => parseFetchPost(p)) ?? [];
@@ -42,6 +42,12 @@ const PostsList = ({
 			)}
 			{data && !!posts.length && (
 				<>
+					<SearchParamsPagination
+						searchParams={searchParams}
+						page={page}
+						maxPage={data.pages}
+					/>
+
 					<div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 						{posts.map((p) => (
 							<PostCard key={p.id} post={p} />

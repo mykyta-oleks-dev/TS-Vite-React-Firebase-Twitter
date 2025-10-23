@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
+import { Label } from '../../ui/label';
+import { Input } from '../../ui/input';
 import type { SetURLSearchParams } from 'react-router';
 
 const PostsSearch = ({

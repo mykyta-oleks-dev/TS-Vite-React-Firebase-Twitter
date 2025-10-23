@@ -1,19 +1,17 @@
 import { cn } from '@/lib/utils';
-import { Link as RouterLink, NavLink, type LinkProps } from 'react-router';
+import { Link as RouterLink, type LinkProps } from 'react-router';
 
-const Link = ({ nav, ...props }: LinkProps & { nav?: boolean }) => {
-	const Component = nav ? NavLink : RouterLink;
+const Link = (props: LinkProps) => {
 	return (
-		<Component
+		<RouterLink
 			{...props}
 			className={cn(
-				!nav && 'hover:underline',
-				'underline-offset-2',
+				'hover:underline underline-offset-2',
 				props.className
 			)}
 		>
 			{props.children}
-		</Component>
+		</RouterLink>
 	);
 };
 
