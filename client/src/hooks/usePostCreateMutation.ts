@@ -20,12 +20,12 @@ const usePostCreateMutation = () => {
 
 			return await createPost(values, photo);
 		},
-		onSuccess: async () => {
+		onSuccess: async (data) => {
 			await queryClient.invalidateQueries({
 				queryKey: [API_ENDPOINTS.POSTS.ROOT],
 			});
 
-			navigate(ROUTES.ROOT)
+			navigate(ROUTES.POST_VIEW(data.postId));
 		},
 		onError: (error) => handleError(error, true),
 	});

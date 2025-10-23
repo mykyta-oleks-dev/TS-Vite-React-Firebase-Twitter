@@ -1,4 +1,4 @@
 export const ROUTES = {
 	ROOT: '/',
-	DYNAMIC: '/:uid',
+	DYNAMIC: '/:id',
 } as const;

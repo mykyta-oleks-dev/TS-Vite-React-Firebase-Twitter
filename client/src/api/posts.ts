@@ -1,7 +1,7 @@
 import axiosInstance from '@/config/axios';
 import { API_ENDPOINTS } from '@/constants/api';
 import type { postData } from '@/schemas/posts';
-import type { CreatePost, ManyPosts } from '@/types/API';
+import type { OnePost, CreatePost, ManyPosts } from '@/types/API';
 
 export const createPost = async (values: postData, photo: string | null) => {
 	const res = await axiosInstance.post<CreatePost>(API_ENDPOINTS.POSTS.ROOT, {
@@ -28,3 +28,11 @@ export const getPosts = async (search: string | null, userId?: string, page = 1,
 
 	return data;
 };
+
+export const getOnePost = async (id: string) => {
+	const res = await axiosInstance.get<OnePost>(API_ENDPOINTS.POSTS.GET_ONE(id));
+
+	const data = res.data;
+
+	return data;
+}

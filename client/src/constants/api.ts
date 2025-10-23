@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
 	},
 	POSTS: {
 		ROOT: POSTS,
+		GET_ONE: (id: string) => `${POSTS}/${id}`,
 	},
 } as const;
 

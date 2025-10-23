@@ -12,6 +12,7 @@ export const ROUTER_KEYS = {
 	DYNAMIC_UID: ':uid',
 
 	POSTS: 'posts',
+	DYNAMIC_ID: ':id',
 } as const;
 
 export const ROUTES = {
@@ -23,13 +24,14 @@ export const ROUTES = {
 
 	MY_PROFILE: `/${ROUTER_KEYS.PROFILE}`,
 	PROFILE_EDIT: `/${ROUTER_KEYS.PROFILE}/${ROUTER_KEYS.EDIT}`,
-	VIEW_PROFILE: (uid: string) => `/${ROUTER_KEYS.PROFILE}/${uid}`,
+	PROFILE_VIEW: (uid: string) => `/${ROUTER_KEYS.PROFILE}/${uid}`,
 
-	POSTS_CREATE: `/${ROUTER_KEYS.POSTS}/${ROUTER_KEYS.CREATE}`,
+	POST_CREATE: `/${ROUTER_KEYS.POSTS}/${ROUTER_KEYS.CREATE}`,
+	POST_VIEW: (id: string) => `/${ROUTER_KEYS.POSTS}/${id}`,
 } as const;
 
 export const ROUTES_LABELS = {
 	[ROUTES.ROOT]: 'Home',
 	[ROUTES.MY_PROFILE]: 'My Profile',
-	[ROUTES.POSTS_CREATE]: 'New Post',
+	[ROUTES.POST_CREATE]: 'New Post',
 } as const;

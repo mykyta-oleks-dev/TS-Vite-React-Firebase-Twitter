@@ -10,7 +10,10 @@ const PostCard = ({ post }: { post: Post }) => {
 
 	return (
 		<div className="p-3 border transition hover:border-primary rounded-md">
-			<Link to={ROUTES.VIEW_PROFILE(post.userId)} className="flex gap-3 items-center">
+			<Link
+				to={ROUTES.PROFILE_VIEW(post.userId)}
+				className="flex gap-3 items-center"
+			>
 				<Avatar>
 					<AvatarImage src={post.userAvatar} />
 					<AvatarFallback>
@@ -18,7 +21,9 @@ const PostCard = ({ post }: { post: Post }) => {
 					</AvatarFallback>
 				</Avatar>
 				<div className="flex flex-col items-start">
-					<span className="text-sm font-semibold">{post.userName}</span>
+					<span className="text-sm font-semibold">
+						{post.userName}
+					</span>
 					<time
 						className="text-xs text-gray-500 no-underline hover:no-underline"
 						dateTime={post.createdAt.toISOString()}
@@ -35,9 +40,9 @@ const PostCard = ({ post }: { post: Post }) => {
 				</div>
 			</Link>
 
-			<hr className='my-3' />
-			
-			<div className="flex flex-col gap-3">
+			<hr className="my-3" />
+
+			<Link to={ROUTES.POST_VIEW(post.id)} className="flex flex-col gap-3 no-underline hover:no-underline">
 				{post.photo && (
 					<>
 						<img
@@ -49,8 +54,10 @@ const PostCard = ({ post }: { post: Post }) => {
 					</>
 				)}
 				<h3 className="text-md font-semibold">{post.title}</h3>
-				<div className="text-sm line-clamp-5 text-ellipsis">{content}</div>
-			</div>
+				<div className="text-sm line-clamp-5 text-ellipsis">
+					{content}
+				</div>
+			</Link>
 		</div>
 	);
 };

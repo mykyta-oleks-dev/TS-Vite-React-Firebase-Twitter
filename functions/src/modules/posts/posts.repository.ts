@@ -49,6 +49,7 @@ class PostsRepository {
 				id: postData.id,
 				title: postData.title,
 				content: postData.content,
+				userId: user.uid,
 			};
 
 			await algoliaClient.saveObject({
@@ -116,10 +117,9 @@ class PostsRepository {
 				query: search,
 				hitsPerPage: Math.max(limit, 1),
 				page: Math.max(page - 1, 0),
+				filters: userId ? `userId:${userId}` : undefined
 			},
 		});
-
-		console.log({ results });
 
 		const { hits } = results;
 
@@ -127,13 +127,8 @@ class PostsRepository {
 
 		let postsQuery = db
 			.collection(COLLECTIONS.POSTS)
-			.orderBy('createdAt', 'desc');
-
-		if (userId) {
-			postsQuery = postsQuery.where('userId', '==', userId);
-		}
-
-		postsQuery = postsQuery.where('id', 'in', postIds);
+			.orderBy('createdAt', 'desc')
+			.where('id', 'in', postIds);
 
 		const snapshot = await postsQuery.get();
 		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));

@@ -13,8 +13,8 @@ const HomePage = () => {
 			<PageTitle title="Latest posts">
 				{userData && userData.emailVerified && (
 					<Button asChild>
-						<Link to={ROUTES.POSTS_CREATE}>
-							{ROUTES_LABELS[ROUTES.POSTS_CREATE]}
+						<Link to={ROUTES.POST_CREATE}>
+							{ROUTES_LABELS[ROUTES.POST_CREATE]}
 						</Link>
 					</Button>
 				)}

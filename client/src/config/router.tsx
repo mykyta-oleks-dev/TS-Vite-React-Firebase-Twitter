@@ -13,6 +13,7 @@ import { createBrowserRouter } from 'react-router';
 import CreatePostPage from '@/pages/posts/create';
 import VerifiedGuard from '@/pages/guard/verified';
 import OtherProfilePage from '@/pages/profiles/view-others';
+import PostDetailsPage from '@/pages/posts/details';
 
 const router = createBrowserRouter([
 	{
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
 					{
 						path: ROUTER_KEYS.DYNAMIC_UID,
 						element: <OtherProfilePage />,
-					}
+					},
 				],
 			},
 			{
@@ -55,6 +56,10 @@ const router = createBrowserRouter([
 								<CreatePostPage />
 							</VerifiedGuard>
 						),
+					},
+					{
+						path: ROUTER_KEYS.DYNAMIC_ID,
+						element: <PostDetailsPage />,
 					},
 				],
 			},
