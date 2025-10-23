@@ -28,6 +28,7 @@ export const ROUTES = {
 
 	POST_CREATE: `/${ROUTER_KEYS.POSTS}/${ROUTER_KEYS.CREATE}`,
 	POST_VIEW: (id: string) => `/${ROUTER_KEYS.POSTS}/${id}`,
+	POST_EDIT: (id: string) => `/${ROUTER_KEYS.POSTS}/${id}/${ROUTER_KEYS.EDIT}`,
 } as const;
 
 export const ROUTES_LABELS = {

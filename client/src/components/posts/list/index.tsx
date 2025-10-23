@@ -8,6 +8,7 @@ import PageLoader from '../../page-loader';
 import SearchParamsPagination from '../../search-params-pagination';
 import PostCard from './card';
 import PostsSearch from './search';
+import useUser from '@/stores/authStore';
 
 const PostsList = ({
 	userId,
@@ -26,6 +27,8 @@ const PostsList = ({
 		queryKey: [API_ENDPOINTS.POSTS.ROOT, { page, limit, userId, search }],
 		queryFn: async () => getPosts(search, userId, page, limit),
 	});
+
+	const userData = useUser((s) => s.userData);
 
 	const posts = data?.posts.map((p) => parseFetchPost(p)) ?? [];
 
@@ -50,7 +53,11 @@ const PostsList = ({
 
 					<div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
 						{posts.map((p) => (
-							<PostCard key={p.id} post={p} />
+							<PostCard
+								key={p.id}
+								post={p}
+								user={userData?.user}
+							/>
 						))}
 					</div>
 

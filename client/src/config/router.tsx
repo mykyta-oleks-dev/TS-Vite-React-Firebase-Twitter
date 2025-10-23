@@ -14,6 +14,7 @@ import CreatePostPage from '@/pages/posts/create';
 import VerifiedGuard from '@/pages/guard/verified';
 import OtherProfilePage from '@/pages/profiles/view-others';
 import PostDetailsPage from '@/pages/posts/details';
+import EditPostPage from '@/pages/posts/edit';
 
 const router = createBrowserRouter([
 	{
@@ -59,7 +60,16 @@ const router = createBrowserRouter([
 					},
 					{
 						path: ROUTER_KEYS.DYNAMIC_ID,
-						element: <PostDetailsPage />,
+						children: [
+							{
+								index: true,
+								element: <PostDetailsPage />,
+							},
+							{
+								path: ROUTER_KEYS.EDIT,
+								element: <EditPostPage />,
+							},
+						],
 					},
 				],
 			},

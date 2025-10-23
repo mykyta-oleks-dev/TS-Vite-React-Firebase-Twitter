@@ -4,7 +4,7 @@ import { AppObject, DBObject } from './common';
 export interface PostData {
 	title: string;
 	content: string;
-	photo?: string | null;
+	photo: string | null;
 	userId: string;
 }
 

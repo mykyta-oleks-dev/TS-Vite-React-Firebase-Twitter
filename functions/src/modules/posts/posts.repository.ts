@@ -190,10 +190,18 @@ class PostsRepository {
 
 		const postData = postConverter.fromFirestore(postSnapshot);
 
+		console.log({
+			valuesPhoto: values.photo,
+			oldPhoto: postData.photo,
+		});
+
+		const photo =
+			values.photo === undefined ? postData.photo : values.photo;
+
 		const postInfo: Pick<PostData, 'title' | 'content' | 'photo'> = {
 			content: values.content,
 			title: values.title,
-			photo: values.photo ?? postData.photo ?? null,
+			photo,
 		};
 
 		await postRef.update({

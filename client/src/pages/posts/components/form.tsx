@@ -9,10 +9,19 @@ import { POSTS_FORM_FIELDS } from '@/constants/validation/posts';
 import { postSchema, type postData } from '@/schemas/posts';
 import type { Post } from '@/types/Post';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { XIcon } from 'lucide-react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 
-const PostForm = ({ post, onSubmit }: { post?: Post; onSubmit: SubmitHandler<postData> }) => {
+const PostForm = ({
+	post,
+	onSubmit,
+	setWithPhoto,
+}: {
+	post?: Post;
+	onSubmit: SubmitHandler<postData>;
+	setWithPhoto: Dispatch<SetStateAction<boolean>>;
+}) => {
 	const [preview, setPreview] = useState<string | null>(post?.photo ?? null);
 
 	const form = useForm<postData>({
@@ -31,11 +40,29 @@ const PostForm = ({ post, onSubmit }: { post?: Post; onSubmit: SubmitHandler<pos
 				className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
 			>
 				<div className="col-span-1 flex flex-col gap-5 items-center">
-					<img
-						className="w-4/5"
-						src={preview ?? '/placeholder-image.png'}
-						alt="Post's content"
-					/>
+					<div className="w-4/5 relative">
+						<img
+							className="w-full"
+							src={preview ?? '/placeholder-image.png'}
+							alt="Post's content"
+						/>
+						{preview && (
+							<Button
+								className="absolute top-3 right-3 rounded-full"
+								size="icon"
+								variant="outline"
+								onClick={() => {
+									form.resetField('photo')
+										
+									setPreview(null);
+
+									setWithPhoto(false);
+								}}
+							>
+								<XIcon />
+							</Button>
+						)}
+					</div>
 					<FormFieldGroup
 						className="w-full"
 						control={form.control}
@@ -47,6 +74,7 @@ const PostForm = ({ post, onSubmit }: { post?: Post; onSubmit: SubmitHandler<pos
 								accept={[...ACCEPTED_IMAGE_TYPES].join(',')}
 								onChange={(e) => {
 									const file = e.target.files?.[0];
+									console.log(file);
 									if (file) {
 										field.onChange(file);
 
@@ -55,6 +83,14 @@ const PostForm = ({ post, onSubmit }: { post?: Post; onSubmit: SubmitHandler<pos
 											setPreview(reader.result as string);
 										};
 										reader.readAsDataURL(file);
+
+										setWithPhoto(true);
+									} else {
+										field.onChange(undefined);
+										
+										setPreview(null);
+
+										setWithPhoto(false);
 									}
 								}}
 								onBlur={field.onBlur}
@@ -87,7 +123,7 @@ const PostForm = ({ post, onSubmit }: { post?: Post; onSubmit: SubmitHandler<pos
 					/>
 
 					<FormFieldGroup
-					className='flex-1 flex flex-col'
+						className="flex-1 flex flex-col"
 						control={form.control}
 						name={POSTS_FORM_FIELDS.CONTENT.NAME}
 						label={POSTS_FORM_FIELDS.CONTENT.LABEL}

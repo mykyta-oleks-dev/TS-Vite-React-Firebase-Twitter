@@ -25,7 +25,7 @@ export interface ManyUsers extends DefaultBody {
 	users: UserApi[];
 }
 
-export interface CreatePost extends DefaultBody {
+export interface WritePost extends DefaultBody {
 	postId: string;
 }
 

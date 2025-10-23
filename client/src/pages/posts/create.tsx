@@ -1,14 +1,18 @@
 import PageTitle from '@/components/page-title';
-import PostForm from './components/form';
 import usePostCreateMutation from '@/hooks/usePostCreateMutation';
+import PostForm from './components/form';
 
 const CreatePostPage = () => {
-	const { mutateAsync } = usePostCreateMutation();
+	const { mutation, setWithPhoto } = usePostCreateMutation();
+	const { mutateAsync } = mutation;
 
 	return (
 		<div>
 			<PageTitle title="Create a new post" />
-			<PostForm onSubmit={(data) => mutateAsync(data)} />
+			<PostForm
+				onSubmit={(data) => mutateAsync(data)}
+				setWithPhoto={setWithPhoto}
+			/>
 		</div>
 	);
 };

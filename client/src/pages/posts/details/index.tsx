@@ -1,28 +1,17 @@
-import { getOnePost } from '@/api/posts';
 import Link from '@/components/link';
 import PageLoader from '@/components/page-loader';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { API_ENDPOINTS } from '@/constants/api';
+import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants/routes';
+import useGetPostWithParam from '@/hooks/useGetPostWithParam';
 import { handleError } from '@/lib/utils';
-import { parseFetchPost } from '@/types/Post';
-import { useQuery } from '@tanstack/react-query';
-import { Navigate, useParams } from 'react-router';
+import useUser from '@/stores/authStore';
+import { PenLineIcon, Trash2Icon } from 'lucide-react';
+import { Navigate } from 'react-router';
 
 const PostDetailsPage = () => {
-	const { id } = useParams() as { id: string };
-	const {
-		data: post,
-		error,
-		isPending,
-	} = useQuery({
-		queryKey: [API_ENDPOINTS.POSTS.ROOT, id],
-		queryFn: async () => {
-			const data = await getOnePost(id);
-
-			return parseFetchPost(data.post);
-		},
-	});
+	const { isPending, error, data: post } = useGetPostWithParam();
+	const userData = useUser((s) => s.userData);
 
 	if (isPending) return <PageLoader />;
 
@@ -64,11 +53,33 @@ const PostDetailsPage = () => {
 						})}
 					</time>
 				</div>
+
+				{userData && userData.user.id === post.userId && (
+					<div className="ml-auto flex gap-3">
+						<Button
+							size="icon"
+							variant="ghost"
+							className="rounded-full text-primary hover:text-primary ml-auto"
+							asChild
+						>
+							<Link to={ROUTES.POST_EDIT(post.id)}>
+								<PenLineIcon />
+							</Link>
+						</Button>
+						<Button
+							size="icon"
+							variant="ghost"
+							className="rounded-full text-destructive hover:text-destructive"
+						>
+							<Trash2Icon />
+						</Button>
+					</div>
+				)}
 			</Link>
 
 			<hr className="my-3" />
 
-			<div className="flex flex-col md:flex-row gap-3">
+			<div className="flex flex-col lg:flex-row gap-3">
 				{post.photo && (
 					<>
 						<img
@@ -81,13 +92,11 @@ const PostDetailsPage = () => {
 				)}
 				<div className="flex flex-col gap-3">
 					<h3 className="text-md font-semibold">{post.title}</h3>
-					<div className="text-sm">
-						{content}
-					</div>
+					<div className="text-sm">{content}</div>
 				</div>
 			</div>
-			
-			<hr className='my-3' />
+
+			<hr className="my-3" />
 		</div>
 	);
 };

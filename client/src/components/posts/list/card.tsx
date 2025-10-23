@@ -2,14 +2,17 @@ import type { Post } from '@/types/Post';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import Link from '../../link';
 import { ROUTES } from '@/constants/routes';
+import { Button } from '@/components/ui/button';
+import { PenLineIcon, Trash2Icon } from 'lucide-react';
+import type { User } from '@/types/User';
 
-const PostCard = ({ post }: { post: Post }) => {
+const PostCard = ({ post, user }: { post: Post; user?: User }) => {
 	const content = post.content
 		.split('\n')
 		.map((p, idx) => <p key={`post-${post.id}-${idx}`}>{p}</p>);
 
 	return (
-		<div className="p-3 border transition hover:border-primary rounded-md">
+		<div className="p-3 flex flex-col gap-3 border transition hover:border-primary rounded-md">
 			<Link
 				to={ROUTES.PROFILE_VIEW(post.userId)}
 				className="flex gap-3 items-center"
@@ -40,9 +43,12 @@ const PostCard = ({ post }: { post: Post }) => {
 				</div>
 			</Link>
 
-			<hr className="my-3" />
+			<hr />
 
-			<Link to={ROUTES.POST_VIEW(post.id)} className="flex flex-col gap-3 no-underline hover:no-underline">
+			<Link
+				to={ROUTES.POST_VIEW(post.id)}
+				className="flex flex-col justify-start gap-3 no-underline hover:no-underline flex-1"
+			>
 				{post.photo && (
 					<>
 						<img
@@ -58,6 +64,30 @@ const PostCard = ({ post }: { post: Post }) => {
 					{content}
 				</div>
 			</Link>
+
+			<div className="flex gap-3">
+				{user && user.id === post.userId && (
+					<>
+						<Button
+							size="icon"
+							variant="ghost"
+							className="rounded-full text-primary hover:text-primary ml-auto"
+							asChild
+						>
+							<Link to={ROUTES.POST_EDIT(post.id)}>
+								<PenLineIcon />
+							</Link>
+						</Button>
+						<Button
+							size="icon"
+							variant="ghost"
+							className="rounded-full text-destructive hover:text-destructive"
+						>
+							<Trash2Icon />
+						</Button>
+					</>
+				)}
+			</div>
 		</div>
 	);
 };

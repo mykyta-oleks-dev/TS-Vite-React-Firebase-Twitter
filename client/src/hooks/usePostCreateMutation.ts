@@ -6,29 +6,36 @@ import { uploadFile } from '@/firebase/storage';
 import { handleError } from '@/lib/utils';
 import type { postData } from '@/schemas/posts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 const usePostCreateMutation = () => {
 	const queryClient = useQueryClient();
 	const navigate = useNavigate();
 
-	return useMutation({
-		mutationFn: async (values: postData) => {
-			const photo = values.photo
-				? await uploadFile(values.photo, FOLDERS.POSTS)
-				: null;
+	const [withPhoto, setWithPhoto] = useState(false);
 
-			return await createPost(values, photo);
-		},
-		onSuccess: async (data) => {
-			await queryClient.invalidateQueries({
-				queryKey: [API_ENDPOINTS.POSTS.ROOT],
-			});
+	return {
+		mutation: useMutation({
+			mutationFn: async (values: postData) => {
+				const photo =
+					values.photo && withPhoto
+						? await uploadFile(values.photo, FOLDERS.POSTS)
+						: null;
 
-			navigate(ROUTES.POST_VIEW(data.postId));
-		},
-		onError: (error) => handleError(error, true),
-	});
+				return await createPost(values, photo);
+			},
+			onSuccess: async (data) => {
+				await queryClient.invalidateQueries({
+					queryKey: [API_ENDPOINTS.POSTS.ROOT],
+				});
+
+				navigate(ROUTES.POST_VIEW(data.postId));
+			},
+			onError: (error) => handleError(error, true),
+		}),
+		setWithPhoto,
+	};
 };
 
 export default usePostCreateMutation;

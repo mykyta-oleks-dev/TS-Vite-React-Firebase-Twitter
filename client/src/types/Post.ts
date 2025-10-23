@@ -4,7 +4,7 @@ interface PostPrimitives {
 	id: string;
 	title: string;
 	content: string;
-	photo?: string;
+	photo?: string | null;
 
 	userId: string;
 	userName: string;
