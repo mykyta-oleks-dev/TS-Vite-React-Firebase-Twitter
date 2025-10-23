@@ -35,8 +35,10 @@ const isAuthor = (collectionName: string, idParamName: string) => {
 
 		const data = doc.data();
 
+		console.log(data);
+
 		// Authorization Check
-		if (data && data.authorId === userId) {
+		if (data && data.userId === userId) {
 			next();
 		} else {
 			throw new ForbiddenError(

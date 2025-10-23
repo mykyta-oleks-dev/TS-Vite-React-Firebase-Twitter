@@ -1,9 +1,6 @@
 import { DecodedIdToken } from 'firebase-admin/auth';
 import { PostInfoBody, PostQuery } from './types/body';
-import {
-	assertIsPostInfo,
-	validatePostInfoBody,
-} from './utils/validate';
+import { assertIsPostInfo, validatePostInfoBody } from './utils/validate';
 import { BadRequestError } from '../../middlewares/ErrorHandling';
 import { REQUEST_ERRORS } from './constants/Errors';
 import postsRepository from './posts.repository';
@@ -16,7 +13,7 @@ class PostsService {
 		const errors = validatePostInfoBody(body);
 
 		if (!assertIsPostInfo(body, errors)) {
-			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_CREATE);
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_WRITE, errors);
 		}
 
 		const userRecord = await auth.getUser(user.uid);
@@ -34,7 +31,10 @@ class PostsService {
 		const errors = validateQuery(query);
 
 		if (isNotEmptyObj(errors)) {
-			throw new BadRequestError(SHARED_REQ_ERRORS.BADREQUEST_QUERY, errors);
+			throw new BadRequestError(
+				SHARED_REQ_ERRORS.BADREQUEST_QUERY,
+				errors
+			);
 		}
 
 		const { page, limit } = query;
@@ -42,7 +42,24 @@ class PostsService {
 		const pageParsed = page ? Number.parseInt(page) : undefined;
 		const limitParsed = limit ? Number.parseInt(limit) : undefined;
 
-		return postsRepository.getMany(pageParsed, limitParsed, query.userId, query.search);
+		return postsRepository.getMany(
+			pageParsed,
+			limitParsed,
+			query.userId,
+			query.search
+		);
+	};
+
+	update = async (body: PostInfoBody, id?: string) => {
+		if (!id) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOID);
+
+		const errors = validatePostInfoBody(body);
+
+		if (!assertIsPostInfo(body, errors)) {
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_WRITE, errors);
+		}
+
+		return postsRepository.update(id, body);
 	};
 }
 

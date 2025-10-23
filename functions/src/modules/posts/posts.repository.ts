@@ -1,9 +1,14 @@
 import { UserRecord } from 'firebase-admin/auth';
 import { getAlgoliaClient, getIndex } from '../../config/algolia';
-import { db } from '../../config/firebase';
+import { auth, db } from '../../config/firebase';
 import { NotFoundError } from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
-import { Post, postConverter } from '../../shared/types/data/Post';
+import {
+	Post,
+	postConverter,
+	PostData,
+	PostResponse,
+} from '../../shared/types/data/Post';
 import { REQUEST_ERRORS } from './constants/Errors';
 import { AlgoliaPost } from './types/algolia';
 import { PostInfo } from './types/body';
@@ -30,13 +35,14 @@ class PostsRepository {
 		const now = new Date();
 
 		const postData: Post = {
-			...values,
 			id,
+			content: values.content,
+			title: values.title,
+			photo: values.photo ?? null,
+
 			createdAt: now,
 			updatedAt: now,
 			userId: user.uid,
-			userName: user.displayName ?? user.email ?? user.uid,
-			userAvatar: user.photoURL ?? null,
 		};
 
 		await newPostRef.set(postData);
@@ -69,7 +75,15 @@ class PostsRepository {
 
 		const post = postConverter.fromFirestore(docSnapshot);
 
-		return { post };
+		const user = await auth.getUser(post.userId);
+
+		const postResponse: PostResponse = {
+			...post,
+			userName: user.displayName ?? user.email ?? user.uid,
+			userAvatar: user.photoURL ?? null,
+		};
+
+		return { post: postResponse };
 	};
 
 	private readonly _getMany = async (
@@ -117,7 +131,7 @@ class PostsRepository {
 				query: search,
 				hitsPerPage: Math.max(limit, 1),
 				page: Math.max(page - 1, 0),
-				filters: userId ? `userId:${userId}` : undefined
+				filters: userId ? `userId:${userId}` : undefined,
 			},
 		});
 
@@ -133,7 +147,11 @@ class PostsRepository {
 		const snapshot = await postsQuery.get();
 		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
 
-		return { posts, total: results.nbHits ?? 0, pages: results.nbPages ?? 0 };
+		return {
+			posts,
+			total: results.nbHits ?? 0,
+			pages: results.nbPages ?? 0,
+		};
 	};
 
 	getMany = async (
@@ -146,7 +164,86 @@ class PostsRepository {
 			? await this._getManyWithSearch(search, page, limit, userId)
 			: await this._getMany(page, limit, userId);
 
-		return results;
+		const postsPromises = results.posts.map(async (p) => {
+			const user = await auth.getUser(p.userId);
+
+			const postResponse: PostResponse = {
+				...p,
+				userName: user.displayName ?? user.email ?? user.uid,
+				userAvatar: user.photoURL ?? null,
+			};
+
+			return postResponse;
+		});
+
+		const posts = await Promise.all(postsPromises);
+
+		return {
+			...results,
+			posts,
+		};
+	};
+
+	update = async (id: string, values: PostInfo) => {
+		const postSnapshot = await PostsRepository._getPostSnapshot(id);
+		const postRef = postSnapshot.ref;
+
+		const postData = postConverter.fromFirestore(postSnapshot);
+
+		const postInfo: Pick<PostData, 'title' | 'content' | 'photo'> = {
+			content: values.content,
+			title: values.title,
+			photo: values.photo ?? postData.photo ?? null,
+		};
+
+		await postRef.update({
+			...postInfo,
+			updatedAt: new Date(),
+		});
+
+		try {
+			const algoliaClient = getAlgoliaClient(true);
+			const indexName = getIndex();
+
+			const { hits } = await algoliaClient.searchSingleIndex<AlgoliaPost>(
+				{
+					indexName,
+					searchParams: {
+						filters: `id:${postRef.id}`,
+					},
+				}
+			);
+
+			if (hits.length === 0) {
+				const body: AlgoliaPost = {
+					id: postRef.id,
+					title: postInfo.title,
+					content: postInfo.content,
+					userId: postData.userId,
+				};
+
+				await algoliaClient.saveObject({
+					indexName,
+					body,
+				});
+			} else {
+				const hit = hits[0];
+
+				await algoliaClient.partialUpdateObject({
+					indexName,
+					objectID: hit.objectID,
+					attributesToUpdate: {
+						title: postInfo.title,
+						content: postInfo.content,
+					},
+				});
+			}
+		} catch (err) {
+			await postRef.set(postData);
+			throw err;
+		}
+
+		return { id: postRef.id };
 	};
 }
 

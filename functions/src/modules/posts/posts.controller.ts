@@ -38,6 +38,22 @@ class PostsController {
 
 		res.status(200).json({ message: 'Posts fetched succesfuly!', posts, pages, total });
 	};
+
+	update: RequestHandler = async (
+		req: Request<{ id?: string }, {}, PostInfoBody>,
+		res
+	) => {
+		const { id } = req.params;
+
+		const body = req.body;
+
+		await postsService.update(body, id);
+
+		res.status(200).json({
+			message: 'Successfuly updated a post!',
+			postId: id,
+		});
+	}
 }
 
 const postsController = new PostsController();

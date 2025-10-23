@@ -1,19 +1,21 @@
-import { DocumentData, FirestoreDataConverter } from "firebase-admin/firestore";
-import { AppObject, DBObject } from "./common";
+import { DocumentData, FirestoreDataConverter } from 'firebase-admin/firestore';
+import { AppObject, DBObject } from './common';
 
 export interface PostData {
 	title: string;
 	content: string;
-	photo?: string;
-
+	photo?: string | null;
 	userId: string;
+}
+
+export interface PostDB extends PostData, DBObject {}
+
+export interface Post extends PostData, AppObject {}
+
+export interface PostResponse extends Post {
 	userName: string;
 	userAvatar: string | null;
 }
-
-export interface PostDB extends PostData, DBObject {};
-
-export interface Post extends PostData, AppObject {};
 
 export const postConverter: FirestoreDataConverter<Post> = {
 	toFirestore(post): DocumentData {
