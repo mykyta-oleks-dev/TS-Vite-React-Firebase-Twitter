@@ -6,6 +6,10 @@ export interface PostData {
 	content: string;
 	photo: string | null;
 	userId: string;
+
+	likes?: number;
+	dislikes?: number;
+	compositeScore: number;
 }
 
 export interface PostDB extends PostData, DBObject {}

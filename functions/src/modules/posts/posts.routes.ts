@@ -24,4 +24,8 @@ postsRoutes.delete(
 	postsController.delete
 );
 
+// Likes submodule
+postsRoutes.put(ROUTES.LIKE, authenticate, postsController.like);
+postsRoutes.delete(ROUTES.LIKE, authenticate, postsController.removeLike);
+
 export default postsRoutes;

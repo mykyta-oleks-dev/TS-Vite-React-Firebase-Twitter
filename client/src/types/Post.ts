@@ -9,6 +9,10 @@ interface PostPrimitives {
 	userId: string;
 	userName: string;
 	userAvatar?: string;
+
+	likes?: number;
+	dislikes?: number;
+	compositeScore: number;
 }
 
 export interface PostApi extends PostPrimitives, APIObject {}

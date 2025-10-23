@@ -1,12 +1,12 @@
 import { DecodedIdToken } from 'firebase-admin/auth';
-import { PostInfoBody, PostQuery } from './types/body';
-import { assertIsPostInfo, validatePostInfoBody } from './utils/validate';
+import { auth } from '../../config/firebase';
 import { BadRequestError } from '../../middlewares/ErrorHandling';
+import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors';
+import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation';
 import { REQUEST_ERRORS } from './constants/Errors';
 import postsRepository from './posts.repository';
-import { auth } from '../../config/firebase';
-import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation';
-import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors';
+import { PostInfoBody, PostQuery } from './types/body';
+import { assertIsPostInfo, isLikeAction, validatePostInfoBody } from './utils/validate';
 
 class PostsService {
 	create = async (user: DecodedIdToken, body: PostInfoBody) => {
@@ -66,6 +66,22 @@ class PostsService {
 		if (!id) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOID);
 
 		await postsRepository.delete(id);
+	};
+
+	like = async (user: DecodedIdToken, id?: string, type?: string) => {
+		if (!id) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOID);
+
+		if (!isLikeAction(type)) {
+			throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_LIKETYPE)
+		}
+
+		await postsRepository.like(user, id, type);
+	};
+
+	removeLike = async (user: DecodedIdToken, id?: string) => {
+		if (!id) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOID);
+
+		await postsRepository.removeLike(user, id);
 	};
 }
 

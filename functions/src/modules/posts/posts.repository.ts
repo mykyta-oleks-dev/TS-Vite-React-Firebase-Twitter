@@ -1,8 +1,14 @@
-import { UserRecord } from 'firebase-admin/auth';
+import { DecodedIdToken, UserRecord } from 'firebase-admin/auth';
+import { FieldValue } from 'firebase-admin/firestore';
 import { getAlgoliaClient, getIndex } from '../../config/algolia';
 import { auth, db } from '../../config/firebase';
-import { AppError, NotFoundError } from '../../middlewares/ErrorHandling';
+import {
+	AppError,
+	BadRequestError,
+	NotFoundError,
+} from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
+import { LikeAction, LikeDB } from '../../shared/types/data/Like';
 import {
 	Post,
 	postConverter,
@@ -12,6 +18,9 @@ import {
 import { REQUEST_ERRORS } from './constants/Errors';
 import { AlgoliaPost } from './types/algolia';
 import { PostInfo } from './types/body';
+
+// For each time period (hour) passed score will decrease by...
+const WEIGHT_FACTOR = 1;
 
 class PostsRepository {
 	private static readonly _getPostSnapshot = async (id: string) => {
@@ -43,6 +52,7 @@ class PostsRepository {
 			createdAt: now,
 			updatedAt: now,
 			userId: user.uid,
+			compositeScore: 0,
 		};
 
 		await newPostRef.set(postData);
@@ -93,7 +103,8 @@ class PostsRepository {
 	) => {
 		let postsQuery = db
 			.collection(COLLECTIONS.POSTS)
-			.orderBy('createdAt', 'desc');
+			.orderBy('createdAt', 'desc')
+			.orderBy('compositeScore', 'desc');
 
 		if (userId) {
 			postsQuery = postsQuery.where('userId', '==', userId);
@@ -150,6 +161,7 @@ class PostsRepository {
 		let postsQuery = db
 			.collection(COLLECTIONS.POSTS)
 			.orderBy('createdAt', 'desc')
+			.orderBy('compositeScore', 'desc')
 			.where('id', 'in', postIds);
 
 		const snapshot = await postsQuery.get();
@@ -285,6 +297,135 @@ class PostsRepository {
 		}
 
 		await postRef.delete();
+	};
+
+	private _calculateScore(post: Post) {
+		const netLikes = (post.likes || 0) - (post.dislikes || 0);
+		const ageInMs = Date.now() - post.createdAt.getTime();
+		const ageInHours = ageInMs / (1000 * 60 * 60);
+
+		return netLikes - ageInHours * WEIGHT_FACTOR;
+	}
+
+	like = async (user: DecodedIdToken, id: string, type: LikeAction) => {
+		const postRef = db.collection(COLLECTIONS.POSTS).doc(id);
+
+		const likeRef = postRef.collection(COLLECTIONS.LIKES).doc(user.uid);
+
+		await db.runTransaction(async (t) => {
+			const postSnap = await t.get(postRef.withConverter(postConverter));
+			const post = postSnap.data();
+
+			if (!postSnap.exists || !post) {
+				throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
+			}
+
+			const likeSnap = await t.get(likeRef);
+
+			const oldLikeType: LikeAction | undefined = likeSnap.exists
+				? (likeSnap.data() as LikeDB).type
+				: undefined;
+
+			if (oldLikeType === type) {
+				throw new BadRequestError(
+					REQUEST_ERRORS.BADREQUEST_DUPACTION(type)
+				);
+			}
+
+			const updates: { [key: string]: FieldValue | number } = {};
+
+			let likesChange = 0;
+			let dislikesChange = 0;
+
+			if (oldLikeType === 'like') {
+				likesChange--;
+			} else if (oldLikeType === 'dislike') {
+				dislikesChange--;
+			}
+
+			if (type === 'like') {
+				likesChange++;
+			} else {
+				dislikesChange++;
+			}
+
+			if (likesChange !== 0) {
+				updates.likes = FieldValue.increment(likesChange);
+			}
+			if (dislikesChange !== 0) {
+				updates.dislikes = FieldValue.increment(dislikesChange);
+			}
+
+			const newPost: Post = {
+				...post,
+				likes: (post.likes || 0) + likesChange,
+				dislikes: (post.dislikes || 0) + dislikesChange,
+			};
+
+			const newScore = this._calculateScore(newPost);
+			updates.compositeScore = newScore;
+
+			t.update(postRef, updates);
+
+			t.set(likeRef, {
+				type,
+				timestamp: FieldValue.serverTimestamp(),
+			});
+		});
+	};
+
+	removeLike = async (user: DecodedIdToken, id: string) => {
+		const postRef = db.collection(COLLECTIONS.POSTS).doc(id);
+
+		const likeRef = postRef.collection(COLLECTIONS.LIKES).doc(user.uid);
+
+		await db.runTransaction(async (t) => {
+			const postSnap = await t.get(postRef.withConverter(postConverter));
+			const post = postSnap.data();
+
+			if (!postSnap.exists || !post) {
+				throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
+			}
+
+			const likeSnap = await t.get(likeRef);
+
+			const likeData = (likeSnap.data() as LikeDB) || undefined;
+
+			if (!likeData) {
+				throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_LIKE);
+			}
+
+			const updates: { [key: string]: FieldValue | number } = {};
+
+			let likesChange = 0;
+			let dislikesChange = 0;
+
+			if (likeData.type === 'like') {
+				likesChange--;
+			} else {
+				dislikesChange--;
+			}
+
+			if (likesChange !== 0) {
+				updates.likes = FieldValue.increment(likesChange);
+			}
+			if (dislikesChange !== 0) {
+				updates.dislikes = FieldValue.increment(dislikesChange);
+			}
+
+			const newPost: Post = {
+				...post,
+				likes: (post.likes || 0) + likesChange,
+				dislikes: (post.dislikes || 0) + dislikesChange,
+			};
+
+			const newScore = this._calculateScore(newPost);
+			updates.compositeScore = newScore;
+
+			t.update(postRef, updates);
+
+			t.delete(likeRef);
+		});
 	};
 }
 

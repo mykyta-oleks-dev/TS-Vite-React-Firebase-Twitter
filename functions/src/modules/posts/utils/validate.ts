@@ -1,11 +1,15 @@
 import { urlRegex } from '../../../shared/constants/Errors';
-import { assertIsNotErroneous, isEmptyString } from '../../../shared/utils/validation';
+import { LikeAction, likeActions } from '../../../shared/types/data/Like';
+import {
+	assertIsNotErroneous,
+	isEmptyString,
+} from '../../../shared/utils/validation';
 import { TITLE_MIN_LENGTH, VALIDATION_ERRORS } from '../constants/Errors';
 import { PostInfo, PostInfoBody, PostInfoErrors } from '../types/body';
 
 export const validatePostInfoBody = (body: PostInfoBody) => {
 	const { title, content, photo } = body;
-	
+
 	const errors: PostInfoErrors = {};
 
 	if (isEmptyString(title)) {
@@ -30,3 +34,8 @@ export const assertIsPostInfo = assertIsNotErroneous<
 	PostInfoBody,
 	PostInfoErrors
 >;
+
+export function isLikeAction(value?: string): value is LikeAction {
+	if (!value) return false;
+	return likeActions.includes(value as LikeAction);
+}
