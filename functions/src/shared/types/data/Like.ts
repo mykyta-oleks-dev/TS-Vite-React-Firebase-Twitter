@@ -14,4 +14,6 @@ export interface LikeDB extends LikeData {
 
 export interface Like extends LikeData {
 	timestamp: Date;
+	userId: string;
+	postId: string;
 }

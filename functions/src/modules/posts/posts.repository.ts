@@ -8,7 +8,7 @@ import {
 	NotFoundError,
 } from '../../middlewares/ErrorHandling';
 import { COLLECTIONS } from '../../shared/constants/Collections';
-import { LikeAction, LikeDB } from '../../shared/types/data/Like';
+import { Like, LikeAction, LikeDB } from '../../shared/types/data/Like';
 import {
 	Post,
 	postConverter,
@@ -17,7 +17,7 @@ import {
 } from '../../shared/types/data/Post';
 import { REQUEST_ERRORS } from './constants/Errors';
 import { AlgoliaPost } from './types/algolia';
-import { PostInfo } from './types/body';
+import { PostInfo, PostQuery } from './types/body';
 
 // For each time period (hour) passed score will decrease by...
 const WEIGHT_FACTOR = 1;
@@ -99,12 +99,14 @@ class PostsRepository {
 	private readonly _getMany = async (
 		page = 1,
 		limit = 10,
-		userId?: string
+		userId?: string,
+		sort?: PostQuery['sort']
 	) => {
-		let postsQuery = db
-			.collection(COLLECTIONS.POSTS)
-			.orderBy('createdAt', 'desc')
-			.orderBy('compositeScore', 'desc');
+		const postsRef = db.collection(COLLECTIONS.POSTS);
+		let postsQuery =
+			sort === 'hot'
+				? postsRef.orderBy('compositeScore', 'desc')
+				: postsRef.orderBy('createdAt', 'desc');
 
 		if (userId) {
 			postsQuery = postsQuery.where('userId', '==', userId);
@@ -131,7 +133,8 @@ class PostsRepository {
 		search: string,
 		page = 1,
 		limit = 10,
-		userId?: string
+		userId?: string,
+		sort?: PostQuery['sort']
 	) => {
 		const algoliaClient = getAlgoliaClient();
 		const indexName = getIndex();
@@ -158,11 +161,14 @@ class PostsRepository {
 			};
 		}
 
-		let postsQuery = db
-			.collection(COLLECTIONS.POSTS)
-			.orderBy('createdAt', 'desc')
-			.orderBy('compositeScore', 'desc')
-			.where('id', 'in', postIds);
+		const postsRef = db.collection(COLLECTIONS.POSTS);
+
+		let postsQuery =
+			sort === 'hot'
+				? postsRef.orderBy('compositeScore', 'desc')
+				: postsRef.orderBy('createdAt', 'desc');
+
+		postsQuery = postsQuery.where('id', 'in', postIds);
 
 		const snapshot = await postsQuery.get();
 		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
@@ -177,12 +183,14 @@ class PostsRepository {
 	getMany = async (
 		page = 1,
 		limit = 10,
+		requestUser?: DecodedIdToken,
 		userId?: string,
-		search?: string
+		search?: string,
+		sort?: PostQuery['sort']
 	) => {
 		const results = search
-			? await this._getManyWithSearch(search, page, limit, userId)
-			: await this._getMany(page, limit, userId);
+			? await this._getManyWithSearch(search, page, limit, userId, sort)
+			: await this._getMany(page, limit, userId, sort);
 
 		const postsPromises = results.posts.map(async (p) => {
 			const user = await auth.getUser(p.userId);
@@ -197,10 +205,28 @@ class PostsRepository {
 		});
 
 		const posts = await Promise.all(postsPromises);
+		const postIds = posts.map((p) => p.id);
+
+		const userLikes = requestUser
+			? (
+					await db
+						.collectionGroup('likes')
+						.where('userId', '==', requestUser.uid)
+						.where('postId', 'in', postIds)
+						.get()
+			  ).docs.map((d) => {
+					const docData = d.data() as LikeDB;
+					return {
+						...docData,
+						timestamp: docData.timestamp.toDate(),
+					} as Like;
+			  })
+			: undefined;
 
 		return {
 			...results,
 			posts,
+			userLikes,
 		};
 	};
 
@@ -307,8 +333,8 @@ class PostsRepository {
 		return netLikes - ageInHours * WEIGHT_FACTOR;
 	}
 
-	like = async (user: DecodedIdToken, id: string, type: LikeAction) => {
-		const postRef = db.collection(COLLECTIONS.POSTS).doc(id);
+	like = async (user: DecodedIdToken, postId: string, type: LikeAction) => {
+		const postRef = db.collection(COLLECTIONS.POSTS).doc(postId);
 
 		const likeRef = postRef.collection(COLLECTIONS.LIKES).doc(user.uid);
 
@@ -369,6 +395,8 @@ class PostsRepository {
 
 			t.set(likeRef, {
 				type,
+				userId: user.uid,
+				postId: postId,
 				timestamp: FieldValue.serverTimestamp(),
 			});
 		});

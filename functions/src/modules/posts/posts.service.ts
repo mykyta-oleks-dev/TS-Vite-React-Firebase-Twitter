@@ -27,7 +27,7 @@ class PostsService {
 		return postsRepository.getOne(id);
 	};
 
-	getMany = async (query: PostQuery) => {
+	getMany = async (query: PostQuery, user?: DecodedIdToken) => {
 		const errors = validateQuery(query);
 
 		if (isNotEmptyObj(errors)) {
@@ -45,8 +45,10 @@ class PostsService {
 		return postsRepository.getMany(
 			pageParsed,
 			limitParsed,
+			user,
 			query.userId,
-			query.search
+			query.search,
+			query.sort,
 		);
 	};
 

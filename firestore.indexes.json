@@ -1,4 +1,9 @@
 {
-  "indexes": [],
-  "fieldOverrides": []
+	"indexes": [
+		{
+			"collectionGroup": "likes",
+			"queryScope": "COLLECTION_GROUP"
+		}
+	],
+	"fieldOverrides": []
 }
