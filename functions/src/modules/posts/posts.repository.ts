@@ -1,13 +1,18 @@
 import { DecodedIdToken, UserRecord } from 'firebase-admin/auth';
-import { FieldValue } from 'firebase-admin/firestore';
+import { DocumentReference, FieldValue } from 'firebase-admin/firestore';
 import { getAlgoliaClient, getIndex } from '../../config/algolia';
 import { auth, db } from '../../config/firebase';
 import {
 	AppError,
-	BadRequestError,
+	ConflictError,
 	NotFoundError,
 } from '../../middlewares/ErrorHandling';
-import { COLLECTIONS } from '../../shared/constants/Collections';
+import { COLLECTIONS_KEYS } from '../../shared/constants/Collections';
+import {
+	Comment,
+	commentConverter,
+	CommentResponse,
+} from '../../shared/types/data/Comment';
 import { Like, LikeAction, LikeDB } from '../../shared/types/data/Like';
 import {
 	Post,
@@ -17,28 +22,15 @@ import {
 } from '../../shared/types/data/Post';
 import { REQUEST_ERRORS } from './constants/Errors';
 import { AlgoliaPost } from './types/algolia';
-import { PostInfo, PostQuery } from './types/body';
+import { CommentInfo } from './types/commentBody';
+import { PostInfo, PostQuery } from './types/postBody';
 
 // For each time period (hour) passed score will decrease by...
 const WEIGHT_FACTOR = 1;
 
 class PostsRepository {
-	private static readonly _getPostSnapshot = async (id: string) => {
-		const postsSnapshot = await db
-			.collection(COLLECTIONS.POSTS)
-			.where('id', '==', id)
-			.limit(1)
-			.get();
-
-		if (postsSnapshot.empty) {
-			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
-		}
-
-		return postsSnapshot.docs[0];
-	};
-
 	create = async (user: UserRecord, values: PostInfo) => {
-		const newPostRef = db.collection(COLLECTIONS.POSTS).doc();
+		const newPostRef = db.collection(COLLECTIONS_KEYS.POSTS).doc();
 		const id = newPostRef.id;
 
 		const now = new Date();
@@ -80,24 +72,12 @@ class PostsRepository {
 		return { id };
 	};
 
-	private readonly _getLikes = async (uid: string, postIds: string[]) => {
-		return (
-			await db
-				.collectionGroup('likes')
-				.where('userId', '==', uid)
-				.where('postId', 'in', postIds)
-				.get()
-		).docs.map((d) => {
-			const docData = d.data() as LikeDB;
-			return {
-				...docData,
-				timestamp: docData.timestamp.toDate(),
-			} as Like;
-		});
-	};
-
-	getOne = async (id: string, requestUser?: DecodedIdToken) => {
-		const docSnapshot = await PostsRepository._getPostSnapshot(id);
+	getOne = async (
+		id: string,
+		requestUser?: DecodedIdToken,
+		withComments?: boolean
+	) => {
+		const docSnapshot = await this._getPostSnapshot(id);
 
 		const post = postConverter.fromFirestore(docSnapshot);
 
@@ -112,94 +92,31 @@ class PostsRepository {
 		const userLikes = requestUser
 			? await this._getLikes(requestUser.uid, [id])
 			: undefined;
-		
-		const userLike = userLikes && userLikes.length > 0 ? userLikes[0] : undefined;
 
-		return { post: postResponse, userLike };
-	};
+		const userLike =
+			userLikes && userLikes.length > 0 ? userLikes[0] : undefined;
 
-	private readonly _getMany = async (
-		page = 1,
-		limit = 10,
-		userId?: string,
-		sort?: PostQuery['sort']
-	) => {
-		const postsRef = db.collection(COLLECTIONS.POSTS);
-		let postsQuery =
-			sort === 'hot'
-				? postsRef.orderBy('compositeScore', 'desc')
-				: postsRef.orderBy('createdAt', 'desc');
+		const comments = withComments
+			? await Promise.all(
+					(
+						await this._getComments(docSnapshot.ref)
+					).map(async (c) => {
+						const user = await auth.getUser(c.userId);
 
-		if (userId) {
-			postsQuery = postsQuery.where('userId', '==', userId);
-		}
+						const commentResponse: CommentResponse = {
+							...c,
 
-		const finalPostsQuery = postsQuery
-			.limit(Math.max(limit, 1))
-			.offset(Math.max(page - 1, 0) * limit);
+							userName:
+								user.displayName ?? user.email ?? user.uid,
+							userAvatar: user.photoURL ?? null,
+						};
 
-		const postsSnapshot = await finalPostsQuery.get();
+						return commentResponse;
+					})
+			  )
+			: undefined;
 
-		const total = (await postsQuery.count().get()).data().count;
-
-		const pages = Math.ceil(total / limit);
-
-		const posts = postsSnapshot.docs.map((d) =>
-			postConverter.fromFirestore(d)
-		);
-
-		return { posts, total, pages };
-	};
-
-	private readonly _getManyWithSearch = async (
-		search: string,
-		page = 1,
-		limit = 10,
-		userId?: string,
-		sort?: PostQuery['sort']
-	) => {
-		const algoliaClient = getAlgoliaClient();
-		const indexName = getIndex();
-
-		const results = await algoliaClient.searchSingleIndex<AlgoliaPost>({
-			indexName,
-			searchParams: {
-				query: search,
-				hitsPerPage: Math.max(limit, 1),
-				page: Math.max(page - 1, 0),
-				filters: userId ? `userId:${userId}` : undefined,
-			},
-		});
-
-		const { hits } = results;
-
-		const postIds = hits.map((hit) => hit.id);
-
-		if (!postIds.length) {
-			return {
-				posts: [],
-				total: results.nbHits ?? 0,
-				pages: results.nbPages ?? 0,
-			};
-		}
-
-		const postsRef = db.collection(COLLECTIONS.POSTS);
-
-		let postsQuery =
-			sort === 'hot'
-				? postsRef.orderBy('compositeScore', 'desc')
-				: postsRef.orderBy('createdAt', 'desc');
-
-		postsQuery = postsQuery.where('id', 'in', postIds);
-
-		const snapshot = await postsQuery.get();
-		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
-
-		return {
-			posts,
-			total: results.nbHits ?? 0,
-			pages: results.nbPages ?? 0,
-		};
+		return { post: postResponse, userLike, comments };
 	};
 
 	getMany = async (
@@ -241,7 +158,7 @@ class PostsRepository {
 	};
 
 	update = async (id: string, values: PostInfo) => {
-		const postSnapshot = await PostsRepository._getPostSnapshot(id);
+		const postSnapshot = await this._getPostSnapshot(id);
 		const postRef = postSnapshot.ref;
 
 		const postData = postConverter.fromFirestore(postSnapshot);
@@ -306,7 +223,7 @@ class PostsRepository {
 	};
 
 	delete = async (id: string) => {
-		const postSnapshot = await PostsRepository._getPostSnapshot(id);
+		const postSnapshot = await this._getPostSnapshot(id);
 		const postRef = postSnapshot.ref;
 
 		const algoliaClient = getAlgoliaClient(true);
@@ -335,6 +252,8 @@ class PostsRepository {
 		await postRef.delete();
 	};
 
+	// Likes and score write
+
 	private _calculateScore(post: Post) {
 		const netLikes = (post.likes || 0) - (post.dislikes || 0);
 		const ageInMs = Date.now() - post.createdAt.getTime();
@@ -344,16 +263,18 @@ class PostsRepository {
 	}
 
 	like = async (user: DecodedIdToken, postId: string, type: LikeAction) => {
-		const postRef = db.collection(COLLECTIONS.POSTS).doc(postId);
+		const postRef = db.collection(COLLECTIONS_KEYS.POSTS).doc(postId);
 
-		const likeRef = postRef.collection(COLLECTIONS.LIKES).doc(user.uid);
+		const likeRef = postRef
+			.collection(COLLECTIONS_KEYS.LIKES)
+			.doc(user.uid);
 
 		await db.runTransaction(async (t) => {
 			const postSnap = await t.get(postRef.withConverter(postConverter));
 			const post = postSnap.data();
 
 			if (!postSnap.exists || !post) {
-				throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
+				throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_POST);
 			}
 
 			const likeSnap = await t.get(likeRef);
@@ -363,8 +284,8 @@ class PostsRepository {
 				: undefined;
 
 			if (oldLikeType === type) {
-				throw new BadRequestError(
-					REQUEST_ERRORS.BADREQUEST_DUPACTION(type)
+				throw new ConflictError(
+					REQUEST_ERRORS.CONFLICT_DUP_ACTION(type)
 				);
 			}
 
@@ -412,17 +333,19 @@ class PostsRepository {
 		});
 	};
 
-	removeLike = async (user: DecodedIdToken, id: string) => {
-		const postRef = db.collection(COLLECTIONS.POSTS).doc(id);
+	removeLike = async (user: DecodedIdToken, postId: string) => {
+		const postRef = db.collection(COLLECTIONS_KEYS.POSTS).doc(postId);
 
-		const likeRef = postRef.collection(COLLECTIONS.LIKES).doc(user.uid);
+		const likeRef = postRef
+			.collection(COLLECTIONS_KEYS.LIKES)
+			.doc(user.uid);
 
 		await db.runTransaction(async (t) => {
 			const postSnap = await t.get(postRef.withConverter(postConverter));
 			const post = postSnap.data();
 
 			if (!postSnap.exists || !post) {
-				throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
+				throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_POST);
 			}
 
 			const likeSnap = await t.get(likeRef);
@@ -430,7 +353,7 @@ class PostsRepository {
 			const likeData = (likeSnap.data() as LikeDB) || undefined;
 
 			if (!likeData) {
-				throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_LIKE);
+				throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_LIKE);
 			}
 
 			const updates: { [key: string]: FieldValue | number } = {};
@@ -465,6 +388,183 @@ class PostsRepository {
 			t.delete(likeRef);
 		});
 	};
+
+	// Comments write
+
+	createComment = async (
+		user: DecodedIdToken,
+		postId: string,
+		values: CommentInfo
+	) => {
+		const docSnapshot = await this._getPostSnapshot(postId);
+
+		values.responseTo &&
+			(await this._getComment(docSnapshot.ref, values.responseTo));
+
+		const commentDoc = docSnapshot.ref
+			.collection(COLLECTIONS_KEYS.COMMENTS)
+			.doc();
+		const id = commentDoc.id;
+
+		const now = new Date();
+
+		const newCommentData: Comment = {
+			id,
+			text: values.text,
+			createdAt: now,
+			updatedAt: now,
+			postId,
+			responseTo: values.responseTo ?? null,
+			userId: user.uid,
+		};
+
+		await commentDoc.create(newCommentData);
+
+		const comment = await this._getComment(docSnapshot.ref, id);
+
+		return { comment };
+	};
+
+	// Private helper methods
+
+	private readonly _getPostSnapshot = async (id: string) => {
+		const postsSnapshot = await db
+			.collection(COLLECTIONS_KEYS.POSTS)
+			.where('id', '==', id)
+			.limit(1)
+			.get();
+
+		if (postsSnapshot.empty) {
+			throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_POST);
+		}
+
+		return postsSnapshot.docs[0];
+	};
+
+	private readonly _getManyWithSearch = async (
+		search: string,
+		page = 1,
+		limit = 10,
+		userId?: string,
+		sort?: PostQuery['sort']
+	) => {
+		const algoliaClient = getAlgoliaClient();
+		const indexName = getIndex();
+
+		const results = await algoliaClient.searchSingleIndex<AlgoliaPost>({
+			indexName,
+			searchParams: {
+				query: search,
+				hitsPerPage: Math.max(limit, 1),
+				page: Math.max(page - 1, 0),
+				filters: userId ? `userId:${userId}` : undefined,
+			},
+		});
+
+		const { hits } = results;
+
+		const postIds = hits.map((hit) => hit.id);
+
+		if (!postIds.length) {
+			return {
+				posts: [],
+				total: results.nbHits ?? 0,
+				pages: results.nbPages ?? 0,
+			};
+		}
+
+		const postsRef = db.collection(COLLECTIONS_KEYS.POSTS);
+
+		let postsQuery =
+			sort === 'hot'
+				? postsRef.orderBy('compositeScore', 'desc')
+				: postsRef.orderBy('createdAt', 'desc');
+
+		postsQuery = postsQuery.where('id', 'in', postIds);
+
+		const snapshot = await postsQuery.get();
+		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
+
+		return {
+			posts,
+			total: results.nbHits ?? 0,
+			pages: results.nbPages ?? 0,
+		};
+	};
+
+	private readonly _getMany = async (
+		page = 1,
+		limit = 10,
+		userId?: string,
+		sort?: PostQuery['sort']
+	) => {
+		const postsRef = db.collection(COLLECTIONS_KEYS.POSTS);
+		let postsQuery =
+			sort === 'hot'
+				? postsRef.orderBy('compositeScore', 'desc')
+				: postsRef.orderBy('createdAt', 'desc');
+
+		if (userId) {
+			postsQuery = postsQuery.where('userId', '==', userId);
+		}
+
+		const finalPostsQuery = postsQuery
+			.limit(Math.max(limit, 1))
+			.offset(Math.max(page - 1, 0) * limit);
+
+		const postsSnapshot = await finalPostsQuery.get();
+
+		const total = (await postsQuery.count().get()).data().count;
+
+		const pages = Math.ceil(total / limit);
+
+		const posts = postsSnapshot.docs.map((d) =>
+			postConverter.fromFirestore(d)
+		);
+
+		return { posts, total, pages };
+	};
+
+	private readonly _getLikes = async (uid: string, postIds: string[]) => {
+		return (
+			await db
+				.collectionGroup('likes')
+				.where('userId', '==', uid)
+				.where('postId', 'in', postIds)
+				.get()
+		).docs.map((d) => {
+			const docData = d.data() as LikeDB;
+			return {
+				...docData,
+				timestamp: docData.timestamp.toDate(),
+			} as Like;
+		});
+	};
+
+	private readonly _getComment = async (
+		postRef: DocumentReference,
+		id: string
+	) => {
+		const comment = (
+			await postRef
+				.collection(COLLECTIONS_KEYS.COMMENTS)
+				.doc(id)
+				.withConverter(commentConverter)
+				.get()
+		).data();
+
+		if (!comment) throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_COMMENT);
+
+		return comment;
+	};
+
+	private readonly _getComments = async (postRef: DocumentReference) =>
+		(
+			await postRef
+				.collection(COLLECTIONS_KEYS.COMMENTS)
+				.withConverter(commentConverter)
+				.get()
+		).docs.map((p) => p.data());
 }
 
 const postsRepository = new PostsRepository();

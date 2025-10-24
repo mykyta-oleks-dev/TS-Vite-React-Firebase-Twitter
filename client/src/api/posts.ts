@@ -36,9 +36,14 @@ export const getPosts = async (
 	return data;
 };
 
-export const getOnePost = async (id: string) => {
+export const getOnePost = async (id: string, withComments = true) => {
 	const res = await axiosInstance.get<OnePost>(
-		API_ENDPOINTS.POSTS.GET_ONE(id)
+		API_ENDPOINTS.POSTS.GET_ONE(id),
+		{
+			params: {
+				withComments,
+			},
+		}
 	);
 
 	const data = res.data;

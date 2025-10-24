@@ -35,7 +35,7 @@ const PostDetailsPage = () => {
 		.split('\n')
 		.map((p, idx) => <p key={`post-${post.id}-${idx}`}>{p}</p>);
 
-	console.log({ post, userLike });
+	console.log(data);
 
 	return (
 		<div>

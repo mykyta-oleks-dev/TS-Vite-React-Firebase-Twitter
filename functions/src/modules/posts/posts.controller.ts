@@ -1,9 +1,11 @@
 import { Request, RequestHandler } from 'express';
 import { getUserOrThrowError } from '../../shared/utils/authentication';
-import { PostInfoBody, PostQuery } from './types/body';
+import { PostInfoBody, PostQuery } from './types/postBody';
 import postsService from './posts.service';
 import { HTTP } from '../../shared/constants/HTTP';
 import { LikeAction } from '../../shared/types/data/Like';
+import { CommentInfoBody } from './types/commentBody';
+import { RESPONSES } from './constants/Responses';
 
 class PostsController {
 	create: RequestHandler = async (
@@ -17,7 +19,7 @@ class PostsController {
 		const { id } = await postsService.create(user, body);
 
 		res.status(HTTP.CREATED).json({
-			message: 'Successfuly created a post!',
+			message: RESPONSES.POST.CREATE,
 			postId: id,
 		});
 	};
@@ -25,13 +27,15 @@ class PostsController {
 	getOne: RequestHandler = async (req: Request<{ id?: string }>, res) => {
 		const { id } = req.params;
 		const user = req.user;
+		const withComments = req.query.withComments === 'true';
 
-		const { post, userLike } = await postsService.getOne(id, user);
+		const { post, userLike, comments } = await postsService.getOne(id, user, withComments);
 
 		res.status(HTTP.OK).json({
-			message: 'Post fetched successfuly!',
+			message: RESPONSES.POST.GET_ONE,
 			post,
-			userLike
+			userLike,
+			comments
 		});
 	};
 
@@ -42,10 +46,13 @@ class PostsController {
 		const query = req.query;
 		const user = req.user;
 
-		const { posts, pages, total, userLikes } = await postsService.getMany(query, user);
+		const { posts, pages, total, userLikes } = await postsService.getMany(
+			query,
+			user
+		);
 
 		res.status(HTTP.OK).json({
-			message: 'Posts fetched succesfuly!',
+			message: RESPONSES.POST.GET_MANY,
 			posts,
 			pages,
 			total,
@@ -64,7 +71,7 @@ class PostsController {
 		await postsService.update(body, id);
 
 		res.status(HTTP.OK).json({
-			message: 'Successfuly updated a post!',
+			message: RESPONSES.POST.UPDATE,
 			postId: id,
 		});
 	};
@@ -76,6 +83,8 @@ class PostsController {
 
 		res.status(HTTP.NO_CONTENT).send();
 	};
+
+	// Likes handling
 
 	like: RequestHandler = async (
 		req: Request<{ id?: string }, {}, { type?: LikeAction }>,
@@ -90,17 +99,29 @@ class PostsController {
 		res.status(HTTP.NO_CONTENT).send();
 	};
 
-	removeLike: RequestHandler = async (
-		req: Request<{ id?: string }>,
-		res
-	) => {
+	removeLike: RequestHandler = async (req: Request<{ id?: string }>, res) => {
 		const user = getUserOrThrowError(req);
 		const { id } = req.params;
 
 		await postsService.removeLike(user, id);
 
 		res.status(HTTP.NO_CONTENT).send();
-	}
+	};
+
+	// Comments handling
+
+	createComment: RequestHandler = async (
+		req: Request<{ id?: string }, {}, CommentInfoBody>,
+		res
+	) => {
+		const user = getUserOrThrowError(req);
+		const {id} = req.params;
+		const body = req.body;
+
+		const { comment } = await postsService.createComment(user, body, id);
+		
+		res.status(HTTP.CREATED).json({ message: RESPONSES.COMMENT.CREATE, comment });
+	};
 }
 
 const postsController = new PostsController();
