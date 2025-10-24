@@ -21,8 +21,6 @@ const UserActions = ({
 
 	const postId = post.id;
 
-	console.log({ post, like, isLiked, isDisliked });
-
 	return (
 		<>
 			<Button
@@ -36,7 +34,7 @@ const UserActions = ({
 				<HeartIcon
 					fill={isLiked ? 'red' : 'transparent'}
 					size={20}
-					strokeWidth={isLiked ? 0 : undefined}
+					strokeWidth={1}
 				/>
 			</Button>
 			<Button
@@ -52,7 +50,7 @@ const UserActions = ({
 				<ThumbsDownIcon
 					fill={isDisliked ? 'green' : 'transparent'}
 					size={18}
-					strokeWidth={isDisliked ? 0 : undefined}
+					strokeWidth={1}
 				/>
 			</Button>
 		</>

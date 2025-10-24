@@ -1,5 +1,6 @@
 import { like, removeLike } from '@/api/likes';
 import { ROUTES } from '@/constants/routes';
+import { handleError } from '@/lib/utils';
 import useUser, { type UserData } from '@/stores/authStore';
 import type { ManyPosts } from '@/types/API';
 import type { LikeAction, LikeApi } from '@/types/Like';
@@ -69,9 +70,18 @@ const usePostManyLikeMutation = (queryKey: QueryKey) => {
 					return {
 						...oldPosts,
 						posts: newPosts,
-						userLikes: newLikes ?? oldPosts.userLikes,
+						userLikes: newLikes,
 					};
 				});
+			}
+
+			return posts;
+		},
+
+		onError: (error, _variables, context) => {
+			handleError(error, true);
+			if (context) {
+				queryClient.setQueryData<ManyPosts>(queryKey, context);
 			}
 		},
 	});

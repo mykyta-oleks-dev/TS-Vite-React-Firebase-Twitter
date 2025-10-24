@@ -1,26 +1,41 @@
 import Link from '@/components/link';
 import PageLoader from '@/components/page-loader';
 import PostCreatorActions from '@/components/posts/creator-actions';
+import UserActions from '@/components/posts/user-actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ROUTES } from '@/constants/routes';
 import useGetPostWithParam from '@/hooks/useGetPostWithParam';
+import usePostOneLikeMutation from '@/hooks/usePostOneLikeMutation';
 import { handleError } from '@/lib/utils';
 import useUser from '@/stores/authStore';
+import type { LikeActionExt } from '@/types/Like';
+import { parseFetchPost } from '@/types/Post';
 import { Navigate } from 'react-router';
 
 const PostDetailsPage = () => {
-	const { isPending, error, data: post } = useGetPostWithParam();
+	const { isPending, error, data, queryKey } = useGetPostWithParam();
 	const userData = useUser((s) => s.userData);
+
+	const { mutate } = usePostOneLikeMutation(queryKey);
 
 	if (isPending) return <PageLoader />;
 
 	if (error) handleError(error, true);
 
-	if (!post) return <Navigate to={ROUTES.ROOT} />;
+	if (!data) return <Navigate to={ROUTES.ROOT} />;
+
+	const { post: postData, userLike } = data;
+
+	const post = parseFetchPost(postData);
+
+	const handlelike = (postId: string, action: LikeActionExt) =>
+		mutate({ postId, action });
 
 	const content = post.content
 		.split('\n')
 		.map((p, idx) => <p key={`post-${post.id}-${idx}`}>{p}</p>);
+
+	console.log({ post, userLike });
 
 	return (
 		<div>
@@ -79,6 +94,10 @@ const PostDetailsPage = () => {
 			</div>
 
 			<hr className="my-3" />
+
+			<div className="flex gap-1 items-center">
+				<UserActions post={post} like={userLike} onLike={handlelike} />
+			</div>
 		</div>
 	);
 };

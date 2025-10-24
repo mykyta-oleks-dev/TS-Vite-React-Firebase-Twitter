@@ -24,12 +24,14 @@ class PostsController {
 
 	getOne: RequestHandler = async (req: Request<{ id?: string }>, res) => {
 		const { id } = req.params;
+		const user = req.user;
 
-		const { post } = await postsService.getOne(id);
+		const { post, userLike } = await postsService.getOne(id, user);
 
 		res.status(HTTP.OK).json({
 			message: 'Post fetched successfuly!',
 			post,
+			userLike
 		});
 	};
 

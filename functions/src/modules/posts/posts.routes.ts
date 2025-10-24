@@ -14,7 +14,7 @@ postsRoutes.post(
 	isVerified,
 	postsController.create
 );
-postsRoutes.get(ROUTES.DYNAMIC, postsController.getOne);
+postsRoutes.get(ROUTES.DYNAMIC, optionalAuthenticate, postsController.getOne);
 postsRoutes.get(ROUTES.ROOT, optionalAuthenticate, postsController.getMany);
 postsRoutes.put(
 	ROUTES.DYNAMIC,

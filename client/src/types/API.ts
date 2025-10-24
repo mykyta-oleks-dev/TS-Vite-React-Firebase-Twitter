@@ -32,6 +32,7 @@ export interface WritePost extends DefaultBody {
 
 export interface OnePost extends DefaultBody {
 	post: PostApi;
+	userLike?: LikeApi
 }
 
 export interface ManyPosts extends DefaultBody {

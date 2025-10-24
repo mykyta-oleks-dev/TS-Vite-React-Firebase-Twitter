@@ -80,7 +80,23 @@ class PostsRepository {
 		return { id };
 	};
 
-	getOne = async (id: string) => {
+	private readonly _getLikes = async (uid: string, postIds: string[]) => {
+		return (
+			await db
+				.collectionGroup('likes')
+				.where('userId', '==', uid)
+				.where('postId', 'in', postIds)
+				.get()
+		).docs.map((d) => {
+			const docData = d.data() as LikeDB;
+			return {
+				...docData,
+				timestamp: docData.timestamp.toDate(),
+			} as Like;
+		});
+	};
+
+	getOne = async (id: string, requestUser?: DecodedIdToken) => {
 		const docSnapshot = await PostsRepository._getPostSnapshot(id);
 
 		const post = postConverter.fromFirestore(docSnapshot);
@@ -93,7 +109,13 @@ class PostsRepository {
 			userAvatar: user.photoURL ?? null,
 		};
 
-		return { post: postResponse };
+		const userLikes = requestUser
+			? await this._getLikes(requestUser.uid, [id])
+			: undefined;
+		
+		const userLike = userLikes && userLikes.length > 0 ? userLikes[0] : undefined;
+
+		return { post: postResponse, userLike };
 	};
 
 	private readonly _getMany = async (
@@ -208,19 +230,7 @@ class PostsRepository {
 		const postIds = posts.map((p) => p.id);
 
 		const userLikes = requestUser
-			? (
-					await db
-						.collectionGroup('likes')
-						.where('userId', '==', requestUser.uid)
-						.where('postId', 'in', postIds)
-						.get()
-			  ).docs.map((d) => {
-					const docData = d.data() as LikeDB;
-					return {
-						...docData,
-						timestamp: docData.timestamp.toDate(),
-					} as Like;
-			  })
+			? await this._getLikes(requestUser.uid, postIds)
 			: undefined;
 
 		return {

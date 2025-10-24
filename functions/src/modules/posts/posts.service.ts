@@ -21,10 +21,10 @@ class PostsService {
 		return postsRepository.create(userRecord, body);
 	};
 
-	getOne = async (id?: string) => {
+	getOne = async (id?: string, user?: DecodedIdToken) => {
 		if (!id) throw new BadRequestError(REQUEST_ERRORS.BADREQUEST_NOID);
 
-		return postsRepository.getOne(id);
+		return postsRepository.getOne(id, user);
 	};
 
 	getMany = async (query: PostQuery, user?: DecodedIdToken) => {
