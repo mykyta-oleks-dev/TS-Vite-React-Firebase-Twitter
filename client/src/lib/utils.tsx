@@ -56,7 +56,10 @@ export function handleError(
 	error: string;
 } {
 	if (error instanceof AxiosError) {
-		return handleError(error.response?.data ?? 'API call failed', showToast);
+		return handleError(
+			error.response?.data ?? 'API call failed',
+			showToast
+		);
 	}
 
 	const message = getErrorMessage(error);
@@ -83,4 +86,31 @@ export function handleError(
 		success: false,
 		error: message,
 	};
+}
+
+export function formatLargeNumber(num?: number, decimals: number = 2): string {
+	if (!num || num === 0) return '0';
+	if (Math.abs(num) < 1000) return num.toString();
+
+	const tiers = [
+		{ value: 1e9, symbol: 'B' }, // Billions
+		{ value: 1e6, symbol: 'M' }, // Millions
+		{ value: 1e3, symbol: 'K' }, // Thousands
+	];
+
+	const tier = tiers.find((t) => Math.abs(num) >= t.value);
+
+	if (tier) {
+		const formattedNum = num / tier.value;
+
+		const roundedNum = formattedNum.toFixed(decimals);
+
+		const cleanNum = roundedNum.endsWith(`.${'0'.repeat(decimals)}`)
+			? roundedNum.slice(0, -(decimals + 1))
+			: roundedNum;
+
+		return cleanNum + tier.symbol;
+	}
+
+	return num.toString();
 }

@@ -1,3 +1,4 @@
+import type { LikeApi } from './Like';
 import type { PostApi } from './Post';
 import type { UserApi } from './User';
 
@@ -37,4 +38,5 @@ export interface ManyPosts extends DefaultBody {
 	posts: PostApi[];
 	total: number;
 	pages: number;
+	userLikes?: LikeApi[]
 }

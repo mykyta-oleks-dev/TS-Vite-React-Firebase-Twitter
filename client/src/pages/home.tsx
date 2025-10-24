@@ -19,7 +19,7 @@ const HomePage = () => {
 					</Button>
 				)}
 			</PageTitle>
-			<PostsList />
+			<PostsList sortType='hot' />
 		</div>
 	);
 };

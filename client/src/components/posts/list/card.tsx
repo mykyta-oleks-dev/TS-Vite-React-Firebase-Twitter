@@ -1,11 +1,23 @@
 import { ROUTES } from '@/constants/routes';
+import type { Like, LikeActionExt, LikeApi } from '@/types/Like';
 import type { Post } from '@/types/Post';
 import type { User } from '@/types/User';
 import Link from '../../link';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import PostCreatorActions from '../creator-actions';
+import UserActions from '../user-actions';
 
-const PostCard = ({ post, user }: { post: Post; user?: User }) => {
+const PostCard = ({
+	post,
+	user,
+	like,
+	onLike,
+}: {
+	post: Post;
+	user?: User;
+	like?: LikeApi | Like;
+	onLike: (postId: string, action: LikeActionExt) => void;
+}) => {
 	const content = post.content
 		.split('\n')
 		.map((p, idx) => <p key={`post-${post.id}-${idx}`}>{p}</p>);
@@ -64,8 +76,11 @@ const PostCard = ({ post, user }: { post: Post; user?: User }) => {
 				</div>
 			</Link>
 
-			<div className="flex gap-3">
-				{user && user.id === post.userId && <PostCreatorActions post={post} />}
+			<div className="flex gap-1 items-center">
+				<UserActions like={like} post={post} onLike={onLike} />
+				{user && user.id === post.userId && (
+					<PostCreatorActions post={post} />
+				)}
 			</div>
 		</div>
 	);

@@ -1,6 +1,8 @@
 const USERS = '/users';
 const POSTS = '/posts';
 
+const getOnePost = (id: string) => `${POSTS}/${id}`;
+
 export const API_ENDPOINTS = {
 	USERS: {
 		ROOT: USERS,
@@ -13,7 +15,8 @@ export const API_ENDPOINTS = {
 	},
 	POSTS: {
 		ROOT: POSTS,
-		GET_ONE: (id: string) => `${POSTS}/${id}`,
+		GET_ONE: getOnePost,
+		LIKE: (id: string) => `${getOnePost(id)}/like`,
 	},
 } as const;
 

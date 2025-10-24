@@ -1,11 +1,12 @@
 import { DEFAULT_LIMIT, MAX, MIN } from '@/constants/pagination';
 import { useSearchParams } from 'react-router';
 
-const usePaginationSearchParams = (userId?: string) => {
+const usePaginationSearchParams = (userId?: string, sort?: string) => {
 	const [searchParams, setSearchParams] = useSearchParams({
 		page: '1',
 		limit: DEFAULT_LIMIT + '',
 		userId: userId ?? '',
+		sort: sort ?? '',
 	});
 
 	const pageStr = searchParams.get('page');
@@ -22,6 +23,7 @@ const usePaginationSearchParams = (userId?: string) => {
 		: DEFAULT_LIMIT;
 
 	const search = searchParams.get('search');
+	const sortType = searchParams.get('sort');
 
 	return {
 		searchParams,
@@ -30,6 +32,7 @@ const usePaginationSearchParams = (userId?: string) => {
 			page,
 			limit,
 			search,
+			sort: sortType,
 		},
 	};
 };

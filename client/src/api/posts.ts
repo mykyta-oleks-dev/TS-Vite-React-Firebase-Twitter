@@ -17,6 +17,7 @@ export const createPost = async (values: postData, photo: string | null) => {
 export const getPosts = async (
 	search: string | null,
 	userId?: string,
+	sort?: string | null,
 	page = 1,
 	limit = 10
 ) => {
@@ -26,6 +27,7 @@ export const getPosts = async (
 			limit,
 			userId: userId ?? null,
 			search: search ?? null,
+			sort: sort ?? null,
 		},
 	});
 
