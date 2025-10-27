@@ -10,7 +10,7 @@ import PostCard from './card';
 import PostsSearch from './search';
 import useUser from '@/stores/authStore';
 import type { LikeActionExt } from '@/types/Like';
-import usePostManyLikeMutation from '@/hooks/usePostManyLikeMutation';
+import usePostManyLikeMutation from '@/hooks/post/usePostManyLikeMutation';
 
 const PostsList = ({
 	userId,
@@ -35,7 +35,7 @@ const PostsList = ({
 	const { data, isPending } = useQuery({
 		queryKey,
 		queryFn: async () => getPosts(search, userId, sort, page, limit),
-		refetchOnWindowFocus: false
+		refetchOnWindowFocus: false,
 	});
 
 	const { mutate } = usePostManyLikeMutation(queryKey);

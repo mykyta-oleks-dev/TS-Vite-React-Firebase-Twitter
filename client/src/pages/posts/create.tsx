@@ -1,5 +1,5 @@
 import PageTitle from '@/components/page-title';
-import usePostCreateMutation from '@/hooks/usePostCreateMutation';
+import usePostCreateMutation from '@/hooks/post/usePostCreateMutation';
 import PostForm from './components/form';
 
 const CreatePostPage = () => {

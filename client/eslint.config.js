@@ -19,26 +19,16 @@ export default defineConfig([
 			ecmaVersion: 2020,
 			globals: globals.browser,
 		},
-		// rules: {
-		// 	// ignore variables (and args) that start with an underscore
-		// 	'no-unused-vars': [
-		// 		'error',
-		// 		{
-		// 			vars: 'all',
-		// 			args: 'after-used',
-		// 			varsIgnorePattern: '^_',
-		// 			argsIgnorePattern: '^_',
-		// 		},
-		// 	],
-		// 	'@typescript-eslint/no-unused-vars': [
-		// 		'error',
-		// 		{
-		// 			vars: 'all',
-		// 			args: 'after-used',
-		// 			varsIgnorePattern: '^_',
-		// 			argsIgnorePattern: '^_',
-		// 		},
-		// 	],
-		// },
+		rules: {
+			// ignore variables (and args) that start with an underscore
+			'no-unused-vars': undefined,
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					varsIgnorePattern: '^_',
+					argsIgnorePattern: '^_',
+				},
+			],
+		},
 	},
 ]);

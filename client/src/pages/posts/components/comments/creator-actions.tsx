@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { ROUTES } from '@/constants/routes';
+import type { Comment } from '@/types/Comment';
 import { PenLineIcon, Trash2Icon } from 'lucide-react';
-import Link from '../link';
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -12,24 +11,24 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 	AlertDialogTrigger,
-} from '../ui/alert-dialog';
-import usePostDeleteMutation from '@/hooks/post/usePostDeleteMutation';
-import type { Post } from '@/types/Post';
+} from '../../../../components/ui/alert-dialog';
 
-const PostCreatorActions = ({ post }: { post: Post }) => {
-	const { mutate } = usePostDeleteMutation();
-
+const CommentCreatorActions = ({
+	comment,
+	onEditClick,
+}: {
+	comment: Comment;
+	onEditClick: () => void;
+}) => {
 	return (
 		<>
 			<Button
 				size="icon"
 				variant="ghost"
 				className="rounded-full text-primary hover:text-primary ml-auto"
-				asChild
+				onClick={onEditClick}
 			>
-				<Link to={ROUTES.POST_EDIT(post.id)}>
-					<PenLineIcon />
-				</Link>
+				<PenLineIcon />
 			</Button>
 
 			<AlertDialog>
@@ -49,13 +48,15 @@ const PostCreatorActions = ({ post }: { post: Post }) => {
 						</AlertDialogTitle>
 						<AlertDialogDescription>
 							This action cannot be undone. This will permanently
-							delete this post without recovery.
+							delete this comment without recovery.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction
-							onClick={() => mutate(post)}
+							onClick={() =>
+								console.log(`deleted comment ${comment.id}`)
+							}
 							variant="destructive"
 						>
 							Continue
@@ -67,4 +68,4 @@ const PostCreatorActions = ({ post }: { post: Post }) => {
 	);
 };
 
-export default PostCreatorActions;
+export default CommentCreatorActions;

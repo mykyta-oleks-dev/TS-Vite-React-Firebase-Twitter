@@ -1,8 +1,8 @@
 import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
 import { ROUTES } from '@/constants/routes';
-import useGetPostWithParam from '@/hooks/useGetPostWithParam';
-import usePostUpdateMutation from '@/hooks/usePostUpdateMutation';
+import useGetPostWithParam from '@/hooks/post/useGetPostWithParam';
+import usePostUpdateMutation from '@/hooks/post/usePostUpdateMutation';
 import { handleError } from '@/lib/utils';
 import { Navigate } from 'react-router';
 import PostForm from './components/form';

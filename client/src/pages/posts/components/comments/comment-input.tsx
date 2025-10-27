@@ -17,12 +17,14 @@ type commentData = z.infer<typeof commentSchema>;
 const CommentInput = ({
 	comment,
 	onSubmit,
-	isPending = false
+	isPending = false,
+	onCancel,
 }: {
 	comment?: Comment;
 	responseTo?: Comment;
 	onSubmit: (text: string) => Promise<void>;
 	isPending?: boolean;
+	onCancel?: () => void;
 }) => {
 	const form = useForm<commentData>({
 		resolver: zodResolver(commentSchema),
@@ -43,7 +45,7 @@ const CommentInput = ({
 				<FormFieldGroup
 					control={form.control}
 					name="text"
-					label="Comment"
+					label={onCancel ? undefined : 'Comment'}
 					render={(field) => (
 						<Textarea
 							placeholder="Your comment goes here"
@@ -53,12 +55,27 @@ const CommentInput = ({
 				/>
 
 				<div className="flex gap-3">
-					<SubmitButton isSubmitting={form.formState.isSubmitting || isPending}>
+					<SubmitButton
+						isSubmitting={form.formState.isSubmitting || isPending}
+					>
 						Submit
 					</SubmitButton>
-					<Button type="reset" variant="outline">
+					<Button
+						type="reset"
+						variant="outline"
+						onClick={() => form.reset()}
+					>
 						Reset
 					</Button>
+					{onCancel && (
+						<Button
+							type="button"
+							variant="secondary"
+							onClick={onCancel}
+						>
+							Cancel
+						</Button>
+					)}
 				</div>
 			</form>
 		</Form>

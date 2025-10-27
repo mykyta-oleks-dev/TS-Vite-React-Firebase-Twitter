@@ -4,15 +4,15 @@ import PostCreatorActions from '@/components/posts/creator-actions';
 import UserActions from '@/components/posts/user-actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ROUTES } from '@/constants/routes';
-import useGetPostWithParam from '@/hooks/useGetPostWithParam';
-import usePostOneLikeMutation from '@/hooks/usePostOneLikeMutation';
+import useGetPostWithParam from '@/hooks/post/useGetPostWithParam';
+import usePostOneLikeMutation from '@/hooks/post/usePostOneLikeMutation';
 import { handleError } from '@/lib/utils';
 import useUser from '@/stores/authStore';
 import { parseFetchComment } from '@/types/Comment';
 import type { LikeActionExt } from '@/types/Like';
 import { parseFetchPost } from '@/types/Post';
 import { Navigate } from 'react-router';
-import CommentsSection from '../components/comments-section';
+import CommentsSection from '../components/comments/comments-section';
 
 const PostDetailsPage = () => {
 	const { isPending, error, data, queryKey } = useGetPostWithParam();

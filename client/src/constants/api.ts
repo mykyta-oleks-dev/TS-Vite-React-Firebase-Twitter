@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
 		GET_ONE: getOnePost,
 		LIKE: (id: string) => `${getOnePost(id)}/like`,
 		COMMENT_CREATE: (id: string) => `${getOnePost(id)}/comments`,
+		COMMENT_ONE: (id: string, commentId: string) => `${getOnePost(id)}/comments/${commentId}`,
 	},
 } as const;
 
