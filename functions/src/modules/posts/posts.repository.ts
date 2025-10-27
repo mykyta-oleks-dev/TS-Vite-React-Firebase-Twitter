@@ -384,8 +384,13 @@ class PostsRepository {
 
 		const commentRef = postRef.collection(COLLECTIONS_KEYS.COMMENTS).doc();
 
-		values.responseTo &&
+		const respondedTo =
+			values.responseTo &&
 			(await this._getComment(postRef, values.responseTo, true));
+
+		if (respondedTo && respondedTo.comment.isDeleted) {
+			throw new ConflictError(REQUEST_ERRORS.CONFLICT_ORIG_COMM_DELETED);
+		}
 
 		const id = await db.runTransaction(async (t) => {
 			const postSnap = await t.get(postRef.withConverter(postConverter));
@@ -657,6 +662,7 @@ class PostsRepository {
 			await postRef
 				.collection(COLLECTIONS_KEYS.COMMENTS)
 				.withConverter(commentConverter)
+				.orderBy('createdAt', 'desc')
 				.get()
 		).docs.map((p) => p.data());
 

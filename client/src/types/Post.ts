@@ -12,6 +12,7 @@ interface PostPrimitives {
 
 	likes?: number;
 	dislikes?: number;
+	comments?: number;
 	compositeScore: number;
 }
 

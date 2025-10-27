@@ -7,10 +7,13 @@ export const REQUEST_ERRORS = {
 	BAD_REQUEST_COMMENT_WRITE: 'Comment information is invalid',
 	BAD_REQUEST_NO_POST_ID: 'Post ID is not provided',
 	BAD_REQUEST_NO_COMM_ID: 'Comment ID is not provided',
-	CONFLICT_DUP_ACTION: (action: LikeAction) =>
-		`You have already ${action}d the post`,
 	BAD_REQUEST_LIKE_TYPE:
 		'Like action type is not specified (has to be "like" or "dislike")',
+
+		
+	CONFLICT_DUP_ACTION: (action: LikeAction) =>
+		`You have already ${action}d the post`,
+	CONFLICT_ORIG_COMM_DELETED: "You can't answer to the deleted comment",
 
 	NOT_FOUND_POST: 'Post document is not found',
 	NOT_FOUND_MANY: 'Post documents are not found',

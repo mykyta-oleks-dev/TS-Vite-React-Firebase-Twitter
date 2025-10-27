@@ -1,3 +1,4 @@
+import type { CommentApi } from './Comment';
 import type { LikeApi } from './Like';
 import type { PostApi } from './Post';
 import type { UserApi } from './User';
@@ -32,12 +33,13 @@ export interface WritePost extends DefaultBody {
 
 export interface OnePost extends DefaultBody {
 	post: PostApi;
-	userLike?: LikeApi
+	userLike?: LikeApi;
+	comments?: CommentApi[];
 }
 
 export interface ManyPosts extends DefaultBody {
 	posts: PostApi[];
 	total: number;
 	pages: number;
-	userLikes?: LikeApi[]
+	userLikes?: LikeApi[];
 }

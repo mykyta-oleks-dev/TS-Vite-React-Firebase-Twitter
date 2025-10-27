@@ -77,7 +77,7 @@ const PostCard = ({
 			</Link>
 
 			<div className="flex gap-1 items-center">
-				<UserActions like={like} post={post} onLike={onLike} />
+				<UserActions like={like} post={post} onLike={onLike} showComments />
 				{user && user.id === post.userId && (
 					<PostCreatorActions post={post} />
 				)}

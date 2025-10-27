@@ -8,9 +8,11 @@ import useGetPostWithParam from '@/hooks/useGetPostWithParam';
 import usePostOneLikeMutation from '@/hooks/usePostOneLikeMutation';
 import { handleError } from '@/lib/utils';
 import useUser from '@/stores/authStore';
+import { parseFetchComment } from '@/types/Comment';
 import type { LikeActionExt } from '@/types/Like';
 import { parseFetchPost } from '@/types/Post';
 import { Navigate } from 'react-router';
+import CommentsSection from '../components/comments-section';
 
 const PostDetailsPage = () => {
 	const { isPending, error, data, queryKey } = useGetPostWithParam();
@@ -24,9 +26,11 @@ const PostDetailsPage = () => {
 
 	if (!data) return <Navigate to={ROUTES.ROOT} />;
 
-	const { post: postData, userLike } = data;
+	const { post: postData, userLike, comments: commentsData } = data;
 
 	const post = parseFetchPost(postData);
+
+	const comments = commentsData?.map((c) => parseFetchComment(c));
 
 	const handlelike = (postId: string, action: LikeActionExt) =>
 		mutate({ postId, action });
@@ -38,7 +42,7 @@ const PostDetailsPage = () => {
 	console.log(data);
 
 	return (
-		<div>
+		<div className="flex flex-col gap-3">
 			<div className="flex gap-3 items-center">
 				<Link
 					to={ROUTES.PROFILE_VIEW(post.userId)}
@@ -74,7 +78,7 @@ const PostDetailsPage = () => {
 				)}
 			</div>
 
-			<hr className="my-3" />
+			<hr />
 
 			<div className="flex flex-col lg:flex-row gap-3">
 				{post.photo && (
@@ -93,11 +97,13 @@ const PostDetailsPage = () => {
 				</div>
 			</div>
 
-			<hr className="my-3" />
+			<hr />
 
 			<div className="flex gap-1 items-center">
 				<UserActions post={post} like={userLike} onLike={handlelike} />
 			</div>
+
+			{comments && <CommentsSection comments={comments} />}
 		</div>
 	);
 };
