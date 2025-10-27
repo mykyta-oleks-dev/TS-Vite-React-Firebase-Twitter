@@ -17,19 +17,15 @@ import CommentsSection from '../components/comments-section';
 const PostDetailsPage = () => {
 	const { isPending, error, data, queryKey } = useGetPostWithParam();
 	const userData = useUser((s) => s.userData);
-
 	const { mutate } = usePostOneLikeMutation(queryKey);
 
 	if (isPending) return <PageLoader />;
-
 	if (error) handleError(error, true);
 
 	if (!data) return <Navigate to={ROUTES.ROOT} />;
 
 	const { post: postData, userLike, comments: commentsData } = data;
-
 	const post = parseFetchPost(postData);
-
 	const comments = commentsData?.map((c) => parseFetchComment(c));
 
 	const handlelike = (postId: string, action: LikeActionExt) =>
@@ -38,8 +34,6 @@ const PostDetailsPage = () => {
 	const content = post.content
 		.split('\n')
 		.map((p, idx) => <p key={`post-${post.id}-${idx}`}>{p}</p>);
-
-	console.log(data);
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -103,7 +97,13 @@ const PostDetailsPage = () => {
 				<UserActions post={post} like={userLike} onLike={handlelike} />
 			</div>
 
-			{comments && <CommentsSection comments={comments} />}
+			{comments && (
+				<CommentsSection
+					comments={comments}
+					postId={post.id}
+					queryKey={queryKey}
+				/>
+			)}
 		</div>
 	);
 };

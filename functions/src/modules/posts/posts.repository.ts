@@ -436,7 +436,16 @@ class PostsRepository {
 
 		const { comment } = await this._getComment(postRef, id);
 
-		return { comment };
+		const userObj = await auth.getUser(user.uid);
+
+		const commentApiResponse: CommentApiResponse = {
+			...comment,
+
+			userName: userObj.displayName ?? userObj.email ?? userObj.uid,
+			userAvatar: userObj.photoURL ?? null,
+		};
+
+		return { comment: commentApiResponse };
 	};
 
 	updateComment = async (

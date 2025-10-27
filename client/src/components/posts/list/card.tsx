@@ -28,7 +28,7 @@ const PostCard = ({
 				to={ROUTES.PROFILE_VIEW(post.userId)}
 				className="flex gap-3 items-center"
 			>
-				<Avatar>
+				<Avatar className="border border-gray-500">
 					<AvatarImage src={post.userAvatar} />
 					<AvatarFallback>
 						{post.userName.substring(0, 2)}
@@ -77,7 +77,12 @@ const PostCard = ({
 			</Link>
 
 			<div className="flex gap-1 items-center">
-				<UserActions like={like} post={post} onLike={onLike} showComments />
+				<UserActions
+					like={like}
+					post={post}
+					onLike={onLike}
+					showComments
+				/>
 				{user && user.id === post.userId && (
 					<PostCreatorActions post={post} />
 				)}

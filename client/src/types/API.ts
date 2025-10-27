@@ -43,3 +43,7 @@ export interface ManyPosts extends DefaultBody {
 	pages: number;
 	userLikes?: LikeApi[];
 }
+
+export interface CreateComment extends DefaultBody {
+	comment: CommentApi;
+}

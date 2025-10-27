@@ -3,6 +3,7 @@ import type { Comment } from '@/types/Comment';
 import Link from './link';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import type { PropsWithChildren } from 'react';
+import { cn } from '@/lib/utils';
 
 const CommentBlock = ({
 	comment,
@@ -15,16 +16,20 @@ const CommentBlock = ({
 		.split('\n')
 		.map((p, idx) => <p key={`post-${comment.id}-${idx}`}>{p}</p>);
 
-	const respondedToContent = respondedComment?.text
-		.split('\n')[0];
+	const respondedToContent = respondedComment?.text.split('\n')[0];
 
 	return (
 		<div
 			id={comment.id}
-			className="p-3 flex flex-col gap-3 border transition hover:border-primary rounded-md items-start"
+			className={cn(
+				'p-3 flex flex-col gap-3 border rounded-md items-start',
+				comment.isDeleted
+					? 'bg-gray-200 dark:bg-gray-800'
+					: 'transition hover:border-primary'
+			)}
 		>
 			<UserData comment={comment} className="flex gap-3 items-center">
-				<Avatar>
+				<Avatar className="border border-gray-500">
 					<AvatarImage
 						src={comment.userAvatar ?? '/default-avatar.png'}
 					/>
@@ -70,7 +75,7 @@ const CommentBlock = ({
 						{respondedToContent}
 					</Link>
 				)}
-				<div>{content}</div>
+				<div className="flex flex-col gap-2">{content}</div>
 			</div>
 		</div>
 	);
