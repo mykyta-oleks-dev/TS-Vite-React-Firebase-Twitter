@@ -6,9 +6,11 @@ import usePostUpdateMutation from '@/hooks/usePostUpdateMutation';
 import { handleError } from '@/lib/utils';
 import { Navigate } from 'react-router';
 import PostForm from './components/form';
+import { parseFetchPost } from '@/types/Post';
 
 const EditPostPage = () => {
-	const { isPending, error, data: post } = useGetPostWithParam();
+	const { isPending, error, data } = useGetPostWithParam();
+	const post = data ? parseFetchPost(data.post) : undefined;
 	const { mutation, setWithPhoto } = usePostUpdateMutation(post);
 
 	const { mutateAsync } = mutation;
@@ -24,9 +26,7 @@ const EditPostPage = () => {
 			<PageTitle title={`Edit a post "${post.title}"`} />
 			<PostForm
 				post={post}
-				onSubmit={(data) =>
-					mutateAsync(data)
-				}
+				onSubmit={(data) => mutateAsync(data)}
 				setWithPhoto={setWithPhoto}
 			/>
 		</div>
