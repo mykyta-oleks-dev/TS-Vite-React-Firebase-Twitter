@@ -9,6 +9,7 @@ export interface PostData {
 
 	likes?: number;
 	dislikes?: number;
+	comments?: number;
 	compositeScore: number;
 }
 

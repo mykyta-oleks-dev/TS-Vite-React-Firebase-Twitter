@@ -249,18 +249,10 @@ class PostsRepository {
 			);
 		}
 
-		await postRef.delete();
+		await db.recursiveDelete(postRef);
 	};
 
 	// Likes and score write
-
-	private _calculateScore(post: Post) {
-		const netLikes = (post.likes || 0) - (post.dislikes || 0);
-		const ageInMs = Date.now() - post.createdAt.getTime();
-		const ageInHours = ageInMs / (1000 * 60 * 60);
-
-		return netLikes - ageInHours * WEIGHT_FACTOR;
-	}
 
 	like = async (user: DecodedIdToken, postId: string, type: LikeAction) => {
 		const postRef = db.collection(COLLECTIONS_KEYS.POSTS).doc(postId);
@@ -396,31 +388,85 @@ class PostsRepository {
 		postId: string,
 		values: CommentInfo
 	) => {
-		const docSnapshot = await this._getPostSnapshot(postId);
+		const postRef = db.collection(COLLECTIONS_KEYS.POSTS).doc(postId);
+
+		const commentRef = postRef.collection(COLLECTIONS_KEYS.COMMENTS).doc();
 
 		values.responseTo &&
-			(await this._getComment(docSnapshot.ref, values.responseTo));
+			(await this._getComment(postRef, values.responseTo, true));
+
+		const id = await db.runTransaction(async (t) => {
+			const postSnap = await t.get(postRef.withConverter(postConverter));
+			const post = postSnap.data();
+
+			if (!postSnap.exists || !post) {
+				throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_POST);
+			}
+
+			const commentSnap = await t.get(commentRef);
+
+			const id = commentSnap.id;
+
+			const now = new Date();
+
+			const newCommentData: Comment = {
+				id,
+				text: values.text,
+				createdAt: now,
+				updatedAt: now,
+				postId,
+				responseTo: values.responseTo ?? null,
+				userId: user.uid,
+			};
+
+			t.set(commentRef, newCommentData);
+
+			const updates: { [key: string]: FieldValue | number } = {};
+
+			const newPost: Post = {
+				...post,
+				comments: (post.comments || 0) + 1,
+			};
+
+			const newScore = this._calculateScore(newPost);
+			updates.compositeScore = newScore;
+			updates.comments = FieldValue.increment(1);
+
+			t.update(postRef, updates);
+
+			return id;
+		});
+
+		const comment = await this._getComment(postRef, id);
+
+		return { comment };
+	};
+
+	updateComment = async (
+		postId: string,
+		commentId: string,
+		values: CommentInfo
+	) => {
+		const docSnapshot = await this._getPostSnapshot(postId);
 
 		const commentDoc = docSnapshot.ref
 			.collection(COLLECTIONS_KEYS.COMMENTS)
-			.doc();
-		const id = commentDoc.id;
+			.doc(commentId);
+
+		const commentData = (await commentDoc.get()).data();
+
+		if (!commentData) {
+			throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_COMMENT);
+		}
 
 		const now = new Date();
 
-		const newCommentData: Comment = {
-			id,
+		await commentDoc.update({
 			text: values.text,
-			createdAt: now,
 			updatedAt: now,
-			postId,
-			responseTo: values.responseTo ?? null,
-			userId: user.uid,
-		};
+		});
 
-		await commentDoc.create(newCommentData);
-
-		const comment = await this._getComment(docSnapshot.ref, id);
+		const comment = await this._getComment(docSnapshot.ref, commentId);
 
 		return { comment };
 	};
@@ -541,9 +587,19 @@ class PostsRepository {
 		});
 	};
 
+	private _calculateScore(post: Post) {
+		const netLikes = (post.likes || 0) - (post.dislikes || 0);
+		const comments = (post.comments || 0) * 3;
+		const ageInMs = Date.now() - post.createdAt.getTime();
+		const ageInHours = ageInMs / (1000 * 60 * 60);
+
+		return netLikes + comments - ageInHours * WEIGHT_FACTOR;
+	}
+
 	private readonly _getComment = async (
 		postRef: DocumentReference,
-		id: string
+		id: string,
+		isResponse = false
 	) => {
 		const comment = (
 			await postRef
@@ -553,7 +609,12 @@ class PostsRepository {
 				.get()
 		).data();
 
-		if (!comment) throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_COMMENT);
+		if (!comment)
+			throw new NotFoundError(
+				isResponse
+					? REQUEST_ERRORS.NOT_FOUND_COMMENT_RESPONDED
+					: REQUEST_ERRORS.NOT_FOUND_COMMENT
+			);
 
 		return comment;
 	};

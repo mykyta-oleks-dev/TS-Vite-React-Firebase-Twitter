@@ -11,12 +11,19 @@ import {
 	assertIsCommentInfo,
 	assertIsPostInfo,
 	isLikeAction,
-	validatePostInfoBody
+	validatePostInfoBody,
 } from './utils/validate';
 
 class PostsService {
-	private readonly _getIdOrThrow = (id?: string) => {
-		if (!id) throw new BadRequestError(REQUEST_ERRORS.BAD_REQUEST_NO_ID);
+	private readonly _getIdOrThrow = (id?: string, isComment = false) => {
+		if (!id) {
+			if (isComment) {
+				throw new BadRequestError(
+					REQUEST_ERRORS.BAD_REQUEST_NO_COMM_ID
+				);
+			}
+			throw new BadRequestError(REQUEST_ERRORS.BAD_REQUEST_NO_POST_ID);
+		}
 		return id;
 	};
 
@@ -35,7 +42,11 @@ class PostsService {
 		return postsRepository.create(userRecord, body);
 	};
 
-	getOne = async (id?: string, user?: DecodedIdToken, withComments?: boolean) => {
+	getOne = async (
+		id?: string,
+		user?: DecodedIdToken,
+		withComments?: boolean
+	) => {
 		const postId = this._getIdOrThrow(id);
 
 		return postsRepository.getOne(postId, user, withComments);
@@ -123,6 +134,26 @@ class PostsService {
 		}
 
 		return postsRepository.createComment(user, postId, body);
+	};
+
+	updateComment = async (
+		body: CommentInfoBody,
+		postId?: string,
+		commentId?: string
+	) => {
+		const postIdActual = this._getIdOrThrow(postId);
+		const commentIdActual = this._getIdOrThrow(commentId, true);
+
+		if (!assertIsCommentInfo(body)) {
+			throw new BadRequestError(
+				REQUEST_ERRORS.BAD_REQUEST_COMMENT_WRITE,
+				{
+					comment: COMMENT_VALIDATION_ERRORS.TEXT.REQUIRED,
+				}
+			);
+		}
+
+		return postsRepository.updateComment(postIdActual, commentIdActual, body);
 	};
 }
 

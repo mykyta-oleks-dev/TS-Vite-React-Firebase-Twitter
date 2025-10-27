@@ -6,6 +6,7 @@ export interface CommentData {
 	userId: string;
 	postId: string;
 	responseTo?: string | null;
+	isDeleted?: boolean;
 }
 
 export interface CommentDB extends CommentData, DBObject {}

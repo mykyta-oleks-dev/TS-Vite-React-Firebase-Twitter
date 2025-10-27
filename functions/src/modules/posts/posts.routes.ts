@@ -21,13 +21,13 @@ postsRoutes.get(ROUTES.ROOT, optionalAuthenticate, postsController.getMany);
 postsRoutes.put(
 	ROUTES.DYNAMIC,
 	forceAuthenticate,
-	isAuthor(COLLECTIONS_KEYS.POSTS, 'id'),
+	isAuthor([COLLECTIONS_KEYS.POSTS], ['id']),
 	postsController.update
 );
 postsRoutes.delete(
 	ROUTES.DYNAMIC,
 	forceAuthenticate,
-	isAuthor(COLLECTIONS_KEYS.POSTS, 'id'),
+	isAuthor([COLLECTIONS_KEYS.POSTS], ['id']),
 	postsController.delete
 );
 
@@ -40,6 +40,12 @@ postsRoutes.post(
 	ROUTES.COMMENTS,
 	forceAuthenticate,
 	postsController.createComment
+);
+postsRoutes.patch(
+	ROUTES.COMMENT_SINGLE,
+	forceAuthenticate,
+	isAuthor([COLLECTIONS_KEYS.POSTS, COLLECTIONS_KEYS.COMMENTS], ['id', 'commentId']),
+	postsController.updateComment
 );
 
 export default postsRoutes;

@@ -7,5 +7,6 @@ export const RESPONSES = {
 	},
 	COMMENT: {
 		CREATE: 'Comment created successfuly!',
+		UPDATE: 'Comment updated successfuly!',
 	},
 } as const;

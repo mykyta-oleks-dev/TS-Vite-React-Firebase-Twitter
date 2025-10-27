@@ -122,6 +122,18 @@ class PostsController {
 		
 		res.status(HTTP.CREATED).json({ message: RESPONSES.COMMENT.CREATE, comment });
 	};
+
+	updateComment: RequestHandler = async (
+		req: Request<{ id?: string, commentId?: string }, {}, CommentInfoBody>,
+		res
+	) => {
+		const {id, commentId} = req.params;
+		const body = req.body;
+
+		await postsService.updateComment(body, id, commentId);
+		
+		res.status(HTTP.NO_CONTENT).send();
+	};
 }
 
 const postsController = new PostsController();
