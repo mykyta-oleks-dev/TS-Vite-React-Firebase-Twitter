@@ -6,7 +6,7 @@ import SubmitButton from '@/components/submit-button';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ROUTES } from '@/constants/routes';
+import { APP_NAME, ROUTES } from '@/constants/routes';
 import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
 import { handleLogIn } from '@/handlers/users';
 import { logInSchema, type logInData } from '@/schemas/auth';
@@ -25,6 +25,7 @@ const LogInPage = () => {
 
 	return (
 		<AuthPageWrapper>
+			<title>{`${APP_NAME} - Log In`}</title>
 			<PageTitle title="Log In" />
 			<Form {...form}>
 				<form

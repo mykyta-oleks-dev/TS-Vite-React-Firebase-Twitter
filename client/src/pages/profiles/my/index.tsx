@@ -1,6 +1,6 @@
 import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
-import { ROUTES } from '@/constants/routes';
+import { APP_NAME, ROUTES } from '@/constants/routes';
 import useUser from '@/stores/authStore';
 import { Navigate } from 'react-router';
 import ProfileData from '../components/data';
@@ -21,6 +21,7 @@ const MyProfilePage = () => {
 
 	return (
 		<div>
+			<title>{`${APP_NAME} - Your Profile`}</title>
 			<PageTitle title="Account details">
 				<Button asChild>
 					<Link to={ROUTES.PROFILE_EDIT}>Edit</Link>

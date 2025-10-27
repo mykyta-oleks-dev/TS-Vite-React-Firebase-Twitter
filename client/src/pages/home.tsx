@@ -2,7 +2,7 @@ import Link from '@/components/link';
 import PageTitle from '@/components/page-title';
 import PostsList from '@/components/posts/list';
 import { Button } from '@/components/ui/button';
-import { ROUTES, ROUTES_LABELS } from '@/constants/routes';
+import { APP_NAME, ROUTES, ROUTES_LABELS } from '@/constants/routes';
 import useUser from '@/stores/authStore';
 
 const HomePage = () => {
@@ -10,6 +10,7 @@ const HomePage = () => {
 
 	return (
 		<div>
+			<title>{`${APP_NAME} - Feed`}</title>
 			<PageTitle title="Latest posts">
 				{userData && userData.emailVerified && (
 					<Button asChild>
@@ -19,7 +20,7 @@ const HomePage = () => {
 					</Button>
 				)}
 			</PageTitle>
-			<PostsList sortType='hot' />
+			<PostsList sortType="hot" />
 		</div>
 	);
 };

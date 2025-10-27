@@ -2,7 +2,7 @@ import { getOneUser } from '@/api/users';
 import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
 import { API_ENDPOINTS } from '@/constants/api';
-import { ROUTES } from '@/constants/routes';
+import { APP_NAME, ROUTES } from '@/constants/routes';
 import { parseFetchUser } from '@/types/User';
 import { useQuery } from '@tanstack/react-query';
 import { Navigate, useParams } from 'react-router';
@@ -32,6 +32,10 @@ const ProfilePage = () => {
 
 	return (
 		<div>
+			<title>
+				{`${APP_NAME} - Profile of ${user.firstName} ${user.lastName}`}
+			</title>
+
 			<PageTitle title="Account details" />
 
 			<ProfileData user={user} emailVerified={emailVerified} />

@@ -8,7 +8,7 @@ import SubmitButton from '@/components/submit-button';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ROUTES } from '@/constants/routes';
+import { APP_NAME, ROUTES } from '@/constants/routes';
 import { AUTH_FORM_FIELDS } from '@/constants/validation/auth';
 import { ACCEPTED_IMAGE_TYPES } from '@/constants/validation/common';
 import { handleSignUp } from '@/handlers/users';
@@ -36,6 +36,7 @@ const SignUpPage = () => {
 
 	return (
 		<AuthPageWrapper>
+			<title>{`${APP_NAME} - Sign Up`}</title>
 			<PageTitle title="Sign Up" />
 			<Form {...form}>
 				<form

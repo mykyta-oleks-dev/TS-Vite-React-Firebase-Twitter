@@ -1,6 +1,6 @@
 import PageLoader from '@/components/page-loader';
 import PageTitle from '@/components/page-title';
-import { ROUTES } from '@/constants/routes';
+import { APP_NAME, ROUTES } from '@/constants/routes';
 import useGetPostWithParam from '@/hooks/post/useGetPostWithParam';
 import usePostUpdateMutation from '@/hooks/post/usePostUpdateMutation';
 import { handleError } from '@/lib/utils';
@@ -23,6 +23,9 @@ const EditPostPage = () => {
 
 	return (
 		<div>
+			<title>
+				{`${APP_NAME} - Editing post "${post.title}"`}
+			</title>
 			<PageTitle title={`Edit a post "${post.title}"`} />
 			<PostForm
 				post={post}

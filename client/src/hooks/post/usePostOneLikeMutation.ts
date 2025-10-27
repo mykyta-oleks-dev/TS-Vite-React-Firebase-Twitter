@@ -120,8 +120,6 @@ const getNewPost = (
 
 	if (oldLikeType === action) return newPost;
 
-	console.log({ oldLikeType, action });
-
 	let likeDiff = 0;
 	let dislikeDiff = 0;
 

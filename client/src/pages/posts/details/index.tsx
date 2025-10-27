@@ -3,7 +3,7 @@ import PageLoader from '@/components/page-loader';
 import PostCreatorActions from '@/components/posts/creator-actions';
 import UserActions from '@/components/posts/user-actions';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ROUTES } from '@/constants/routes';
+import { APP_NAME, ROUTES } from '@/constants/routes';
 import useGetPostWithParam from '@/hooks/post/useGetPostWithParam';
 import usePostOneLikeMutation from '@/hooks/post/usePostOneLikeMutation';
 import { handleError } from '@/lib/utils';
@@ -37,6 +37,9 @@ const PostDetailsPage = () => {
 
 	return (
 		<div className="flex flex-col gap-3">
+			<title>
+				{`${APP_NAME} - Post "${post.title}"`}
+			</title>
 			<div className="flex gap-3 items-center">
 				<Link
 					to={ROUTES.PROFILE_VIEW(post.userId)}

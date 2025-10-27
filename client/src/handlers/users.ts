@@ -60,13 +60,12 @@ export const handleSignUpFinish = async (values: signUpFinishData) => {
 
 export const handleLogIn = async (values: logInData) => {
 	try {
-		const results = await signInWithEmailAndPassword(
+		await signInWithEmailAndPassword(
 			auth,
 			values.email,
 			values.password
 		);
-		const user = results.user;
-		console.log(await user.getIdToken());
+
 		router.navigate(ROUTES.ROOT);
 	} catch (err) {
 		handleError(err, true);
@@ -75,12 +74,9 @@ export const handleLogIn = async (values: logInData) => {
 
 export const handleGoogleAuth = async () => {
 	try {
-		await signInWithPopup(auth, googleAuthProvider).then(
-			async (userCredential) => {
-				console.log(await userCredential.user.getIdToken());
-				router.navigate(ROUTES.ROOT);
-			}
-		);
+		await signInWithPopup(auth, googleAuthProvider).then(async () => {
+			router.navigate(ROUTES.ROOT);
+		});
 	} catch (err) {
 		handleError(err, true);
 	}

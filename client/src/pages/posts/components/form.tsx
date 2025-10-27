@@ -74,7 +74,6 @@ const PostForm = ({
 								accept={[...ACCEPTED_IMAGE_TYPES].join(',')}
 								onChange={(e) => {
 									const file = e.target.files?.[0];
-									console.log(file);
 									if (file) {
 										field.onChange(file);
 
