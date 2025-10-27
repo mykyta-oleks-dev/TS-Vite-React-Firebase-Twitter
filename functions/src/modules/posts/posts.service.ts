@@ -155,6 +155,16 @@ class PostsService {
 
 		return postsRepository.updateComment(postIdActual, commentIdActual, body);
 	};
+
+	deleteComment = async (
+		postId?: string,
+		commentId?: string
+	) => {
+		const postIdActual = this._getIdOrThrow(postId);
+		const commentIdActual = this._getIdOrThrow(commentId, true);
+
+		return postsRepository.deleteComment(postIdActual, commentIdActual);
+	};
 }
 
 const postsService = new PostsService();

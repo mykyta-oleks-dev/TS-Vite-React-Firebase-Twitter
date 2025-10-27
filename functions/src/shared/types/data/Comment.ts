@@ -13,7 +13,7 @@ export interface CommentDB extends CommentData, DBObject {}
 
 export interface Comment extends CommentData, AppObject {}
 
-export interface CommentResponse extends Comment {
+export interface CommentApiResponse extends Comment {
 	userName: string;
 	userAvatar: string | null;
 }

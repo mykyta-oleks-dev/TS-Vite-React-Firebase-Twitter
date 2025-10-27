@@ -47,5 +47,11 @@ postsRoutes.patch(
 	isAuthor([COLLECTIONS_KEYS.POSTS, COLLECTIONS_KEYS.COMMENTS], ['id', 'commentId']),
 	postsController.updateComment
 );
+postsRoutes.delete(
+	ROUTES.COMMENT_SINGLE,
+	forceAuthenticate,
+	isAuthor([COLLECTIONS_KEYS.POSTS, COLLECTIONS_KEYS.COMMENTS], ['id', 'commentId']),
+	postsController.deleteComment
+);
 
 export default postsRoutes;

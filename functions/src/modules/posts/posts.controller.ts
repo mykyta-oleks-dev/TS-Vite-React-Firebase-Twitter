@@ -6,6 +6,7 @@ import { HTTP } from '../../shared/constants/HTTP';
 import { LikeAction } from '../../shared/types/data/Like';
 import { CommentInfoBody } from './types/commentBody';
 import { RESPONSES } from './constants/Responses';
+import { CommentParams, PostParams } from './types/params';
 
 class PostsController {
 	create: RequestHandler = async (
@@ -24,7 +25,7 @@ class PostsController {
 		});
 	};
 
-	getOne: RequestHandler = async (req: Request<{ id?: string }>, res) => {
+	getOne: RequestHandler = async (req: Request<PostParams>, res) => {
 		const { id } = req.params;
 		const user = req.user;
 		const withComments = req.query.withComments === 'true';
@@ -61,7 +62,7 @@ class PostsController {
 	};
 
 	update: RequestHandler = async (
-		req: Request<{ id?: string }, {}, PostInfoBody>,
+		req: Request<PostParams, {}, PostInfoBody>,
 		res
 	) => {
 		const { id } = req.params;
@@ -76,7 +77,7 @@ class PostsController {
 		});
 	};
 
-	delete: RequestHandler = async (req: Request<{ id?: string }>, res) => {
+	delete: RequestHandler = async (req: Request<PostParams>, res) => {
 		const { id } = req.params;
 
 		await postsService.delete(id);
@@ -87,7 +88,7 @@ class PostsController {
 	// Likes handling
 
 	like: RequestHandler = async (
-		req: Request<{ id?: string }, {}, { type?: LikeAction }>,
+		req: Request<PostParams, {}, { type?: LikeAction }>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
@@ -99,7 +100,7 @@ class PostsController {
 		res.status(HTTP.NO_CONTENT).send();
 	};
 
-	removeLike: RequestHandler = async (req: Request<{ id?: string }>, res) => {
+	removeLike: RequestHandler = async (req: Request<PostParams>, res) => {
 		const user = getUserOrThrowError(req);
 		const { id } = req.params;
 
@@ -111,7 +112,7 @@ class PostsController {
 	// Comments handling
 
 	createComment: RequestHandler = async (
-		req: Request<{ id?: string }, {}, CommentInfoBody>,
+		req: Request<PostParams, {}, CommentInfoBody>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
@@ -124,13 +125,24 @@ class PostsController {
 	};
 
 	updateComment: RequestHandler = async (
-		req: Request<{ id?: string, commentId?: string }, {}, CommentInfoBody>,
+		req: Request<CommentParams, {}, CommentInfoBody>,
 		res
 	) => {
 		const {id, commentId} = req.params;
 		const body = req.body;
 
 		await postsService.updateComment(body, id, commentId);
+		
+		res.status(HTTP.NO_CONTENT).send();
+	};
+
+	deleteComment: RequestHandler = async (
+		req: Request<CommentParams>,
+		res
+	) => {
+		const {id, commentId} = req.params;
+
+		await postsService.deleteComment(id, commentId);
 		
 		res.status(HTTP.NO_CONTENT).send();
 	};

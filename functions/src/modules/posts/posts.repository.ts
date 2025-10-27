@@ -11,14 +11,14 @@ import { COLLECTIONS_KEYS } from '../../shared/constants/Collections';
 import {
 	Comment,
 	commentConverter,
-	CommentResponse,
+	CommentApiResponse,
 } from '../../shared/types/data/Comment';
 import { Like, LikeAction, LikeDB } from '../../shared/types/data/Like';
 import {
 	Post,
 	postConverter,
 	PostData,
-	PostResponse,
+	PostApiResponse,
 } from '../../shared/types/data/Post';
 import { REQUEST_ERRORS } from './constants/Errors';
 import { AlgoliaPost } from './types/algolia';
@@ -81,12 +81,20 @@ class PostsRepository {
 
 		const post = postConverter.fromFirestore(docSnapshot);
 
-		const user = await auth.getUser(post.userId);
+		let user: UserRecord | undefined;
 
-		const postResponse: PostResponse = {
+		try {
+			user = await auth.getUser(post.userId);
+		} catch {
+			user = undefined;
+		}
+
+		const postResponse: PostApiResponse = {
 			...post,
-			userName: user.displayName ?? user.email ?? user.uid,
-			userAvatar: user.photoURL ?? null,
+			userName: user
+				? user.displayName ?? user.email ?? user.uid
+				: '[deleted]',
+			userAvatar: user?.photoURL ?? null,
 		};
 
 		const userLikes = requestUser
@@ -97,23 +105,7 @@ class PostsRepository {
 			userLikes && userLikes.length > 0 ? userLikes[0] : undefined;
 
 		const comments = withComments
-			? await Promise.all(
-					(
-						await this._getComments(docSnapshot.ref)
-					).map(async (c) => {
-						const user = await auth.getUser(c.userId);
-
-						const commentResponse: CommentResponse = {
-							...c,
-
-							userName:
-								user.displayName ?? user.email ?? user.uid,
-							userAvatar: user.photoURL ?? null,
-						};
-
-						return commentResponse;
-					})
-			  )
+			? await this._getCommentApiResponses(docSnapshot.ref)
 			: undefined;
 
 		return { post: postResponse, userLike, comments };
@@ -134,7 +126,7 @@ class PostsRepository {
 		const postsPromises = results.posts.map(async (p) => {
 			const user = await auth.getUser(p.userId);
 
-			const postResponse: PostResponse = {
+			const postResponse: PostApiResponse = {
 				...p,
 				userName: user.displayName ?? user.email ?? user.uid,
 				userAvatar: user.photoURL ?? null,
@@ -437,7 +429,7 @@ class PostsRepository {
 			return id;
 		});
 
-		const comment = await this._getComment(postRef, id);
+		const { comment } = await this._getComment(postRef, id);
 
 		return { comment };
 	};
@@ -466,9 +458,51 @@ class PostsRepository {
 			updatedAt: now,
 		});
 
-		const comment = await this._getComment(docSnapshot.ref, commentId);
+		const { comment } = await this._getComment(docSnapshot.ref, commentId);
 
 		return { comment };
+	};
+
+	deleteComment = async (postId: string, commentId: string) => {
+		const postRef = db.collection(COLLECTIONS_KEYS.POSTS).doc(postId);
+
+		const { commentRef, comment } = await this._getComment(
+			postRef,
+			commentId
+		);
+
+		await db.runTransaction(async (t) => {
+			const postSnap = await t.get(postRef.withConverter(postConverter));
+			const post = postSnap.data();
+
+			if (!postSnap.exists || !post) {
+				throw new NotFoundError(REQUEST_ERRORS.NOT_FOUND_POST);
+			}
+
+			const now = new Date();
+
+			const newCommentData: Comment = {
+				...comment,
+				updatedAt: now,
+				isDeleted: true,
+				text: '[deleted]',
+			};
+
+			t.set(commentRef, newCommentData);
+
+			const updates: { [key: string]: FieldValue | number } = {};
+
+			const newPost: Post = {
+				...post,
+				comments: (post.comments || 0) - 1,
+			};
+
+			const newScore = this._calculateScore(newPost);
+			updates.compositeScore = newScore;
+			updates.comments = FieldValue.increment(-1);
+
+			t.update(postRef, updates);
+		});
 	};
 
 	// Private helper methods
@@ -601,12 +635,11 @@ class PostsRepository {
 		id: string,
 		isResponse = false
 	) => {
+		const commentRef = postRef
+			.collection(COLLECTIONS_KEYS.COMMENTS)
+			.doc(id);
 		const comment = (
-			await postRef
-				.collection(COLLECTIONS_KEYS.COMMENTS)
-				.doc(id)
-				.withConverter(commentConverter)
-				.get()
+			await commentRef.withConverter(commentConverter).get()
 		).data();
 
 		if (!comment)
@@ -616,7 +649,7 @@ class PostsRepository {
 					: REQUEST_ERRORS.NOT_FOUND_COMMENT
 			);
 
-		return comment;
+		return { comment, commentRef };
 	};
 
 	private readonly _getComments = async (postRef: DocumentReference) =>
@@ -626,6 +659,39 @@ class PostsRepository {
 				.withConverter(commentConverter)
 				.get()
 		).docs.map((p) => p.data());
+
+	private readonly _getCommentApiResponses = async (
+		postRef: DocumentReference
+	) => {
+		return await Promise.all(
+			(
+				await this._getComments(postRef)
+			).map(async (c) => {
+				let user: UserRecord | undefined;
+				try {
+					user = await auth.getUser(c.userId);
+				} catch {
+					user = undefined;
+				}
+
+				const commentResponse: CommentApiResponse = {
+					...c,
+
+					userId: user && !c.isDeleted ? c.userId : '[deleted]',
+					userName:
+						user && !c.isDeleted
+							? user.displayName ?? user.email ?? user.uid
+							: '[deleted]',
+					userAvatar:
+						user && !c.isDeleted && user.photoURL
+							? user.photoURL
+							: null,
+				};
+
+				return commentResponse;
+			})
+		);
+	};
 }
 
 const postsRepository = new PostsRepository();

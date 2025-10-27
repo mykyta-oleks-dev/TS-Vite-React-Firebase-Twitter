@@ -17,7 +17,7 @@ export interface PostDB extends PostData, DBObject {}
 
 export interface Post extends PostData, AppObject {}
 
-export interface PostResponse extends Post {
+export interface PostApiResponse extends Post {
 	userName: string;
 	userAvatar: string | null;
 }
