@@ -12,6 +12,7 @@ import { handleLogIn } from '@/handlers/users';
 import { logInSchema, type logInData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import AuthPageWrapper from './components/wrapper';
 
 const LogInPage = () => {
 	const form = useForm<logInData>({
@@ -23,32 +24,30 @@ const LogInPage = () => {
 	});
 
 	return (
-		<div className="w-full h-screen flex justify-center items-center">
-			<div className="p-5 min-w-lg border border-primary rounded-xl">
-				<PageTitle title="Log In" />
-				<Form {...form}>
-					<form
-						onSubmit={form.handleSubmit(handleLogIn)}
-						className="flex flex-col gap-5"
-					>
-						<FormFieldGroup
-							control={form.control}
-							name={AUTH_FORM_FIELDS.EMAIL.NAME}
-							label={AUTH_FORM_FIELDS.EMAIL.LABEL}
-							render={(field) => (
-								<Input
-									placeholder={
-										AUTH_FORM_FIELDS.EMAIL.PLACEHOLDER
-									}
-									{...field}
-								/>
-							)}
-						/>
-						<FormFieldGroup
-							control={form.control}
-							name={AUTH_FORM_FIELDS.PASSWORD.NAME}
-							label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
-							render={(field) => (
+		<AuthPageWrapper>
+			<PageTitle title="Log In" />
+			<Form {...form}>
+				<form
+					onSubmit={form.handleSubmit(handleLogIn)}
+					className="flex flex-col gap-3"
+				>
+					<FormFieldGroup
+						control={form.control}
+						name={AUTH_FORM_FIELDS.EMAIL.NAME}
+						label={AUTH_FORM_FIELDS.EMAIL.LABEL}
+						render={(field) => (
+							<Input
+								placeholder={AUTH_FORM_FIELDS.EMAIL.PLACEHOLDER}
+								{...field}
+							/>
+						)}
+					/>
+					<FormFieldGroup
+						control={form.control}
+						name={AUTH_FORM_FIELDS.PASSWORD.NAME}
+						label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
+						render={(field) => (
+							<>
 								<Input
 									placeholder={
 										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
@@ -56,41 +55,42 @@ const LogInPage = () => {
 									{...field}
 									type={AUTH_FORM_FIELDS.PASSWORD.TYPE}
 								/>
-							)}
-						/>
-						<Link
-							to={ROUTES.RESET_PASSWORD}
-							className="text-primary"
+
+								<Link
+									to={ROUTES.RESET_PASSWORD}
+									className="text-primary"
+								>
+									Forgot the password?
+								</Link>
+							</>
+						)}
+					/>
+					<div className="flex sm:flex-row flex-col gap-3">
+						<SubmitButton
+							className="flex-1"
+							isSubmitting={form.formState.isSubmitting}
 						>
-							Forgot the password?
+							Log In
+						</SubmitButton>
+						<Button
+							type="reset"
+							variant="outline"
+							className="flex-1"
+						>
+							Reset
+						</Button>
+					</div>
+					<hr />
+					<GoogleAuthButton isLogin />
+					<div>
+						Don&apos;t have an account?{' '}
+						<Link to={ROUTES.SIGN_UP} className="text-primary">
+							Sign Up
 						</Link>
-						<div className="flex gap-5">
-							<SubmitButton
-								className="flex-1"
-								isSubmitting={form.formState.isSubmitting}
-							>
-								Log In
-							</SubmitButton>
-							<Button
-								type="reset"
-								variant="outline"
-								className="flex-1"
-							>
-								Reset
-							</Button>
-						</div>
-						<hr />
-						<GoogleAuthButton isLogin />
-						<div>
-							Don&apos;t have an account?{' '}
-							<Link to={ROUTES.SIGN_UP} className="text-primary">
-								Sign Up
-							</Link>
-						</div>
-					</form>
-				</Form>
-			</div>
-		</div>
+					</div>
+				</form>
+			</Form>
+		</AuthPageWrapper>
 	);
 };
 

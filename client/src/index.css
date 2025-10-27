@@ -205,3 +205,15 @@
 .active {
 	@apply underline;
 }
+
+.navmenu-vertical {
+	@apply flex-0 p-5 mx-auto;
+}
+
+.navmenu-vertical ul {
+	@apply flex flex-col;
+}
+
+.navmenu-vertical ul li a {
+	@apply text-xl
+}

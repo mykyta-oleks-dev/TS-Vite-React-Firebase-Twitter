@@ -574,7 +574,7 @@ class PostsRepository {
 				? postsRef.orderBy('compositeScore', 'desc')
 				: postsRef.orderBy('createdAt', 'desc');
 
-		postsQuery = postsQuery.where('id', 'in', postIds);
+		if (postIds.length) postsQuery = postsQuery.where('id', 'in', postIds);
 
 		const snapshot = await postsQuery.get();
 		const posts = snapshot.docs.map((d) => postConverter.fromFirestore(d));
@@ -620,13 +620,11 @@ class PostsRepository {
 	};
 
 	private readonly _getLikes = async (uid: string, postIds: string[]) => {
-		return (
-			await db
-				.collectionGroup('likes')
-				.where('userId', '==', uid)
-				.where('postId', 'in', postIds)
-				.get()
-		).docs.map((d) => {
+		let query = db.collectionGroup('likes').where('userId', '==', uid);
+
+		if (postIds.length) query = query.where('postId', 'in', postIds);
+
+		return (await query.get()).docs.map((d) => {
 			const docData = d.data() as LikeDB;
 			return {
 				...docData,
