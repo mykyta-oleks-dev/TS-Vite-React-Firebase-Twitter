@@ -9,7 +9,7 @@ import {
 	type QueryKey,
 } from '@tanstack/react-query';
 
-const useCommentsWriteMutation = (queryKey: QueryKey) => {
+const useCommentsDeleteMutation = (queryKey: QueryKey) => {
 	const queryClient = useQueryClient();
 	const userData = useUser((s) => s.userData);
 
@@ -54,4 +54,4 @@ const useCommentsWriteMutation = (queryKey: QueryKey) => {
 	});
 };
 
-export default useCommentsWriteMutation;
+export default useCommentsDeleteMutation;

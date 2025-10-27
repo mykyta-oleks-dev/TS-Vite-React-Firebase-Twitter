@@ -21,7 +21,6 @@ const CommentInput = ({
 	onCancel,
 }: {
 	comment?: Comment;
-	responseTo?: Comment;
 	onSubmit: (text: string) => Promise<void>;
 	isPending?: boolean;
 	onCancel?: () => void;

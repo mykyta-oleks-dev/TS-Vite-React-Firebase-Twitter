@@ -1,18 +1,20 @@
+import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants/routes';
+import useCommentsEditMutation from '@/hooks/comment/useCommentsEditMutation';
+import useCommentsWriteMutation from '@/hooks/comment/useCommentsWriteMutation';
+import { cn } from '@/lib/utils';
+import useUser from '@/stores/authStore';
 import type { Comment } from '@/types/Comment';
+import type { QueryKey } from '@tanstack/react-query';
+import { useState, type PropsWithChildren } from 'react';
 import Link from '../../../../components/link';
 import {
 	Avatar,
 	AvatarFallback,
 	AvatarImage,
 } from '../../../../components/ui/avatar';
-import { useState, type PropsWithChildren } from 'react';
-import { cn } from '@/lib/utils';
-import useUser from '@/stores/authStore';
-import CommentCreatorActions from './creator-actions';
-import useCommentsEditMutation from '@/hooks/comment/useCommentsEditMutation';
-import type { QueryKey } from '@tanstack/react-query';
 import CommentInput from './comment-input';
+import CommentCreatorActions from './creator-actions';
 
 const CommentBlock = ({
 	comment,
@@ -23,10 +25,14 @@ const CommentBlock = ({
 	respondedComment?: Comment;
 	queryKey: QueryKey;
 }) => {
+	const [isReplying, setIsReplying] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
 	const userData = useUser((s) => s.userData);
 
-	const { mutateAsync, isPending } = useCommentsEditMutation(queryKey);
+	const { mutateAsync: mutateAsyncEdit, isPending: isPendingEdit } =
+		useCommentsEditMutation(queryKey);
+	const { mutateAsync: mutateAsyncReply, isPending: isPendingReply } =
+		useCommentsWriteMutation(queryKey);
 
 	const content = comment.text
 		.split('\n')
@@ -42,9 +48,30 @@ const CommentBlock = ({
 		setIsEditing(false);
 	};
 
-	const handleSubmit = async (text: string) => {
-		await mutateAsync({ postId: comment.postId, text, original: comment });
+	const handleReplyClick = () => {
+		setIsReplying(true);
+	};
+
+	const handleReplyCancel = () => {
+		setIsReplying(false);
+	};
+
+	const handleSubmitEdit = async (text: string) => {
+		await mutateAsyncEdit({
+			postId: comment.postId,
+			text,
+			original: comment,
+		});
 		setIsEditing(false);
+	};
+
+	const handleSubmitReply = async (text: string) => {
+		await mutateAsyncReply({
+			postId: comment.postId,
+			text,
+			respondedToId: comment.id,
+		});
+		setIsReplying(false);
 	};
 
 	return (
@@ -92,23 +119,24 @@ const CommentBlock = ({
 				{respondedComment && (
 					<Link
 						to={`#${respondedComment.id}`}
-						className="p-3 bg-gray-300 dark:bg-gray-700 line-clamp-2 text-xs"
+						className="p-3 bg-gray-300 dark:bg-gray-700"
 						onClick={(e) => {
 							e.preventDefault();
-
 							document
 								.getElementById(respondedComment.id)
 								?.scrollIntoView();
 						}}
 					>
-						{respondedToContent}
+						<p className="text-xs text-ellipsis line-clamp-2 overflow-clip">
+							{respondedToContent}
+						</p>
 					</Link>
 				)}
 				{isEditing ? (
 					<CommentInput
-						onSubmit={handleSubmit}
+						onSubmit={handleSubmitEdit}
 						comment={comment}
-						isPending={isPending}
+						isPending={isPendingEdit}
 						onCancel={handleEditCancel}
 					/>
 				) : (
@@ -118,6 +146,11 @@ const CommentBlock = ({
 				<hr />
 
 				<div className="flex gap-3">
+					{!comment.isDeleted && (
+						<Button variant="link" onClick={handleReplyClick}>
+							Reply
+						</Button>
+					)}
 					{userData?.user.id === comment.userId && (
 						<CommentCreatorActions
 							comment={comment}
@@ -126,6 +159,17 @@ const CommentBlock = ({
 						/>
 					)}
 				</div>
+
+				{isReplying && (
+					<>
+						<hr />
+						<CommentInput
+							isPending={isPendingReply}
+							onSubmit={handleSubmitReply}
+							onCancel={handleReplyCancel}
+						/>
+					</>
+				)}
 			</div>
 		</div>
 	);

@@ -2,7 +2,6 @@ import { createComment } from '@/api/comments';
 import { handleError } from '@/lib/utils';
 import useUser from '@/stores/authStore';
 import type { OnePost } from '@/types/API';
-import type { Comment } from '@/types/Comment';
 import {
 	useMutation,
 	useQueryClient,
@@ -17,15 +16,15 @@ const useCommentsWriteMutation = (queryKey: QueryKey) => {
 		mutationFn: async ({
 			text,
 			postId,
-			respondedTo,
+			respondedToId,
 		}: {
 			text: string;
 			postId: string;
-			respondedTo?: Comment;
+			respondedToId?: string;
 		}) => {
 			if (!userData) return;
 
-			return await createComment(text, postId, respondedTo?.id);
+			return await createComment(text, postId, respondedToId);
 		},
 
 		onError(error) {
