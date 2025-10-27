@@ -12,14 +12,23 @@ import {
 	AlertDialogTitle,
 	AlertDialogTrigger,
 } from '../../../../components/ui/alert-dialog';
+import useCommentsDeleteMutation from '@/hooks/comment/useCommentsDeleteMutation';
+import type { QueryKey } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Spinner } from '@/components/ui/spinner';
 
 const CommentCreatorActions = ({
 	comment,
 	onEditClick,
+	queryKey,
 }: {
 	comment: Comment;
 	onEditClick: () => void;
+	queryKey: QueryKey;
 }) => {
+	const [open, setOpen] = useState(false);
+	const { mutateAsync, isPending } = useCommentsDeleteMutation(queryKey);
+
 	return (
 		<>
 			<Button
@@ -31,12 +40,13 @@ const CommentCreatorActions = ({
 				<PenLineIcon />
 			</Button>
 
-			<AlertDialog>
+			<AlertDialog open={open}>
 				<AlertDialogTrigger asChild>
 					<Button
 						size="icon"
 						variant="ghost"
 						className="rounded-full text-destructive hover:text-destructive"
+						onClick={() => setOpen(true)}
 					>
 						<Trash2Icon />
 					</Button>
@@ -54,12 +64,17 @@ const CommentCreatorActions = ({
 					<AlertDialogFooter>
 						<AlertDialogCancel>Cancel</AlertDialogCancel>
 						<AlertDialogAction
-							onClick={() =>
-								console.log(`deleted comment ${comment.id}`)
-							}
+							onClick={async () => {
+								await mutateAsync({
+									original: comment,
+									postId: comment.postId,
+								});
+								setOpen(false);
+							}}
 							variant="destructive"
+							disabled={isPending}
 						>
-							Continue
+							Continue {isPending && <Spinner />}
 						</AlertDialogAction>
 					</AlertDialogFooter>
 				</AlertDialogContent>

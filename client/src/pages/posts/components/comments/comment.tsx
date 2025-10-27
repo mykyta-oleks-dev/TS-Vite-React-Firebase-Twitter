@@ -122,6 +122,7 @@ const CommentBlock = ({
 						<CommentCreatorActions
 							comment={comment}
 							onEditClick={handleEditClick}
+							queryKey={queryKey}
 						/>
 					)}
 				</div>

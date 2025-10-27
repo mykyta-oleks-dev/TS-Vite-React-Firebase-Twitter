@@ -31,3 +31,8 @@ export const editComment = async (
 			text,
 		}
 	);
+
+export const deleteComment = async (postId: string, commentId: string) =>
+	await axiosInstance.delete(
+		API_ENDPOINTS.POSTS.COMMENT_ONE(postId, commentId)
+	);
