@@ -15,8 +15,9 @@ const helloHandler: RequestHandler = (_req, res) => {
 };
 
 app.get('/', helloHandler);
-app.use('/users', usersRoutes);
-app.use('/posts', postsRoutes);
+app.get('/api/', helloHandler);
+app.use('/api/users', usersRoutes);
+app.use('/api/posts', postsRoutes);
 
 // Unknown routes handling
 app.use(notFoundHandler);
