@@ -43,12 +43,12 @@ const LogInPage = () => {
 							/>
 						)}
 					/>
-					<FormFieldGroup
-						control={form.control}
-						name={AUTH_FORM_FIELDS.PASSWORD.NAME}
-						label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
-						render={(field) => (
-							<>
+					<div className="flex flex-col gap-1">
+						<FormFieldGroup
+							control={form.control}
+							name={AUTH_FORM_FIELDS.PASSWORD.NAME}
+							label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
+							render={(field) => (
 								<Input
 									placeholder={
 										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
@@ -56,16 +56,17 @@ const LogInPage = () => {
 									{...field}
 									type={AUTH_FORM_FIELDS.PASSWORD.TYPE}
 								/>
+							)}
+						/>
 
-								<Link
-									to={ROUTES.RESET_PASSWORD}
-									className="text-primary"
-								>
-									Forgot the password?
-								</Link>
-							</>
-						)}
-					/>
+						<Link
+							to={ROUTES.RESET_PASSWORD}
+							className="text-primary"
+						>
+							Forgot the password?
+						</Link>
+					</div>
+
 					<div className="flex sm:flex-row flex-col gap-3">
 						<SubmitButton
 							className="flex-1"

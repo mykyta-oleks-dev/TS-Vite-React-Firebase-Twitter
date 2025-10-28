@@ -1,5 +1,5 @@
 import { auth } from '../../../config/firebase.js';
-import transport, { ETHEREAL } from '../../../config/nodemailer.js';
+import { getEtherealConfig, getTransport } from '../../../config/nodemailer.js';
 import { AppError } from '../../../middlewares/ErrorHandling.js';
 
 export const sendVerificationEmail = async (
@@ -19,6 +19,9 @@ export const sendVerificationEmail = async (
 		.then(async (link) => {
 			// Construct email verification template, embed the link and send
 			// using custom SMTP server.
+			const ETHEREAL = getEtherealConfig();
+			const transport = getTransport();
+
 			await transport
 				.sendMail({
 					from: `"Twitter Clone Automatic Messages" <${ETHEREAL.USER}>`,
@@ -52,6 +55,9 @@ export const sendResetPassword = async (email: string, redirectUrl?: string) =>
 				: undefined
 		)
 		.then(async (link) => {
+			const ETHEREAL = getEtherealConfig();
+			const transport = getTransport();
+
 			await transport
 				.sendMail({
 					from: `"Twitter Clone Automatic Messages" <${ETHEREAL.USER}>`,

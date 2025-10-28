@@ -1,10 +1,10 @@
 import { algoliasearch, SearchClient } from 'algoliasearch';
-import { defineString } from 'firebase-functions/params';
-
-const APP_ID = defineString('ALGOLIA_APP_ID');
-const READ_API_KEY = defineString('ALGOLIA_READ_API_KEY');
-const WRITE_API_KEY = defineString('ALGOLIA_WRITE_API_KEY');
-const INDEX = defineString('ALGOLIA_INDEX');
+import {
+	algoliaAppId,
+	algoliaIndex,
+	algoliaReadApiKey,
+	algoliaWriteApiKey,
+} from './secrets.js';
 
 let algoliaWriteClientInstance: SearchClient | null = null;
 let algoliaReadClientInstance: SearchClient | null = null;
@@ -23,10 +23,9 @@ export const getAlgoliaClient = (write?: boolean): SearchClient => {
 		return algoliaReadClientInstance;
 	}
 
-	// Resolve the parameter values at runtime using .value()
-	const appId = APP_ID.value();
-	const writeApiKey = WRITE_API_KEY.value();
-	const readApiKey = READ_API_KEY.value();
+	const appId = algoliaAppId.value();
+	const writeApiKey = algoliaWriteApiKey.value();
+	const readApiKey = algoliaReadApiKey.value();
 
 	if (!appId || !writeApiKey || !readApiKey) {
 		throw new Error('Algolia credentials are not set in the environment.');
@@ -39,4 +38,4 @@ export const getAlgoliaClient = (write?: boolean): SearchClient => {
 	return write ? algoliaWriteClientInstance : algoliaReadClientInstance;
 };
 
-export const getIndex = () => INDEX.value();
+export const getIndex = () => algoliaIndex.value();

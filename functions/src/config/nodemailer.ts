@@ -1,20 +1,31 @@
 import nodemailer from 'nodemailer';
+import { smtpHost, smtpPass, smtpPort, smtpUser } from './secrets.js';
 
-export const ETHEREAL = {
-	HOST: process.env.SMTP_HOST ?? 'smtp.ethereal.email',
-	PORT: process.env.SMTP_PORT ? +process.env.SMTP_PORT : 587,
-	USER: process.env.SMTP_USER ?? 'john.smith@ethereal.com',
-	PASS: process.env.SMTP_PASS ?? 'bNsdU51CReGg5tyMXS',
-} as const;
+export const getEtherealConfig = () => {
+	const ETHEREAL = {
+		HOST: smtpHost.value(),
+		PORT: +smtpPort.value(),
+		USER: smtpUser.value(),
+		PASS: smtpPass.value(),
+	} as const;
 
-const trasport = nodemailer.createTransport({
-	host: ETHEREAL.HOST,
-	port: ETHEREAL.PORT,
-	secure: false,
-	auth: {
-		user: ETHEREAL.USER,
-		pass: ETHEREAL.PASS,
-	},
-});
+	return ETHEREAL;
+};
 
-export default trasport;
+export const getTransport = () => {
+	const ETHEREAL = getEtherealConfig();
+
+	const transport = nodemailer.createTransport({
+		host: ETHEREAL.HOST,
+		port: ETHEREAL.PORT,
+		secure: false,
+		auth: {
+			user: ETHEREAL.USER,
+			pass: ETHEREAL.PASS,
+		},
+	});
+
+	return transport;
+};
+
+export default getTransport;

@@ -5,6 +5,7 @@ import { HeartIcon, MessageSquareTextIcon, ThumbsDownIcon } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Link } from 'react-router';
 import { ROUTES } from '@/constants/routes';
+import useUser from '@/stores/authStore';
 
 const UserActions = ({
 	post,
@@ -17,12 +18,14 @@ const UserActions = ({
 	onLike: (postId: string, action: LikeActionExt) => void;
 	showComments?: boolean;
 }) => {
+	const userData = useUser(s => s.userData);
+	
 	const likesCount = formatLargeNumber(post.likes);
 	const dislikesCount = formatLargeNumber(post.dislikes);
 	const commentsCount = formatLargeNumber(post.comments);
 
-	const isLiked = like?.type === 'like';
-	const isDisliked = like?.type === 'dislike';
+	const isLiked = like?.type === 'like' && userData?.user.id === like?.userId;
+	const isDisliked = like?.type === 'dislike' && userData?.user.id === like?.userId;
 
 	const postId = post.id;
 

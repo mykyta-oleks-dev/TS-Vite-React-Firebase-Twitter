@@ -1,6 +1,6 @@
 import { MenuIcon } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Drawer, DrawerContent, DrawerTrigger } from '../ui/drawer';
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from '../ui/drawer';
 import Navigation from './navigation';
 import type { User } from '@/types/User';
 
@@ -17,6 +17,8 @@ const DrawerNavigation = ({ user }: { user?: User }) => {
 				</Button>
 			</DrawerTrigger>
 			<DrawerContent className='max-w-sm'>
+				<DrawerTitle className='sr-only'>Navigation</DrawerTitle>
+				<DrawerDescription className='sr-only'>Mobile side drawer navigation</DrawerDescription>
 				<Navigation user={user} orientation="vertical" />
 			</DrawerContent>
 		</Drawer>

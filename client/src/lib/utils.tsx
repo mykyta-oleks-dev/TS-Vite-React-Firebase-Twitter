@@ -18,6 +18,9 @@ const getFirebaseErrorMessage = (error: FirebaseError) => {
 	if (error.code === AuthErrorCodes.INVALID_LOGIN_CREDENTIALS)
 		return 'Invalid credentials provided!';
 
+	if (error.code === AuthErrorCodes.USER_DELETED)
+		return 'User by these credentials is not found';
+
 	return error.message;
 };
 
