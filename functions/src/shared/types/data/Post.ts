@@ -1,5 +1,5 @@
 import { DocumentData, FirestoreDataConverter } from 'firebase-admin/firestore';
-import { AppObject, DBObject } from './common';
+import { AppObject, DBObject } from './common.js';
 
 export interface PostData {
 	title: string;

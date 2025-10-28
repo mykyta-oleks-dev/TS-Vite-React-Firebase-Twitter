@@ -1,5 +1,11 @@
 import nodemailer from 'nodemailer';
-import { ETHEREAL } from '../modules/users/constants/Verification';
+
+export const ETHEREAL = {
+	HOST: process.env.SMTP_HOST ?? 'smtp.ethereal.email',
+	PORT: process.env.SMTP_PORT ? +process.env.SMTP_PORT : 587,
+	USER: process.env.SMTP_USER ?? 'john.smith@ethereal.com',
+	PASS: process.env.SMTP_PASS ?? 'bNsdU51CReGg5tyMXS',
+} as const;
 
 const trasport = nodemailer.createTransport({
 	host: ETHEREAL.HOST,

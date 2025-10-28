@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ForbiddenError, UnauthorizedError } from "./ErrorHandling";
-import { auth } from "../config/firebase";
+import { ForbiddenError, UnauthorizedError } from "./ErrorHandling.js";
+import { auth } from "../config/firebase.js";
 
 const isVerified = async (req: Request, _res: Response, next: NextFunction) => {
 	const user = req.user;

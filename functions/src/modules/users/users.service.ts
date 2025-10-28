@@ -5,17 +5,17 @@ import {
 	UserRecord,
 } from 'firebase-admin/auth';
 
-import { auth } from '../../config/firebase';
+import { auth } from '../../config/firebase.js';
 import {
 	AppError,
 	BadRequestError,
 	ConflictError,
 	NotFoundError,
-} from '../../middlewares/ErrorHandling';
-import { REQUEST_ERRORS } from './constants/Errors';
-import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body';
-import usersRepository from './users.repository';
-import { sendResetPassword, sendVerificationEmail } from './utils/emails';
+} from '../../middlewares/ErrorHandling.js';
+import { REQUEST_ERRORS } from './constants/Errors.js';
+import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body.js';
+import usersRepository from './users.repository.js';
+import { sendResetPassword, sendVerificationEmail } from './utils/emails.js';
 import {
 	assertIsPasswordsData,
 	assertIsSignUp,
@@ -24,9 +24,9 @@ import {
 	validatePasswords,
 	validateSignUpBody,
 	validateUserInfo,
-} from './utils/validate';
-import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation';
-import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors';
+} from './utils/validate.js';
+import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation.js';
+import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors.js';
 
 class UsersService {
 	signUp = async (body: SignUpBody, redirectUrl?: string) => {

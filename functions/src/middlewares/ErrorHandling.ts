@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { HTTP, HTTP_LABEL } from '../shared/constants/HTTP';
+import { HTTP, HTTP_LABEL } from '../shared/constants/HTTP.js';
 
 type Payload = Record<string, string | number>;
 

@@ -1,18 +1,18 @@
-import { urlRegex } from '../../../shared/constants/Errors';
-import { LikeAction, likeActions } from '../../../shared/types/data/Like';
+import { urlRegex } from '../../../shared/constants/Errors.js';
+import { LikeAction, likeActions } from '../../../shared/types/data/Like.js';
 import {
 	assertIsNotErroneous,
 	isEmptyString,
-} from '../../../shared/utils/validation';
+} from '../../../shared/utils/validation.js';
 import {
 	POST_VALIDATION_ERRORS,
 	TITLE_MIN_LENGTH
-} from '../constants/Errors';
+} from '../constants/Errors.js';
 import {
 	CommentInfo,
 	CommentInfoBody
-} from '../types/commentBody';
-import { PostInfo, PostInfoBody, PostInfoErrors } from '../types/postBody';
+} from '../types/commentBody.js';
+import { PostInfo, PostInfoBody, PostInfoErrors } from '../types/postBody.js';
 
 export const validatePostInfoBody = (body: PostInfoBody) => {
 	const { title, content, photo } = body;

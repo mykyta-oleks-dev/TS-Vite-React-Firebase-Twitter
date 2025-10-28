@@ -1,4 +1,4 @@
-import { SHARED_VALIDATION_ERRORS } from "../constants/Errors";
+import { SHARED_VALIDATION_ERRORS } from "../constants/Errors.js";
 
 export const validateQuery = ({page, limit}: { page?: string, limit?: string}) => {
 	const errors: Partial<Record<'page' | 'limit', string | undefined>> = {};

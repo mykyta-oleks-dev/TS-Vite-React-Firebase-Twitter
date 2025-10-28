@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { ROUTES } from './constants/Routes';
+import { ROUTES } from './constants/Routes.js';
 import forceAuthenticate, {
 	optionalAuthenticate,
-} from '../../middlewares/Authentication';
-import isVerified from '../../middlewares/VerificationCheck';
-import postsController from './posts.controller';
-import isAuthor from '../../middlewares/Authorization';
-import { COLLECTIONS_KEYS } from '../../shared/constants/Collections';
+} from '../../middlewares/Authentication.js';
+import isVerified from '../../middlewares/VerificationCheck.js';
+import postsController from './posts.controller.js';
+import isAuthor from '../../middlewares/Authorization.js';
+import { COLLECTIONS_KEYS } from '../../shared/constants/Collections.js';
 
 const postsRoutes = Router();
 

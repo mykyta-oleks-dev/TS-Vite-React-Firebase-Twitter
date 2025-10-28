@@ -1,7 +1,6 @@
-import { auth } from '../../../config/firebase';
-import transport from '../../../config/nodemailer';
-import { AppError } from '../../../middlewares/ErrorHandling';
-import { ETHEREAL } from '../constants/Verification';
+import { auth } from '../../../config/firebase.js';
+import transport, { ETHEREAL } from '../../../config/nodemailer.js';
+import { AppError } from '../../../middlewares/ErrorHandling.js';
 
 export const sendVerificationEmail = async (
 	email: string,

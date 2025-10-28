@@ -4,8 +4,8 @@ import {
 	BadRequestError,
 	ForbiddenError,
 	NotFoundError,
-} from './ErrorHandling';
-import { db } from '../config/firebase';
+} from './ErrorHandling.js';
+import { db } from '../config/firebase.js';
 import { DocumentReference } from 'firebase-admin/firestore';
 
 /**

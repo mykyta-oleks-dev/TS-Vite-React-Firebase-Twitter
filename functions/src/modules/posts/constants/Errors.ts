@@ -1,4 +1,4 @@
-import { LikeAction } from '../../../shared/types/data/Like';
+import { LikeAction } from '../../../shared/types/data/Like.js';
 
 export const TITLE_MIN_LENGTH = 3;
 

@@ -1,5 +1,5 @@
-import { Stringified } from '../../../shared/types/data/common';
-import { UserData } from '../../../shared/types/data/User';
+import { Stringified } from '../../../shared/types/data/common.js';
+import { UserData } from '../../../shared/types/data/User.js';
 
 export type UserInfo = Omit<UserData, 'email' > & {
 	birthday: string

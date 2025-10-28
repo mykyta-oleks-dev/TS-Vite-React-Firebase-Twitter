@@ -1,14 +1,14 @@
-import { urlRegex } from '../../../shared/constants/Errors';
+import { urlRegex } from '../../../shared/constants/Errors.js';
 import {
 	assertIsNotErroneous,
 	isEmptyString,
 	isNotDate,
-} from '../../../shared/utils/validation';
+} from '../../../shared/utils/validation.js';
 import {
 	emailRegex,
 	PASSWORD_MIN_LENGTH,
 	VALIDATION_ERRORS,
-} from '../constants/Errors';
+} from '../constants/Errors.js';
 import {
 	PasswordsData,
 	PasswordsDataBody,
@@ -19,7 +19,7 @@ import {
 	UserInfo,
 	UserInfoBody,
 	UserInfoErrors,
-} from '../types/body';
+} from '../types/body.js';
 
 export const validateSignUpBody = (body: SignUpBody) => {
 	const errors: SignUpErrors = validateUserInfo(body);

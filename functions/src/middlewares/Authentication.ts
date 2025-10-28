@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { auth } from '../config/firebase';
-import { UnauthorizedError } from './ErrorHandling';
+import { auth } from '../config/firebase.js';
+import { UnauthorizedError } from './ErrorHandling.js';
 
 export const forceAuthenticate = async (
 	req: Request,

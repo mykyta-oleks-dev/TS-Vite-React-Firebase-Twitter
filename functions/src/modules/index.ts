@@ -1,2 +1,2 @@
-export { usersRoutes } from './users';
-export { postsRoutes } from './posts';
+export { usersRoutes } from './users/index.js';
+export { postsRoutes } from './posts/index.js';

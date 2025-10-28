@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { UnauthorizedError } from '../../middlewares/ErrorHandling';
-import { SHARED_REQ_ERRORS } from '../constants/Errors';
+import { UnauthorizedError } from '../../middlewares/ErrorHandling.js';
+import { SHARED_REQ_ERRORS } from '../constants/Errors.js';
 
 export const getUserOrThrowError = (req: Request) => {
 	const user = req.user;

@@ -1,16 +1,20 @@
 import { Request, RequestHandler } from 'express';
-import { getUserOrThrowError } from '../../shared/utils/authentication';
-import { PostInfoBody, PostQuery } from './types/postBody';
-import postsService from './posts.service';
-import { HTTP } from '../../shared/constants/HTTP';
-import { LikeAction } from '../../shared/types/data/Like';
-import { CommentInfoBody } from './types/commentBody';
-import { RESPONSES } from './constants/Responses';
-import { CommentParams, PostParams } from './types/params';
+import { getUserOrThrowError } from '../../shared/utils/authentication.js';
+import { PostInfoBody, PostQuery } from './types/postBody.js';
+import postsService from './posts.service.js';
+import { HTTP } from '../../shared/constants/HTTP.js';
+import { LikeAction } from '../../shared/types/data/Like.js';
+import { CommentInfoBody } from './types/commentBody.js';
+import { RESPONSES } from './constants/Responses.js';
+import { CommentParams, PostParams } from './types/params.js';
 
 class PostsController {
 	create: RequestHandler = async (
-		req: Request<{}, {}, PostInfoBody>,
+		req: Request<
+			Record<string, string>,
+			Record<string, string>,
+			PostInfoBody
+		>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
@@ -30,18 +34,27 @@ class PostsController {
 		const user = req.user;
 		const withComments = req.query.withComments === 'true';
 
-		const { post, userLike, comments } = await postsService.getOne(id, user, withComments);
+		const { post, userLike, comments } = await postsService.getOne(
+			id,
+			user,
+			withComments
+		);
 
 		res.status(HTTP.OK).json({
 			message: RESPONSES.POST.GET_ONE,
 			post,
 			userLike,
-			comments
+			comments,
 		});
 	};
 
 	getMany: RequestHandler = async (
-		req: Request<{}, {}, {}, PostQuery>,
+		req: Request<
+			Record<string, string>,
+			Record<string, string>,
+			Record<string, string>,
+			PostQuery
+		>,
 		res
 	) => {
 		const query = req.query;
@@ -62,7 +75,7 @@ class PostsController {
 	};
 
 	update: RequestHandler = async (
-		req: Request<PostParams, {}, PostInfoBody>,
+		req: Request<PostParams, Record<string, string>, PostInfoBody>,
 		res
 	) => {
 		const { id } = req.params;
@@ -88,7 +101,7 @@ class PostsController {
 	// Likes handling
 
 	like: RequestHandler = async (
-		req: Request<PostParams, {}, { type?: LikeAction }>,
+		req: Request<PostParams, Record<string, string>, { type?: LikeAction }>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
@@ -112,27 +125,30 @@ class PostsController {
 	// Comments handling
 
 	createComment: RequestHandler = async (
-		req: Request<PostParams, {}, CommentInfoBody>,
+		req: Request<PostParams, Record<string, string>, CommentInfoBody>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
-		const {id} = req.params;
+		const { id } = req.params;
 		const body = req.body;
 
 		const { comment } = await postsService.createComment(user, body, id);
-		
-		res.status(HTTP.CREATED).json({ message: RESPONSES.COMMENT.CREATE, comment });
+
+		res.status(HTTP.CREATED).json({
+			message: RESPONSES.COMMENT.CREATE,
+			comment,
+		});
 	};
 
 	updateComment: RequestHandler = async (
-		req: Request<CommentParams, {}, CommentInfoBody>,
+		req: Request<CommentParams, Record<string, string>, CommentInfoBody>,
 		res
 	) => {
-		const {id, commentId} = req.params;
+		const { id, commentId } = req.params;
 		const body = req.body;
 
 		await postsService.updateComment(body, id, commentId);
-		
+
 		res.status(HTTP.NO_CONTENT).send();
 	};
 
@@ -140,10 +156,10 @@ class PostsController {
 		req: Request<CommentParams>,
 		res
 	) => {
-		const {id, commentId} = req.params;
+		const { id, commentId } = req.params;
 
 		await postsService.deleteComment(id, commentId);
-		
+
 		res.status(HTTP.NO_CONTENT).send();
 	};
 }

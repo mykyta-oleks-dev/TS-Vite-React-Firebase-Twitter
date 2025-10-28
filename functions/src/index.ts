@@ -1,7 +1,7 @@
 import { setGlobalOptions } from 'firebase-functions';
 import { onRequest } from 'firebase-functions/https';
-import app from './app';
-import { smtpHost, smtpPass, smtpPort, smtpUser } from './config/secrets';
+import app from './app.js';
+import { smtpHost, smtpPass, smtpPort, smtpUser } from './config/secrets.js';
 
 setGlobalOptions({ maxInstances: 10 });
 

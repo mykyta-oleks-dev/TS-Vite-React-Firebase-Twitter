@@ -1,29 +1,29 @@
 import { DecodedIdToken, UserRecord } from 'firebase-admin/auth';
 import { DocumentReference, FieldValue } from 'firebase-admin/firestore';
-import { getAlgoliaClient, getIndex } from '../../config/algolia';
-import { auth, db } from '../../config/firebase';
+import { getAlgoliaClient, getIndex } from '../../config/algolia.js';
+import { auth, db } from '../../config/firebase.js';
 import {
 	AppError,
 	ConflictError,
 	NotFoundError,
-} from '../../middlewares/ErrorHandling';
-import { COLLECTIONS_KEYS } from '../../shared/constants/Collections';
+} from '../../middlewares/ErrorHandling.js';
+import { COLLECTIONS_KEYS } from '../../shared/constants/Collections.js';
 import {
 	Comment,
 	commentConverter,
 	CommentApiResponse,
-} from '../../shared/types/data/Comment';
-import { Like, LikeAction, LikeDB } from '../../shared/types/data/Like';
+} from '../../shared/types/data/Comment.js';
+import { Like, LikeAction, LikeDB } from '../../shared/types/data/Like.js';
 import {
 	Post,
 	postConverter,
 	PostData,
 	PostApiResponse,
-} from '../../shared/types/data/Post';
-import { REQUEST_ERRORS } from './constants/Errors';
-import { AlgoliaPost } from './types/algolia';
-import { CommentInfo } from './types/commentBody';
-import { PostInfo, PostQuery } from './types/postBody';
+} from '../../shared/types/data/Post.js';
+import { REQUEST_ERRORS } from './constants/Errors.js';
+import { AlgoliaPost } from './types/algolia.js';
+import { CommentInfo } from './types/commentBody.js';
+import { PostInfo, PostQuery } from './types/postBody.js';
 
 // For each time period (hour) passed score will decrease by...
 const WEIGHT_FACTOR = 1;

@@ -3,7 +3,7 @@ import {
 	FirestoreDataConverter,
 	Timestamp
 } from 'firebase-admin/firestore';
-import type { AppObject, DBObject } from './common';
+import type { AppObject, DBObject } from './common.js';
 
 export interface UserData {
 	email: string;

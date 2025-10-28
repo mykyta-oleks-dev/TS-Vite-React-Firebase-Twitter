@@ -1,5 +1,5 @@
-import { CommentData } from '../../../shared/types/data/Comment';
-import { Stringified } from '../../../shared/types/data/common';
+import { CommentData } from '../../../shared/types/data/Comment.js';
+import { Stringified } from '../../../shared/types/data/common.js';
 
 export type CommentInfo = Omit<CommentData, 'userId' | 'postId' | 'isDeleted'>;
 

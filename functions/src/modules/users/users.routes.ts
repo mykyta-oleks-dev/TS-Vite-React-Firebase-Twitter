@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import forceAuthenticate from '../../middlewares/Authentication';
-import usersController from './users.controller';
-import { ROUTES } from './constants/Routes';
+import forceAuthenticate from '../../middlewares/Authentication.js';
+import usersController from './users.controller.js';
+import { ROUTES } from './constants/Routes.js';
 
 const usersRoutes = Router();
 

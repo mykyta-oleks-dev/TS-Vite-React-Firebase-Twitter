@@ -1,51 +1,46 @@
 // eslint.config.js
-import { defineConfig } from "eslint/config";
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import js from '@eslint/js';
+import tsParser from '@typescript-eslint/parser';
+import { flatConfigs } from 'eslint-plugin-import';
+import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  {
-    // Ці файли охоплюються загальним конфігом
-    files: ["**/*.{js,ts}"],
+	{
+		files: ['**/*.ts'],
 
-    // Підключаємо base конфіг з ESLint
-    extends: [
-      "eslint:recommended",
-      "plugin:import/errors",
-      "plugin:import/warnings",
-      "plugin:import/typescript",
-      "google",
-      "plugin:@typescript-eslint/recommended",
-    ],
+		extends: [
+			js.configs.recommended,
+			flatConfigs.errors,
+			flatConfigs.warnings,
+			flatConfigs.typescript,
+			// googleConfig,
+			tseslint.configs.recommended,
+		],
 
-    languageOptions: {
-      parser: "@typescript-eslint/parser",
-      parserOptions: {
-        project: ["tsconfig.json", "tsconfig.dev.json"],
-        sourceType: "module",
-      },
-      // Налаштування глобалів (env → globals) маємо робити вручну
-      globals: {
-        // наприклад, process, console і т.д.
-        process: "readonly",
-        console: "readonly",
-        // інші node глобали можна під’єднати з пакету globals
-      },
-    },
+		languageOptions: {
+			parser: tsParser,
+			parserOptions: {
+				project: ['tsconfig.json'],
+				sourceType: 'module',
+			},
+			globals: {
+				process: 'readonly',
+				console: 'readonly',
+			},
+		},
 
-    ignores: [
-      "lib/**/*",
-      "generated/**/*",
-    ],
+		ignores: ['lib/**/*', 'generated/**/*'],
 
-    plugins: {
-      "@typescript-eslint": typescriptEslint,
-      import: require("eslint-plugin-import"),
-    },
-
-    rules: {
-      quotes: ["error", "double"],
-      "import/no-unresolved": "off",
-      indent: ["error", 2],
-    },
-  },
+		rules: {
+			'import/no-unresolved': 'off',
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					varsIgnorePattern: '^_',
+					argsIgnorePattern: '^_',
+				},
+			],
+		},
+	},
 ]);

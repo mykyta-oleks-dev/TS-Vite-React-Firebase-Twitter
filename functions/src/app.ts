@@ -1,11 +1,8 @@
 import cors from 'cors';
 import express, { RequestHandler } from 'express';
-import { errorHandler, notFoundHandler } from './middlewares/ErrorHandling';
-import { postsRoutes, usersRoutes } from './modules';
+import { errorHandler, notFoundHandler } from './middlewares/ErrorHandling.js';
+import { postsRoutes, usersRoutes } from './modules/index.js';
 
-// Initialize Firebase Admin SDK
-
-// References to Firestore and Auth
 // Initialize the Express application
 const app = express();
 

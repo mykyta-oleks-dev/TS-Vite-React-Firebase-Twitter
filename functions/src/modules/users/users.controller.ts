@@ -1,14 +1,14 @@
 import { Request, RequestHandler } from 'express';
-import { ConflictError } from '../../middlewares/ErrorHandling';
-import { HTTP } from '../../shared/constants/HTTP';
-import { getUserOrThrowError } from '../../shared/utils/authentication';
-import { REQUEST_ERRORS } from './constants/Errors';
-import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body';
-import usersService from './users.service';
+import { ConflictError } from '../../middlewares/ErrorHandling.js';
+import { HTTP } from '../../shared/constants/HTTP.js';
+import { getUserOrThrowError } from '../../shared/utils/authentication.js';
+import { REQUEST_ERRORS } from './constants/Errors.js';
+import { PasswordsDataBody, SignUpBody, UserInfoBody } from './types/body.js';
+import usersService from './users.service.js';
 
 class UsersController {
 	signUp: RequestHandler = async (
-		req: Request<{}, {}, SignUpBody & { redirectUrl?: string }>,
+		req: Request<Record<string, string>, Record<string, string>, SignUpBody & { redirectUrl?: string }>,
 		res
 	) => {
 		const { redirectUrl, ...body } = req.body;
@@ -22,7 +22,7 @@ class UsersController {
 	};
 
 	signUpGoogle: RequestHandler = async (
-		req: Request<{}, {}, UserInfoBody>,
+		req: Request<Record<string, string>, Record<string, string>, UserInfoBody>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
@@ -47,7 +47,7 @@ class UsersController {
 	};
 
 	getMany: RequestHandler = async (
-		req: Request<{}, {}, {}, { page?: string; limit?: string }>,
+		req: Request<Record<string, string>, Record<string, string>, Record<string, string>, { page?: string; limit?: string }>,
 		res
 	) => {
 		const query = req.query;
@@ -58,7 +58,7 @@ class UsersController {
 	};
 
 	update: RequestHandler = async (
-		req: Request<{}, {}, UserInfoBody>,
+		req: Request<Record<string, string>, Record<string, string>, UserInfoBody>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);
@@ -93,7 +93,7 @@ class UsersController {
 	};
 
 	changePassword: RequestHandler = async (
-		req: Request<{}, {}, PasswordsDataBody>,
+		req: Request<Record<string, string>, Record<string, string>, PasswordsDataBody>,
 		res
 	) => {
 		const user = getUserOrThrowError(req);

@@ -1,9 +1,9 @@
-import { db } from '../../config/firebase';
-import { NotFoundError } from '../../middlewares/ErrorHandling';
-import { COLLECTIONS_KEYS } from '../../shared/constants/Collections';
-import { User, userConverter } from '../../shared/types/data/User';
-import { REQUEST_ERRORS } from './constants/Errors';
-import { SignUp, UserInfo } from './types/body';
+import { db } from '../../config/firebase.js';
+import { NotFoundError } from '../../middlewares/ErrorHandling.js';
+import { COLLECTIONS_KEYS } from '../../shared/constants/Collections.js';
+import { User, userConverter } from '../../shared/types/data/User.js';
+import { REQUEST_ERRORS } from './constants/Errors.js';
+import { SignUp, UserInfo } from './types/body.js';
 
 class UsersRepository {
 	private readonly _getUserSnapshot = async (uid: string) => {

@@ -1,4 +1,4 @@
-import { EMULATORS, FIREBASE } from '@/constants/env';
+import { EMULATORS, FIREBASE, IS_DEV } from '@/constants/env';
 import { initializeApp } from 'firebase/app';
 import {
 	connectAuthEmulator,
@@ -29,7 +29,7 @@ export const auth = getAuth(app);
 
 export const storage = getStorage(app);
 
-if (EMULATORS.HOST) {
+if (IS_DEV && EMULATORS.HOST) {
 	// Set up auth emulation
 	if (EMULATORS.AUTH_PORT) {
 		console.log('emulating auth');

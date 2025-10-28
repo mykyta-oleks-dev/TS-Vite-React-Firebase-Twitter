@@ -1,18 +1,18 @@
 import { DecodedIdToken } from 'firebase-admin/auth';
-import { auth } from '../../config/firebase';
-import { BadRequestError } from '../../middlewares/ErrorHandling';
-import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors';
-import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation';
-import { COMMENT_VALIDATION_ERRORS, REQUEST_ERRORS } from './constants/Errors';
-import postsRepository from './posts.repository';
-import { CommentInfoBody } from './types/commentBody';
-import { PostInfoBody, PostQuery } from './types/postBody';
+import { auth } from '../../config/firebase.js';
+import { BadRequestError } from '../../middlewares/ErrorHandling.js';
+import { SHARED_REQ_ERRORS } from '../../shared/constants/Errors.js';
+import { isNotEmptyObj, validateQuery } from '../../shared/utils/validation.js';
+import { COMMENT_VALIDATION_ERRORS, REQUEST_ERRORS } from './constants/Errors.js';
+import postsRepository from './posts.repository.js';
+import { CommentInfoBody } from './types/commentBody.js';
+import { PostInfoBody, PostQuery } from './types/postBody.js';
 import {
 	assertIsCommentInfo,
 	assertIsPostInfo,
 	isLikeAction,
 	validatePostInfoBody,
-} from './utils/validate';
+} from './utils/validate.js';
 
 class PostsService {
 	private readonly _getIdOrThrow = (id?: string, isComment = false) => {
