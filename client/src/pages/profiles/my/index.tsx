@@ -12,6 +12,7 @@ import Link from '@/components/link';
 const MyProfilePage = () => {
 	const userData = useUser((s) => s.userData);
 	const isLoading = useUser((s) => s.isLoading);
+	const isPassword = useUser((s) => s.isPassword);
 
 	if (isLoading) return <PageLoader />;
 
@@ -36,7 +37,11 @@ const MyProfilePage = () => {
 					<ProfileData user={user} emailVerified={emailVerified} />
 				</TabsContent>
 				<TabsContent value="dangerous">
-					<DangerousZone user={user} emailVerified={emailVerified} />
+					<DangerousZone
+						user={user}
+						emailVerified={emailVerified}
+						isPassword={isPassword}
+					/>
 				</TabsContent>
 			</Tabs>
 		</div>

@@ -13,6 +13,7 @@ import { logInSchema, type logInData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import AuthPageWrapper from './components/wrapper';
+import { useNavigate } from 'react-router';
 
 const LogInPage = () => {
 	const form = useForm<logInData>({
@@ -23,13 +24,15 @@ const LogInPage = () => {
 		},
 	});
 
+	const navigate = useNavigate();
+
 	return (
 		<AuthPageWrapper>
 			<title>{`${APP_NAME} - Log In`}</title>
 			<PageTitle title="Log In" />
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(handleLogIn)}
+					onSubmit={form.handleSubmit((data) => handleLogIn(data, navigate))}
 					className="flex flex-col gap-3"
 				>
 					<FormFieldGroup

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import forceAuthenticate from '../../middlewares/Authentication.js';
 import usersController from './users.controller.js';
 import { ROUTES } from './constants/Routes.js';
+import noCaching from '../../middlewares/NoCache.js';
 
 const usersRoutes = Router();
 
@@ -11,7 +12,7 @@ usersRoutes.post(
 	forceAuthenticate,
 	usersController.signUpGoogle
 );
-usersRoutes.get(ROUTES.DYNAMIC, usersController.getOne);
+usersRoutes.get(ROUTES.DYNAMIC, noCaching, usersController.getOne);
 usersRoutes.get(ROUTES.ROOT, usersController.getMany);
 usersRoutes.put(ROUTES.ROOT, forceAuthenticate, usersController.update);
 usersRoutes.delete(ROUTES.ROOT, forceAuthenticate, usersController.delete);

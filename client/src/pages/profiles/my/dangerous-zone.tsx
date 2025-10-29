@@ -29,9 +29,11 @@ import { useForm } from 'react-hook-form';
 const DangerousZone = ({
 	user,
 	emailVerified,
+	isPassword,
 }: {
 	user: User;
 	emailVerified: boolean;
+	isPassword: boolean;
 }) => {
 	const reset = useUser((s) => s.reset);
 
@@ -69,64 +71,72 @@ const DangerousZone = ({
 				<h3 className="mb-3 font-semibold text-xl">
 					Change your password
 				</h3>
-				<Form {...form}>
-					<form
-						onSubmit={form.handleSubmit((data) =>
-							handleChangePassword(user.email, data)
-						)}
-						className="flex flex-col gap-3"
-					>
-						<FormFieldGroup
-							control={form.control}
-							name="oldPassword"
-							label={AUTH_FORM_FIELDS.OLD_PASSWORD.LABEL}
-							render={(field) => (
-								<Input
-									{...field}
-									placeholder={
-										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
-									}
-									type="password"
-								/>
+				{isPassword && (
+					<Form {...form}>
+						<form
+							onSubmit={form.handleSubmit((data) =>
+								handleChangePassword(user.email, data)
 							)}
-						/>
-						<FormFieldGroup
-							control={form.control}
-							name="password"
-							label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
-							render={(field) => (
-								<Input
-									{...field}
-									placeholder={
-										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
-									}
-									type="password"
-								/>
-							)}
-						/>
-						<FormFieldGroup
-							control={form.control}
-							name="confirmPassword"
-							label={AUTH_FORM_FIELDS.CONFIRM_PASSWORD.LABEL}
-							render={(field) => (
-								<Input
-									{...field}
-									placeholder={
-										AUTH_FORM_FIELDS.PASSWORD.PLACEHOLDER
-									}
-									type="password"
-								/>
-							)}
-						/>
-						<SubmitButton
-							variant="destructive"
-							className="md:w-max"
-							isSubmitting={form.formState.isSubmitting}
+							className="flex flex-col gap-3"
 						>
-							Change Password
-						</SubmitButton>
-					</form>
-				</Form>
+							<FormFieldGroup
+								control={form.control}
+								name="oldPassword"
+								label={AUTH_FORM_FIELDS.OLD_PASSWORD.LABEL}
+								render={(field) => (
+									<Input
+										{...field}
+										placeholder={
+											AUTH_FORM_FIELDS.PASSWORD
+												.PLACEHOLDER
+										}
+										type="password"
+									/>
+								)}
+							/>
+							<FormFieldGroup
+								control={form.control}
+								name="password"
+								label={AUTH_FORM_FIELDS.PASSWORD.LABEL}
+								render={(field) => (
+									<Input
+										{...field}
+										placeholder={
+											AUTH_FORM_FIELDS.PASSWORD
+												.PLACEHOLDER
+										}
+										type="password"
+									/>
+								)}
+							/>
+							<FormFieldGroup
+								control={form.control}
+								name="confirmPassword"
+								label={AUTH_FORM_FIELDS.CONFIRM_PASSWORD.LABEL}
+								render={(field) => (
+									<Input
+										{...field}
+										placeholder={
+											AUTH_FORM_FIELDS.PASSWORD
+												.PLACEHOLDER
+										}
+										type="password"
+									/>
+								)}
+							/>
+							<SubmitButton
+								variant="destructive"
+								className="md:w-max"
+								isSubmitting={form.formState.isSubmitting}
+							>
+								Change Password
+							</SubmitButton>
+						</form>
+					</Form>
+				)}
+				{!isPassword && (
+					<p>Your authentication is managed with Google Accounts</p>
+				)}
 			</div>
 
 			<hr />

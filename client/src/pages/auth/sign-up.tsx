@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import AuthPageWrapper from './components/wrapper';
+import { useNavigate } from 'react-router';
 
 const SignUpPage = () => {
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -34,13 +35,17 @@ const SignUpPage = () => {
 		},
 	});
 
+	const navigate = useNavigate();
+
 	return (
 		<AuthPageWrapper>
 			<title>{`${APP_NAME} - Sign Up`}</title>
 			<PageTitle title="Sign Up" />
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(handleSignUp)}
+					onSubmit={form.handleSubmit((data) =>
+						handleSignUp(data, navigate)
+					)}
 					className="flex flex-col gap-3"
 				>
 					<div className="flex items-center gap-3">

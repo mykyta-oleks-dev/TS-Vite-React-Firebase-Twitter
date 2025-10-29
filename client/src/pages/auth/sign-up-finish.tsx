@@ -16,13 +16,15 @@ import { signUpFinishSchema, type signUpFinishData } from '@/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Navigate } from 'react-router';
+import { Navigate, useNavigate } from 'react-router';
 import AuthPageWrapper from './components/wrapper';
 
 const FinishSignUpPage = () => {
 	const { isAuthenticated, authLoading } = useAuth();
 
 	const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+	const navigate = useNavigate();
 
 	const form = useForm<signUpFinishData>({
 		resolver: zodResolver(signUpFinishSchema),
@@ -47,7 +49,9 @@ const FinishSignUpPage = () => {
 			/>
 			<Form {...form}>
 				<form
-					onSubmit={form.handleSubmit(handleSignUpFinish)}
+					onSubmit={form.handleSubmit((data) =>
+						handleSignUpFinish(data, navigate)
+					)}
 					className="flex flex-col gap-3"
 				>
 					<div className="flex items-center gap-3">

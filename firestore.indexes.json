@@ -2,7 +2,41 @@
 	"indexes": [
 		{
 			"collectionGroup": "likes",
-			"queryScope": "COLLECTION_GROUP"
+			"queryScope": "COLLECTION_GROUP",
+			"fields": [
+				{
+					"fieldPath": "postId",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "userId",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "__name__",
+					"order": "ASCENDING"
+				}
+			],
+			"density": "SPARSE_ALL"
+		},
+		{
+			"collectionGroup": "posts",
+			"queryScope": "COLLECTION",
+			"fields": [
+				{
+					"fieldPath": "userId",
+					"order": "ASCENDING"
+				},
+				{
+					"fieldPath": "createdAt",
+					"order": "DESCENDING"
+				},
+				{
+					"fieldPath": "__name__",
+					"order": "DESCENDING"
+				}
+			],
+			"density": "SPARSE_ALL"
 		}
 	],
 	"fieldOverrides": []

@@ -620,17 +620,21 @@ class PostsRepository {
 	};
 
 	private readonly _getLikes = async (uid: string, postIds: string[]) => {
-		let query = db.collectionGroup('likes').where('userId', '==', uid);
+		try {
+			let query = db.collectionGroup('likes').where('userId', '==', uid);
 
-		if (postIds.length) query = query.where('postId', 'in', postIds);
+			if (postIds.length) query = query.where('postId', 'in', postIds);
 
-		return (await query.get()).docs.map((d) => {
-			const docData = d.data() as LikeDB;
-			return {
-				...docData,
-				timestamp: docData.timestamp.toDate(),
-			} as Like;
-		});
+			return (await query.get()).docs.map((d) => {
+				const docData = d.data() as LikeDB;
+				return {
+					...docData,
+					timestamp: docData.timestamp.toDate(),
+				} as Like;
+			});
+		} catch {
+			return [];
+		}
 	};
 
 	private _calculateScore(post: Post) {

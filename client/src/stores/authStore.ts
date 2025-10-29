@@ -9,10 +9,12 @@ export type UserData = {
 interface UserStore {
 	userData: UserData;
 	isAuthenticated: boolean;
+	isPassword: boolean;
 	isLoading: boolean;
 
 	setUserData: (authState: UserData) => void;
 	setAuthenticated: (isAuthenticated: boolean) => void;
+	setIsPassword: (isPassword: boolean) => void;
 	setLoading: (isLoading: boolean) => void;
 	updateUser: (user: User) => void;
 	reset: () => void;
@@ -21,10 +23,12 @@ interface UserStore {
 const useUser = create<UserStore>((set) => ({
 	userData: null,
 	isAuthenticated: false,
+	isPassword: false,
 	isLoading: false,
 
 	setUserData: (userData) => set({ userData }),
 	setAuthenticated: (isAuthenticated: boolean) => set({ isAuthenticated }),
+	setIsPassword: (isPassword: boolean) => set({ isPassword }),
 	setLoading: (isLoading: boolean) => set({ isLoading }),
 	updateUser: (user) =>
 		set((prev) => ({

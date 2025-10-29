@@ -20,10 +20,11 @@ const useAuth = ():
 		userData,
 		isAuthenticated,
 		isLoading,
+		setIsPassword,
 		setUserData,
 		setAuthenticated,
 		setLoading,
-		reset: logOut,
+		reset,
 	} = useUser(useShallow((s) => s));
 	const navigate = useNavigate();
 
@@ -33,6 +34,9 @@ const useAuth = ():
 			if (currentUser) {
 				setAuthenticated(true);
 				try {
+					const isPasswordProvider = currentUser.providerData.some(
+						(p) => p.providerId === 'password'
+					);
 					const { data } = await getOneUser(currentUser.uid);
 
 					const { user: userData, isVerified } = data;
@@ -48,6 +52,7 @@ const useAuth = ():
 						emailVerified: currentUser.emailVerified,
 					});
 					setLoading(false);
+					setIsPassword(isPasswordProvider);
 				} catch (err) {
 					if (
 						axios.isAxiosError(err) &&
@@ -59,7 +64,7 @@ const useAuth = ():
 					}
 				}
 			} else {
-				logOut();
+				reset();
 				setLoading(false);
 			}
 		});
@@ -68,7 +73,7 @@ const useAuth = ():
 		return () => {
 			return unsubscribe();
 		};
-	}, [logOut, setLoading, setUserData, setAuthenticated, navigate]);
+	}, [reset, setLoading, setUserData, setAuthenticated, navigate]);
 
 	if (isLoading)
 		return {

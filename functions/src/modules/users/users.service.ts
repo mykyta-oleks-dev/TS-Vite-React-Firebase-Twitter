@@ -130,6 +130,7 @@ class UsersService {
 				...(await usersRepository.getOne(uid)),
 			};
 		} catch {
+			console.log('user not found');
 			throw new NotFoundError(REQUEST_ERRORS.NOTFOUND_ONE);
 		}
 	};

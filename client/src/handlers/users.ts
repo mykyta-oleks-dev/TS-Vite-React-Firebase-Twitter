@@ -31,51 +31,61 @@ import { toast } from 'sonner';
 import { deleteFile, uploadFile } from '../firebase/storage';
 import type { User } from '@/types/User';
 import { FOLDERS } from '@/constants/storage';
+import type { NavigateFunction } from 'react-router';
 
-export const handleSignUp = async (values: signUpData) => {
+export const handleSignUp = async (
+	values: signUpData,
+	navigate?: NavigateFunction
+) => {
 	try {
 		const avatar = await uploadFile(values.avatar, FOLDERS.AVATARS);
 
 		const { data } = await signUp(values, avatar);
 
 		await signInWithCustomToken(auth, data.token);
-		router.navigate(ROUTER_KEYS.ROOT);
+		(await navigate?.(ROUTER_KEYS.ROOT)) ??
+			(await router.navigate(ROUTER_KEYS.ROOT));
 	} catch (err) {
 		handleError(err, true);
 	}
 };
 
-export const handleSignUpFinish = async (values: signUpFinishData) => {
+export const handleSignUpFinish = async (
+	values: signUpFinishData,
+	navigate?: NavigateFunction
+) => {
 	try {
 		const avatar = await uploadFile(values.avatar, FOLDERS.AVATARS);
 
 		const { data } = await signUpFinish(values, avatar);
 
 		await signInWithCustomToken(auth, data.token);
-		router.navigate(ROUTER_KEYS.ROOT);
+		(await navigate?.(ROUTER_KEYS.ROOT)) ??
+			(await router.navigate(ROUTER_KEYS.ROOT));
 	} catch (err) {
 		handleError(err, true);
 	}
 };
 
-export const handleLogIn = async (values: logInData) => {
+export const handleLogIn = async (
+	values: logInData,
+	navigate?: NavigateFunction
+) => {
 	try {
-		await signInWithEmailAndPassword(
-			auth,
-			values.email,
-			values.password
-		);
+		await signInWithEmailAndPassword(auth, values.email, values.password);
 
-		router.navigate(ROUTES.ROOT);
+		(await navigate?.(ROUTER_KEYS.ROOT)) ??
+			(await router.navigate(ROUTER_KEYS.ROOT));
 	} catch (err) {
 		handleError(err, true);
 	}
 };
 
-export const handleGoogleAuth = async () => {
+export const handleGoogleAuth = async (navigate?: NavigateFunction) => {
 	try {
 		await signInWithPopup(auth, googleAuthProvider).then(async () => {
-			router.navigate(ROUTES.ROOT);
+			(await navigate?.(ROUTER_KEYS.ROOT)) ??
+				(await router.navigate(ROUTER_KEYS.ROOT));
 		});
 	} catch (err) {
 		handleError(err, true);
